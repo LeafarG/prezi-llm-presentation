@@ -607,6 +607,63 @@
 
     /* ============ HISTORY DETAIL VIEW ============ */
     .historia-body { position: relative; }
+    .tipos-body { position: relative; }
+    .tipos-lead { font-size: 0.92rem; margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.5; }
+    .tipos-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .tipo-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+    .tipo-row:hover {
+      transform: translateX(4px);
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+    }
+    .tipo-row.selected {
+      border-color: var(--accent);
+      background: rgba(96,165,250,0.08);
+    }
+    .tipo-badge {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .tipo-badge.slm { background: rgba(96,165,250,0.18); color: var(--accent); }
+    .tipo-badge.llm { background: rgba(52,211,153,0.18); color: var(--success); }
+    .tipo-badge.frontier { background: rgba(167,139,250,0.18); color: var(--purple); }
+    .tipo-badge.reasoning { background: rgba(251,191,36,0.18); color: var(--warning); }
+    .tipo-content { flex: 1; min-width: 0; }
+    .tipo-head { display: flex; align-items: baseline; gap: 0.4rem; margin-bottom: 0.25rem; }
+    .tipo-head h4 { margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 700; }
+    .tipo-head .size { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-dim); }
+    .tipo-content p { font-size: 0.88rem; color: var(--text-secondary); margin: 0 0 0.5rem; line-height: 1.45; }
+    .tipo-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tipo-detail {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .tipo-detail.active { opacity: 1; pointer-events: auto; }
+    .tipo-panel { display: none; animation: fadeInPanel 400ms ease; }
+    .tipo-panel.active { display: block; }
     .tl-list {
       opacity: 1;
       transition: opacity 250ms ease;
@@ -1034,6 +1091,8 @@
     .macro-card[data-cluster="construcoes"] .icon { background: rgba(52,211,153,0.15); }
     .macro-card h3 { font-size: 1.05rem; margin-bottom: 0.25rem; }
     .macro-card p { font-size: 0.78rem; margin: 0; color: var(--text-muted); line-height: 1.45; }
+    .macro-card .macro-fact { font-size: 0.78rem; margin: 0 0 0.6rem; color: var(--text-secondary); line-height: 1.4; }
+    .macro-card .macro-fact strong { color: var(--card-accent, var(--accent)); font-family: 'JetBrains Mono', monospace; font-weight: 700; }
     .macro-card .sections-list {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem;
@@ -1163,21 +1222,21 @@
                 <button class="macro-card" data-cluster="fundamentos" data-tour="fundamentos">
                   <span class="icon">01</span>
                   <h3>Fundamentos</h3>
-                  <p>A base histórica e estrutural. Como chegamos aqui e sobre o que construímos.</p>
+                  <p class="macro-fact"><strong>1943 → 2017</strong>: 74 anos do neurônio matemático ao Transformer.</p>
                   <div class="sections-list">História &nbsp;·&nbsp; Frameworks</div>
                   <div class="tour-tag">▶ TOUR GUIADO</div>
                 </button>
                 <button class="macro-card" data-cluster="modelo" data-tour="modelo">
                   <span class="icon">02</span>
                   <h3>O Modelo</h3>
-                  <p>Arquiteturas, variantes e como o raciocínio emergiu da escala.</p>
+                  <p class="macro-fact"><strong>4 classes</strong> dominantes em 2026: SLM / LLM / Frontier / Reasoning.</p>
                   <div class="sections-list">Tipos &nbsp;·&nbsp; Thinking</div>
                   <div class="tour-tag">▶ TOUR GUIADO</div>
                 </button>
                 <button class="macro-card" data-cluster="construcoes" data-tour="construcoes">
                   <span class="icon">03</span>
                   <h3>Construções</h3>
-                  <p>Ferramentas, protocolos e harnesses — onde o LLM vira sistema.</p>
+                  <p class="macro-fact"><strong>8 tools + 1 protocolo + 4 harnesses</strong> onde o LLM vira sistema.</p>
                   <div class="sections-list">Tools &nbsp;·&nbsp; MCP &nbsp;·&nbsp; Harness</div>
                   <div class="tour-tag">▶ TOUR GUIADO</div>
                 </button>
@@ -1217,9 +1276,17 @@
 
               <!-- ============ TIMELINE VIEW ============ -->
               <div class="tl-list" id="tlList">
+                <div class="tl-row" data-event="dartmouth">
+                  <div class="tl-year">1956</div>
+                  <div class="tl-text"><strong>Dartmouth Workshop</strong> · Nascimento do termo "Artificial Intelligence". McCarthy, Minsky, Rochester e Shannon. 10-week study. Optimism for the next decade.</div>
+                </div>
                 <div class="tl-row" data-event="perceptron">
                   <div class="tl-year">1958</div>
                   <div class="tl-text"><strong>Perceptron · Rosenblatt</strong> · Primeiro algoritmo que aprende a partir de dados. Roda no Mark I, do tamanho de uma sala.</div>
+                </div>
+                <div class="tl-row" data-event="eliza">
+                  <div class="tl-year">1966</div>
+                  <div class="tl-text"><strong>ELIZA · Weizenbaum (MIT)</strong> · Primeiro chatbot. Script "DOCTOR" simula psicoterapeuta Rogeriano. Impressionante pra época — usuários juravam que era humano.</div>
                 </div>
                 <div class="tl-row" data-event="winter1">
                   <div class="tl-year warn">1969</div>
@@ -1256,6 +1323,10 @@
                 <div class="tl-row" data-event="cowork">
                   <div class="tl-year highlight">2026</div>
                   <div class="tl-text"><strong>Microsoft Cowork (GA jun/2026)</strong> · Agentes autônomos com Work IQ. Multi-agent orchestration vira commodity.</div>
+                </div>
+                <div class="tl-row" data-event="deepseekR1">
+                  <div class="tl-year highlight">2025</div>
+                  <div class="tl-text"><strong>DeepSeek-R1 (jan/2025)</strong> · Open-source reasoning model comparável ao o1. R1 mostra reasoning chains explicitamente. Custou <strong>$5.5M</strong> de compute — uma fração de modelos fechados.</div>
                 </div>
               </div>
 
@@ -1459,6 +1530,66 @@
                     </div>
                   </div>
 
+                  <div class="event-panel" data-event="dartmouth">
+                    <div class="event-meta">
+                      <div class="event-year-lg">1956</div>
+                      <div class="event-tag-row">
+                        <span class="chip accent">Conceito</span>
+                        <span class="chip">McCarthy</span>
+                        <span class="chip">Dartmouth College</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Dartmouth Workshop · nascimento da IA</h3>
+                    <div class="event-body">
+                      <p><strong>Verão de 1956</strong>, Dartmouth College (Hanover, New Hampshire). <strong>John McCarthy</strong> (Dartmouth), <strong>Marvin Minsky</strong> (Harvard), <strong>Claude Shannon</strong> (Bell Labs) e <strong>Nathaniel Rochester</strong> (IBM) propuseram um <em>10-week study</em> sobre inteligência artificial.</p>
+                      <p>A proposta foi notavelmente otimista: um grupo de <strong>10 pesquisadores</strong> acreditava resolver boa parte das questões de IA em <em>um único verão</em>. Cobriam redes neurais, computação simbólica, language models primitivos, complexidade, abstração, criatividade. Quase tudo que discutimos hoje estava lá no horizonte.</p>
+                      <p>O workshop <strong>não cumpriu a promessa</strong> — longe disso. Mas <strong>batizou o campo</strong>: foi nesse documento que McCarthy cunhou o termo <em>"Artificial Intelligence"</em> (preferido sobre alternativas como <em>cybernetic</em> ou <em>automata theory</em>). A definição hoje clássica de IA vem desse momento.</p>
+                      <p>Curiosidade: entre os participantes estavam <strong>Allen Newell</strong> e <strong>Herbert Simon</strong>, que mostraram o <em>Logic Theorist</em>, um programa que provava teoremas de lógica. Foi o <strong>primeiro software de IA</strong> realmente funcional — meses antes da conferência.</p>
+                      <p><strong>Por que importa:</strong> Dartmouth legitimou o campo como disciplina académica financiável. Sem esse impulso, redes neurais e NLP podem ter ficado mais décadas marginalizadas.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="eliza">
+                    <div class="event-meta">
+                      <div class="event-year-lg">1966</div>
+                      <div class="event-tag-row">
+                        <span class="chip accent">Chatbot</span>
+                        <span class="chip accent">NLP primitivo</span>
+                        <span class="chip">Weizenbaum</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">ELIZA · Weizenbaum (MIT)</h3>
+                    <div class="event-body">
+                      <p><strong>Joseph Weizenbaum</strong>, do MIT, publica em 1966 o <strong>ELIZA</strong>, um programa que implementa o <em>script DOCTOR</em>: simula um psicoterapeuta Rogeriano que reformula afirmações do usuário como perguntas.</p>
+                      <p>Exemplo de diálogo:</p>
+                      <p><em>User: "I'm sad."<br>ELIZA: "Do you think coming here will help you not to be sad?"<br>User: "My mother hates me."<br>ELIZA: "Tell me more about your mother."</em></p>
+                      <p>Era <strong>estatística contextual primitiva</strong>: match de keywords + reformulação por templates. <strong>Nada de ML</strong>, nenhuma rede neural. Mas o resultado impressionou.</p>
+                      <p>Weizenbaum ficou <em>horrorizado</em> quando viu secretárias e pesquisadores do MIT <strong>revelarem problemas pessoais reais ao ELIZA</strong>, sabendo que era um script. Sua assistente pediu para ele sair da sala quando usou o programa em privado. Isso virou tema central do seu livro <em>Computer Power and Human Reason</em> (1976) — uma crítica à transferência emocional em máquinas.</p>
+                      <p><strong>Por que importa:</strong> ELIZA é o ancestral de todo chatbot. O pattern "interface conversacional com personalidade" não morreu — virou <strong>ChatGPT</strong>, <strong>Pi</strong>, <strong>Character.AI</strong>. Toda vez que tu te engajas emocionalmente com um LLM, tá repetindo (em escala) a observação de Weizenbaum.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="deepseekR1">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">2025</div>
+                      <div class="event-tag-row">
+                        <span class="chip success">Open-source</span>
+                        <span class="chip success">Reasoning</span>
+                        <span class="chip success">$5.5M</span>
+                        <span class="chip purple">MIT license</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">DeepSeek-R1 · open-source reasoning</h3>
+                    <div class="event-body">
+                      <p>Em <strong>janeiro de 2025</strong>, a startup chinesa <strong>DeepSeek</strong> lança o <strong>R1</strong>: um modelo de raciocínio open-source (MIT license) com performance comparável ao o1 da OpenAI em benchmarks de matemática, código e ciências.</p>
+                      <p>O impacto foi <strong>sísmico</strong> por três razões:</p>
+                      <p><strong>(1) Custo:</strong> o paper técnico reportou <strong>~$5.5M</strong> em compute de treinamento. Em contraste, GPT-4 custou estimadamente $100M+, e o1 vendeu API a $200/milhão output tokens. Ordem de grandeza de diferença.</p>
+                      <p><strong>(2) Reasoning explícito:</strong> ao contrário de o1 (que esconde o raciocínio interno), R1 mostra <em>tokens de raciocínio</em> diretamente no output. Isso melhorou muito a <em>interpretabilidade</em> do modelo — pesquisadores podem auditar a "cadeia de pensamento". Esse padrão depois foi adotado por Claude, Gemini, GPT-5.</p>
+                      <p><strong>(3) Geopolítica:</strong> foi o estopim do <em>"Sputnik moment"</em> da IA. O <strong>Nvidia caiu 17%</strong> em um único dia (27/jan/2025). Narração: "a China pode treinar modelos frontier mais barato que os EUA". Verdade ou não, o pânico de mercado foi real — e a discussão sobre <em>export controls</em> e cadeias de suprimento de GPUs ficou nacional.</p>
+                      <p><strong>Side effects:</strong> a corrida open-source ganhou tração. Em 6 meses, R1-distillados rodavam em laptops (Gemma 3, Llama 3.3, Qwen 2.5-Max). A <em>AI democratization</em> virou tema de novo.</p>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
@@ -1489,33 +1620,152 @@
                 <h2>Tipos de LLM</h2>
               </div>
             </div>
-            <div class="content-body">
-              <p style="font-size: 0.95rem; margin-bottom: 1rem;">Modelos diferentes para trabalhos diferentes. A escolha define custo, latência e onde roda.</p>
-              <div class="quad-grid">
-                <div class="quad">
-                  <div class="quad-icon">S</div>
-                  <h4>SLM <span style="color: var(--text-dim); font-weight: 400; font-size: 0.85rem;">— &lt;10B</span></h4>
-                  <p>Cabe em laptop / celular / RPi. Latência sub-segundo, custo quase zero. <em>Phi-3, Gemma 2B, Llama 3.2 1B/3B, Qwen2.5</em>.</p>
+            <div class="content-body tipos-body">
+              <p class="tipos-lead">Modelos diferentes para trabalhos diferentes. A escolha define custo, latência e onde roda. <span style="color: var(--text-dim);">Clique em cada tipo pra detalhes.</span></p>
+              <div class="tipos-list">
+
+                <div class="tipo-row" data-tipo="slm">
+                  <div class="tipo-badge slm">S</div>
+                  <div class="tipo-content">
+                    <div class="tipo-head"><h4>SLM</h4><span class="size">— &lt;10B params</span></div>
+                    <p>Cabe em laptop / celular / RPi. Latência sub-segundo, custo quase zero.</p>
+                    <div class="tipo-chips">
+                      <span class="chip accent">Phi-3</span>
+                      <span class="chip accent">Gemma 2B</span>
+                      <span class="chip accent">Llama 3.2 1B/3B</span>
+                      <span class="chip accent">Qwen 2.5 0.5B/3B</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="quad success">
-                  <div class="quad-icon">L</div>
-                  <h4>LLM <span style="color: var(--text-dim); font-weight: 400; font-size: 0.85rem;">— 10B a 100B+</span></h4>
-                  <p>Capacidade geral forte, multimodal, janelas longas. <em>GPT-4o, Claude 4, Gemini 2, Llama 3.1 70B, Mistral Large</em>.</p>
+
+                <div class="tipo-row" data-tipo="llm">
+                  <div class="tipo-badge llm">L</div>
+                  <div class="tipo-content">
+                    <div class="tipo-head"><h4>LLM</h4><span class="size">— 10B a 100B+</span></div>
+                    <p>Capacidade geral forte, multimodal, janelas longas. Custo médio por token caiu ~90% em 24 meses.</p>
+                    <div class="tipo-chips">
+                      <span class="chip success">GPT-4o</span>
+                      <span class="chip success">Claude 4 Sonnet</span>
+                      <span class="chip success">Gemini 2</span>
+                      <span class="chip success">Llama 3.1 70B</span>
+                      <span class="chip success">Mistral Large</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="quad purple">
-                  <div class="quad-icon">F</div>
-                  <h4>Frontier</h4>
-                  <p>Topo da pirâmide. Compute de dezenas de milhões. Máxima capacidade. <em>GPT-5, Claude 4 Opus, Gemini 2.5 Pro, o3, DeepSeek-V3</em>.</p>
+
+                <div class="tipo-row" data-tipo="frontier">
+                  <div class="tipo-badge frontier">F</div>
+                  <div class="tipo-content">
+                    <div class="tipo-head"><h4>Frontier</h4><span class="size">— 500B+</span></div>
+                    <p>Topo da pirâmide. Compute de dezenas de milhões. Máxima capacidade, mas custo proibitivo.</p>
+                    <div class="tipo-chips">
+                      <span class="chip purple">GPT-5</span>
+                      <span class="chip purple">Claude 4 Opus</span>
+                      <span class="chip purple">Gemini 2.5 Pro</span>
+                      <span class="chip purple">o3-pro</span>
+                      <span class="chip purple">DeepSeek-V3</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="quad warning">
-                  <div class="quad-icon">R</div>
-                  <h4>Reasoning</h4>
-                  <p>Pensa antes de responder. Tokens internos de raciocínio. <em>o1/o3, DeepSeek-R1, Claude extended thinking, Gemini Thinking</em>.</p>
+
+                <div class="tipo-row" data-tipo="reasoning">
+                  <div class="tipo-badge reasoning">R</div>
+                  <div class="tipo-content">
+                    <div class="tipo-head"><h4>Reasoning</h4><span class="size">— scale at inference</span></div>
+                    <p>Pensa antes de responder. Tokens internos de raciocínio (chain-of-thought). Latência maior, qualidade maior.</p>
+                    <div class="tipo-chips">
+                      <span class="chip warning">o1 / o3</span>
+                      <span class="chip warning">DeepSeek-R1</span>
+                      <span class="chip warning">Claude extended thinking</span>
+                      <span class="chip warning">Gemini Thinking</span>
+                    </div>
+                  </div>
                 </div>
+
               </div>
+
               <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
                 <strong>Open vs closed:</strong> Llama, Mistral, Qwen, DeepSeek (pesos abertos) · vs · GPT, Claude, Gemini, Grok (só via API).
               </p>
+
+              <!-- ============ TIPO DETAIL VIEW ============ -->
+              <div class="tipo-detail" id="tipoDetail" aria-hidden="true">
+                <button class="back-btn" id="tipoBack"><span class="back-arrow">←</span> Voltar aos tipos</button>
+                <div class="tipo-panels" id="tipoPanels">
+
+                  <div class="tipo-panel" data-tipo="slm">
+                    <div class="event-meta">
+                      <div class="event-year-lg">&lt; 10B params</div>
+                      <div class="event-tag-row"><span class="chip accent">Edge · on-device</span></div>
+                    </div>
+                    <h3 class="event-title">SLM · Small Language Models</h3>
+                    <div class="event-body">
+                      <p>Modelos com <strong>até ~10 bilhões de parâmetros</strong>, projetados para rodar em hardware comum: laptop, celular, Raspberry Pi, smart-speakers. A arquitetura é a mesma do Transformer — só que destilada, quantizada ou pré-treinada menor.</p>
+                      <p><strong>Quando usar:</strong></p>
+                      <p>• <em>Privacidade</em> — dados nunca saem do dispositivo (smartphone keyboards, transcription offline).</p>
+                      <p>• <em>Latência</em> — resposta em &lt;100ms, sem round-trip HTTP.</p>
+                      <p>• <em>Custo marginal zero</em> — ótimo para workloads em loop (autocomplete, classificação).</p>
+                      <p>• <em>Edge computing</em> — IoT, automotive, smart home sem cloud.</p>
+                      <p><strong>Trade-offs:</strong> capacidade de raciocínio limitada. Não vão escrever Harry Potter. Mas para tarefas estruturadas (extração, classificação, formatação) são surpreendentemente úteis. Phi-3 mini bate GPT-3.5 em vários benchmarks (HellaSwag, ARC).</p>
+                      <p><strong>Players:</strong> Microsoft Phi-3 (mini/small/medium), Google Gemma 2B/9B, Meta Llama 3.2 1B/3B, Alibaba Qwen 2.5 0.5B-7B, Apple (silencioso, mas provavelmente tem modelos internos no iOS 18+).</p>
+                    </div>
+                  </div>
+
+                  <div class="tipo-panel" data-tipo="llm">
+                    <div class="event-meta">
+                      <div class="event-year-lg">10B – 100B+</div>
+                      <div class="event-tag-row"><span class="chip success">General purpose</span></div>
+                    </div>
+                    <h3 class="event-title">LLM · o canivete suíço</h3>
+                    <div class="event-body">
+                      <p>Modelos de <strong>10 a 100+ bilhões de parâmetros</strong>. Grande o suficiente pra tarefas gerais: tradução, sumarização, Q&A, escrita criativa, programação básica. Pequeno o suficiente pra ser self-hosted ou por API a custo aceitável.</p>
+                      <p><strong>Quando usar:</strong></p>
+                      <p>• <em>Produtos B2B</em> — capacidade previsível, custo previsível.</p>
+                      <p>• <em>Multimodal</em> — maioria já fala visão, alguns áudio.</p>
+                      <p>• <em>Janelas longas</em> — até 2M tokens em Llama 3.1; Claude 4 suporta 1M com 'Compaction'.</p>
+                      <p>• <em>Code-assist</em> — Copilot e Cursor rodam LLMs, não Frontier.</p>
+                      <p><strong>Tendência:</strong> a fronteira entre LLM "médio" e Frontier "completo" tá esvaziando. Llama 3.1 70B bate GPT-4 original. GPT-4o mini é menor que Claude Sonnet 3.5 mas competitivo.</p>
+                      <p><strong>Players:</strong> OpenAI GPT-4o/mini, Anthropic Claude 4 Sonnet, Google Gemini 2 Flash, Meta Llama 3.1 70B/405B, Mistral Large, Microsoft Phi-3 medium.</p>
+                    </div>
+                  </div>
+
+                  <div class="tipo-panel" data-tipo="frontier">
+                    <div class="event-meta">
+                      <div class="event-year-lg">500B+</div>
+                      <div class="event-tag-row"><span class="chip purple">Frontier</span><span class="chip purple">$$$</span></div>
+                    </div>
+                    <h3 class="event-title">Frontier · topo da pirâmide</h3>
+                    <div class="event-body">
+                      <p>Os modelos <strong>mais capazes do mundo</strong> em qualquer momento. Hoje GPT-5, Claude 4 Opus, Gemini 2.5 Pro. Estimativas de compute de treinamento: <strong>dezenas a centenas de milhões de dólares</strong>. Os pesos geralmente <strong>não são publicados</strong> — só API.</p>
+                      <p><strong>Quando usar:</strong></p>
+                      <p>• <em>Problemas que LLMs não resolvem bem</em> — raciocínio multi-hop, código muito complexo, matemática avançada.</p>
+                      <p>• <em>Workloads pequenas mas críticas</em> — análise jurídica, científico, raciocínio agente.</p>
+                      <p>• <em>Sistemas autônomos</em> — agentes de longa duração, tools chaining.</p>
+                      <p><strong>Custo:</strong> GPT-5 cobra ~$10/M input, $30/M output. Opus 4 ~$15/$75. Para 10M tokens/mês de workload agent, $300-$750.</p>
+                      <p><strong>Side effects:</strong> a corrida Frontier é <em>capability &amp; safety arms race</em>. Cada nova geração muda <em>capabilities surprises</em> — o time descobre comportamentos não previstos (in-context manipulation, jailbreaks). Por isso as empresas líderes têm <em>red teams</em> internas.</p>
+                    </div>
+                  </div>
+
+                  <div class="tipo-panel" data-tipo="reasoning">
+                    <div class="event-meta">
+                      <div class="event-year-lg">scale at inference</div>
+                      <div class="event-tag-row"><span class="chip warning">CoT</span><span class="chip warning">extra compute</span></div>
+                    </div>
+                    <h3 class="event-title">Reasoning · pensa antes de responder</h3>
+                    <div class="event-body">
+                      <p>Categoria nova que explodiu em 2024. Modelos que alocam <strong>compute extra em tempo de inferência</strong> para gerar raciocínio intermediário (chain-of-thought, search interno, tentativa-e-erro). OpenAI o1 (set/2024) foi o primeiro produto mainstream.</p>
+                      <p><strong>Mecânica:</strong> o modelo emite tokens de raciocínio <em>antes</em> da resposta final. Esses tokens podem ser visíveis (DeepSeek-R1, Claude extended thinking) ou escondidos (o1, o3). Em problemas difíceis, mais raciocínio = melhor resposta (até certo platô).</p>
+                      <p><strong>Quando usar:</strong></p>
+                      <p>• <em>Matemática/programação competitiva</em> — AIME, USACO, Codeforces.</p>
+                      <p>• <em>Raciocínio multi-hop</em> — perguntas que exigem conexão de 5+ fatos.</p>
+                      <p>• <em>Agentes</em> — planners com raciocínio intermediário funcionam melhor.</p>
+                      <p>• <em>Auditoria</em> — quando você <em>quer ver</em> o raciocínio pra entender a falha.</p>
+                      <p><strong>Limitações:</strong> latência multi-segundo a multi-minuto. Custo cresce com raciocínio. Em tarefas simples (resumir, formatar) é <em>pior</em> que LLM comum. Use com parcimônia.</p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -2377,6 +2627,69 @@
 
     // Expose tour control for deep-link / hash handling
     window.__tour = { start: startTour, end: endTour };
+
+    // ============================================================
+    // Tipos de LLM — click-to-expand per category
+    // ============================================================
+    (function setupTiposDetail() {
+      const sec = sectionEls['tipos'];
+      if (!sec) return;
+      const rows = sec.querySelectorAll('.tipo-row[data-tipo]');
+      const detail = sec.querySelector('#tipoDetail');
+      const panels = sec.querySelectorAll('.tipo-panel');
+      const backBtn = sec.querySelector('#tipoBack');
+      if (!detail || !backBtn) return;
+
+      let activeTipo = null;
+
+      function showTipo(tipoId) {
+        if (!tipoId || activeTipo === tipoId) return;
+        rows.forEach(r => r.classList.toggle('selected', r.dataset.tipo === tipoId));
+        panels.forEach(p => p.classList.toggle('active', p.dataset.tipo === tipoId));
+        detail.classList.add('active');
+        detail.setAttribute('aria-hidden', 'false');
+        detail.scrollTop = 0;
+        sec.querySelectorAll('.tipos-list')[0]?.style && (sec.querySelectorAll('.tipos-list')[0].style.opacity = '0.35');
+        sec.querySelectorAll('.tipos-list')[0]?.style && (sec.querySelectorAll('.tipos-list')[0].style.pointerEvents = 'none');
+        activeTipo = tipoId;
+        history.replaceState(null, '', `#tipos?expand=${tipoId}`);
+      }
+      function hideTipo() {
+        if (!activeTipo) return;
+        rows.forEach(r => r.classList.remove('selected'));
+        detail.classList.remove('active');
+        detail.setAttribute('aria-hidden', 'true');
+        const list = sec.querySelectorAll('.tipos-list')[0];
+        if (list) { list.style.opacity = ''; list.style.pointerEvents = ''; }
+        activeTipo = null;
+        if (window.location.hash.startsWith('#tipos?expand=')) {
+          history.replaceState(null, '', '#tipos');
+        }
+      }
+
+      rows.forEach(row => {
+        row.addEventListener('click', () => showTipo(row.dataset.tipo));
+      });
+      backBtn.addEventListener('click', hideTipo);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && activeTipo) {
+          e.preventDefault();
+          hideTipo();
+        }
+      });
+
+      // Auto-open if URL has ?expand=X
+      function handleExpand() {
+        const m = window.location.hash.match(/^#tipos\?expand=([a-z]+)$/);
+        if (m && m[1]) showTipo(m[1]);
+      }
+      handleExpand();
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash.startsWith('#tipos?expand=')) handleExpand();
+        else if (activeTipo) hideTipo();
+      });
+    })();
 
     // ============================================================
     // História — click-to-expand timeline events
