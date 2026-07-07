@@ -1069,12 +1069,13 @@
 
       <!-- ============ INTER-CLUSTER ARROWS ============ -->
       <svg class="cluster-arrows" viewBox="0 0 6000 3000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Fundamentos (NW) -> Modelo (NE): curve over the top -->
-        <path d="M 1500 700 C 2500 100, 3500 100, 4400 600" />
-        <polygon class="arrow-head" points="4400,600 4370,580 4370,620" />
-        <!-- Modelo (NE) -> Construções (S): curve down the right then sweep left -->
-        <path d="M 4400 1300 C 4800 1700, 2000 1700, 800 2400" />
-        <polygon class="arrow-head" points="800,2400 830,2380 810,2420" />
+        <!-- Fundamentos (NW, center 800,700) -> Modelo (NE, center 4400,700) -->
+        <path d="M 1500 700 C 2500 100, 3500 100, 4400 700" />
+        <polygon class="arrow-head" points="4400,700 4370,680 4370,720" />
+        <!-- Modelo (NE, center 4400,1500) -> Construções (S, center 800,2550) -->
+        <!-- arcs below the capa frame to avoid overlap -->
+        <path d="M 4400 1950 C 4400 2150, 800 2150, 800 2550" />
+        <polygon class="arrow-head" points="800,2550 780,2520 820,2520" />
       </svg>
 
       <!-- ============ CLUSTER LABELS (faded, canvas-level) ============ -->
