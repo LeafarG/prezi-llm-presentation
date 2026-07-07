@@ -109,8 +109,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 6000px;
-      height: 3800px;
+      width: 7900px;
+      height: 1500px;
       transform-origin: 0 0;
       will-change: transform;
       transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1);
@@ -1089,24 +1089,24 @@
       mix-blend-mode: screen;
     }
     .cluster-bg.fundamentos {
-      left: 100px; top: 50px;
-      width: 1700px; height: 2050px;
+      left: 900px; top: 80px;
+      width: 3700px; height: 1300px;
       background: radial-gradient(ellipse, rgba(96,165,250,0.10) 0%, transparent 70%);
     }
     .cluster-bg.modelo {
-      left: 3500px; top: 50px;
-      width: 1700px; height: 1900px;
+      left: 1800px; top: 80px;
+      width: 1900px; height: 1300px;
       background: radial-gradient(ellipse, rgba(167,139,250,0.10) 0%, transparent 70%);
     }
     .cluster-bg.construcoes {
-      left: 200px; top: 2100px;
-      width: 4800px; height: 1000px;
+      left: 4500px; top: 80px;
+      width: 3450px; height: 1300px;
       background: radial-gradient(ellipse, rgba(52,211,153,0.08) 0%, transparent 70%);
     }
     .cluster-bg.capa-area {
-      left: 1900px; top: 3150px;
-      width: 2200px; height: 700px;
-      background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%);
+      left: 80px; top: 200px;
+      width: 820px; height: 1100px;
+      background: radial-gradient(circle, rgba(244,114,182,0.10) 0%, transparent 70%);
     }
 
     /* ============ CLUSTER LABELS (canvas-level) ============ */
@@ -1122,15 +1122,18 @@
       color: var(--text-dim);
       opacity: 0.55;
     }
-    .cluster-label.fundamentos { left: 230px; top: 90px; color: var(--accent); }
-    .cluster-label.modelo { left: 3630px; top: 90px; color: var(--purple); }
-    .cluster-label.construcoes { left: 330px; top: 2140px; color: var(--success); }
+    .cluster-label.fundamentos { left: 1300px; top: 40px; color: var(--accent); }
+    .cluster-label.modelo { left: 2525px; top: 40px; color: var(--purple); }
+    .cluster-label.construcoes { left: 5800px; top: 40px; color: var(--success); }
+    .cluster-label.capa-area { left: 110px; top: 320px; color: var(--pink); writing-mode: vertical-rl; transform: rotate(180deg); }
 
     /* ============ INTER-CLUSTER ARROWS (SVG) ============ */
     .cluster-arrows { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-    .cluster-arrows path { fill: none; stroke: var(--accent); stroke-width: 4; stroke-dasharray: 12 8; opacity: 0.55; }
-    .cluster-arrows .arrow-head { fill: var(--accent); opacity: 0.6; }
-    .cluster-arrows path.highlight { stroke: var(--pink); stroke-dasharray: 0; opacity: 0.95; stroke-width: 5; }
+    .cluster-arrows path { fill: none; opacity: 0.7; }
+    .cluster-arrows path.lead-in { stroke: var(--pink); stroke-width: 3; stroke-dasharray: 4 6; }
+    .cluster-arrows path.between { stroke: var(--border-strong); stroke-width: 3; }
+    .cluster-arrows path.highlight { stroke: var(--accent); stroke-dasharray: 0; opacity: 0.95; stroke-width: 4; }
+    .cluster-arrows .arrow-head { fill: var(--border-strong); opacity: 0.7; }
 
     /* ============ CAPA: MACRO CARDS ============ */
     .capa-body {
@@ -1328,18 +1331,28 @@
       <div class="cluster-bg capa-area"></div>
 
       <!-- ============ INTER-CLUSTER ARROWS ============ -->
-      <svg class="cluster-arrows" viewBox="0 0 6000 3800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Fundamentos (NW, center 900,1100) -> Modelo (NE, center 4300,550) -->
-        <!-- Curve over the top: y goes above both clusters -->
-        <path d="M 1600 600 C 2500 50, 3300 50, 3600 600" />
-        <polygon class="arrow-head" points="3600,600 3630,580 3620,620" />
-        <!-- Modelo (NE, center 4300,1450) -> Construções (S, centers 1000/2600/4200) -->
-        <!-- Arc down the right side, sweep along the bottom, land on Tools center -->
-        <path d="M 5000 1450 C 5600 1800, 5400 2300, 4500 2300" />
-        <polygon class="arrow-head" points="4500,2300 4470,2320 4520,2320" />
-        <!-- Construções (S, center 4200,2600) -> Capa (south-center, center 3000,3450) -->
-        <path d="M 4200 3000 C 4200 3150, 3500 3200, 3000 3200" />
-        <polygon class="arrow-head" points="3000,3200 2980,3170 2980,3230" />
+      <svg class="cluster-arrows" viewBox="0 0 7900 1500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Capa -> Historia (lead-in, dashed pink) -->
+        <path d="M 860 760 L 945 760" class="lead-in" />
+        <polygon class="arrow-head" points="945,760 935,755 935,765" />
+        <!-- Historia -> Tipos (Fundamentos -> Modelo) -->
+        <path d="M 1810 760 L 1845 760" class="between" />
+        <polygon class="arrow-head" points="1845,760 1835,755 1835,765" />
+        <!-- Tipos -> Thinking (within Modelo) -->
+        <path d="M 2710 760 L 2745 760" class="between" />
+        <polygon class="arrow-head" points="2745,760 2735,755 2735,765" />
+        <!-- Thinking -> Frameworks -->
+        <path d="M 3610 760 L 3645 760" class="between" />
+        <polygon class="arrow-head" points="3645,760 3635,755 3635,765" />
+        <!-- Frameworks -> Tools -->
+        <path d="M 4510 760 L 4545 760" class="between" />
+        <polygon class="arrow-head" points="4545,760 4535,755 4535,765" />
+        <!-- Tools -> MCP -->
+        <path d="M 5410 760 L 5445 760" class="between" />
+        <polygon class="arrow-head" points="5445,760 5435,755 5435,765" />
+        <!-- MCP -> Harness (finale, ends at Harness left edge) -->
+        <path d="M 6360 760 L 6395 760" class="between" />
+        <polygon class="arrow-head" points="6395,760 6385,755 6385,765" />
       </svg>
 
       <!-- ============ CLUSTER LABELS (faded, canvas-level) ============ -->
@@ -1349,7 +1362,7 @@
 
       <!-- ============ CAPA ============ -->
       <div class="section" id="sec-capa" data-id="capa"
-           style="left: 2000px; top: 3200px; width: 2000px; height: 500px;">
+           style="left: 100px; top: 200px; width: 750px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// CAPA</div>
@@ -1406,7 +1419,7 @@
 
       <!-- ============ HISTÓRIA ============ -->
      <div class="section" id="sec-historia" data-id="historia"
-           style="left: 200px; top: 150px; width: 1400px; height: 900px;">
+           style="left: 950px; top: 200px; width: 850px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 01</div>
@@ -1763,7 +1776,7 @@
 
       <!-- ============ TIPOS ============ -->
       <div class="section" id="sec-tipos" data-id="tipos"
-           style="left: 3600px; top: 150px; width: 1400px; height: 800px;">
+           style="left: 1850px; top: 200px; width: 850px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 02</div>
@@ -1936,7 +1949,7 @@
 
       <!-- ============ THINKING ============ -->
       <div class="section" id="sec-thinking" data-id="thinking"
-           style="left: 3600px; top: 1050px; width: 1400px; height: 800px;">
+           style="left: 2750px; top: 200px; width: 850px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 03</div>
@@ -1993,7 +2006,7 @@
 
       <!-- ============ FRAMEWORKS ============ -->
       <div class="section" id="sec-frameworks" data-id="frameworks"
-           style="left: 200px; top: 1150px; width: 1400px; height: 900px;">
+           style="left: 3650px; top: 200px; width: 850px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 04</div>
@@ -2117,7 +2130,7 @@
 
       <!-- ============ TOOLS ============ -->
       <div class="section" id="sec-tools" data-id="tools"
-           style="left: 300px; top: 2200px; width: 1400px; height: 800px;">
+           style="left: 4550px; top: 200px; width: 850px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 05</div>
@@ -2298,7 +2311,7 @@
 
       <!-- ============ MCP ============ -->
       <div class="section" id="sec-mcp" data-id="mcp"
-           style="left: 1900px; top: 2200px; width: 1400px; height: 800px;">
+           style="left: 5450px; top: 200px; width: 900px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 06</div>
@@ -2349,7 +2362,7 @@
 
       <!-- ============ HARNESS ============ -->
       <div class="section" id="sec-harness" data-id="harness"
-           style="left: 3500px; top: 2200px; width: 1400px; height: 800px;">
+           style="left: 6400px; top: 200px; width: 1500px; height: 1100px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 07</div>
@@ -2628,8 +2641,8 @@
 
     function computeOverviewFit() {
       const { w: vw, h: vh } = getViewportSize();
-      const canvasW = 6000;
-      const canvasH = 3800;
+      const canvasW = 7900;
+      const canvasH = 1500;
       const padding = 80;
       const scale = Math.min(
         (vw - padding * 2) / canvasW,

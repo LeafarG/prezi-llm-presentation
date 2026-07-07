@@ -40,55 +40,38 @@ What we build on top: tooling, protocol, agents.
 - Each macro-card launches a **guided tour** that walks through the
   cluster's sections with brief pauses + "→ próximo" overlay
 
-## Visual canvas layout (cluster regions)
+## Visual canvas layout (timeline)
 
 ```
-Canvas 6000 × 3800
+Canvas 7900 × 1500 (timeline horizontal)
 
-┌─────────────── 6000 ────────────────┐
-│ (200,150)                          (5000,150)
-│  ┌──────────────┐    ┌──────────────┐
-│  │  HISTÓRIA    │    │   TIPOS      │
-│  │  (NW blue)   │    │   (NE purp)  │
-│  └──────────────┘    └──────────────┘
-│  (200,1150)           (3600,1050)
-│  ┌──────────────┐    ┌──────────────┐
-│  │ FRAMEWORKS   │    │  THINKING    │
-│  │ (SW blue)    │    │  (SE purp)   │
-│  └──────────────┘    └──────────────┘
-│
-│  (300,2200) (1900,2200) (3500,2200)
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│  │    TOOLS    │ │     MCP     │ │   HARNESS   │
-│  └─────────────┘ └─────────────┘ └─────────────┘
-│
-│           (2000, 3200) — CAPA, bottom-center
-│           ┌──────────────────────────┐
-│           │         CAPA             │
-│           │   + 3 macro-cards + tour│
-│           └──────────────────────────┘
-└────────────────────────────────────┘
+   100      950    1850 2750 3650 4550 5450   6400 7400   (left edges)
+   ├──┬──────┼─────┼───┼────┼────┼────┼─────────┼───┤
+   │CAPA│  HIST   │TIPOS│THIN│FRA │TOOL│  MCP    │ HARNESS │ (timeline)
+   │    │          │    │    │MEW │ S  │         │         │
+   │750 │ 850      │850 │850 │850 │850 │ 900     │ 1500    │ (widths)
+   │    │          │    │    │   │    │         │         │
+   └────┴──────────┴────┴────┴───┴────┴─────────┴─────────┘
+         ↗    →    →    →    →    →    →    →       (timeline flow)
+   (pink)  (gray between-section arrows)
 ```
 
-**Geometry guarantee:** all sections use symmetric layout:
-- Same width: 1400 throughout Construções cluster
-- Vertical gap Fundamentos: Historia→Frameworks = 100 px (frame-bottom to frame-top)
-- Vertical gap Modelo: Tipos→Thinking = 100 px
-- Horizontal gap Construções: Tools→MCP = 200 px, MCP→Harness = 200 px
-- Construções → Capa gap: 200 px
-- All cluster sections are rectangular sections with consistent GAPS so the canvas feels quad-balanced.
+**Geometry guarantee** — each section:
+- Vertical: same top=200, height=1100 (canvas 1500 px tall, 200/300 px top/bottom margin)
+- Horizontal: 50-100 px gap between adjacent sections
+- Capa w=750 (smaller, intro column); Harness w=1500 (larger, finale column); others w=850-900
+- Total horizontal span: 100 + 750 + 100 + 850*4 + 100 + 900 + 100 + 1500 = 7900 ✓
+- Inter-section arrows drawn as small horizontal segments in each gap (50 px), pointing left-to-right (pink dashed for Capa→Historia lead-in, gray solid for the rest)
 
-Cluster colors tint (radial gradient):
-- Fundamentos: blue, NW corner
-- Modelo: purple, NE corner
-- Construções: green, southern band
-- Capa: pink, south-center
+Cluster colors tint (vertical bands):
+- Capa-area: pink radial-gradient behind the leftmost Capa column
+- Fundamentos: blue vertical band (Historia + Frameworks columns)
+- Modelo: purple vertical band (Tipos + Thinking columns)
+- Construções: green vertical band (Tools + MCP + Harness columns)
 
-### Cluster backgrounds
-- Fundamentos: subtle blue radial-gradient sphere around NW corner
-- Modelo: subtle purple radial-gradient around NE
-- Construções: subtle green/pink gradient along bottom
-- Arrows SVG overlay: connects Fundamentos → Modelo (curves NE-ish)
+Inter-cluster arrows SVG overlay: 7 small horizontal arrows + arrowheads drawn in the 50 px gap between adjacent sections. During the narrative tour, one arrow briefly `.highlight`s (cyan accent) just before its right-side section focuses.
+
+This layout replaces the previous v2 quadranted "U" (6000×3800) — boss feedback was that the U felt too rigid and unnatural. Timeline reads as a continuous narrative flow from Capa on the left to Harness on the right.
 
 ## Navigation modes
 
@@ -103,10 +86,12 @@ Cluster colors tint (radial gradient):
 
 ## UX details
 
-### PC-only enforcement
-- `@media (max-width: 1280px), (max-height: 720px)` → shows fullscreen
-  "PC apenas" overlay hiding everything else. This is intentional: the
-  presentation is designed for projector / desktop screens.
+### Responsive (no PC-only gate)
+- The presentation is **responsive on any viewport** — the v2 PC-only media gate
+  was removed 2026-07-07 (`4ea5116`) on boss feedback. Smaller screens still get
+  a usable experience; the canvas zooms out via the existing Prezi fit logic.
+- The presentation was originally optimized for projector / desktop, but now
+  adapts gracefully to mobile / tablet by scaling the canvas uniformly.
 
 ### Pre-compaction memory flush
 - During aggressive memory compaction, `MEMORY.md` / `SOUL.md` / `AGENTS.md`
@@ -121,8 +106,10 @@ Cluster colors tint (radial gradient):
 
 ## Events timeline (current)
 
-10 entries with click-to-expand detail panels:
+13 entries with click-to-expand detail panels:
+- 1956 Dartmouth Workshop · McCarthy, Minsky, Rochester, Shannon
 - 1958 Perceptron · Rosenblatt
+- 1966 ELIZA · Weizenbaum (chatbot precursor)
 - 1969 1º AI Winter · Minsky & Papert
 - 1986 Backprop · Rumelhart/Hinton/Williams
 - 1987 2º AI Winter · LISP crash
@@ -131,6 +118,7 @@ Cluster colors tint (radial gradient):
 - 2020 GPT-3 · 175B
 - 2022 ChatGPT · RLHF
 - 2024 o1 + MCP
+- 2025 DeepSeek-R1 · open-source reasoning
 - 2026 MS Cowork
 
 Detail view has back button, ESC closes, click anywhere outside the detail
@@ -138,8 +126,8 @@ panel closes. Deep-link `?event=<id>` opens detail directly.
 
 ## Critical notes for future work
 
-- Canvas dimension constants must agree between CSS (`.canvas { width: 6000;
-  height: 3600; }`) and JS (`computeOverviewFit` uses `canvasH = 3600`).
+- Canvas dimension constants must agree between CSS (`.canvas { width: 7900;
+  height: 1500; }`) and JS (`canvasW = 7900`, `canvasH = 1500`).
   If you expand the canvas, update both.
 - `getSectionRect` reads CSS `style.left/top/width/height` (inline) — keep
   these in sync with `SECTIONS` table if you ever want to dedup.
