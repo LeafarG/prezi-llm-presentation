@@ -43,31 +43,39 @@ What we build on top: tooling, protocol, agents.
 ## Visual canvas layout (cluster regions)
 
 ```
-Canvas 6000 × 3000
+Canvas 6000 × 3600
 
 ┌─────────────── 6000 ────────────────┐
-│ (100,200)                          (5400,200)
+│ (100,280)                          (5400,280)
 │  ┌──────────────┐    ┌──────────────┐
 │  │  HISTÓRIA    │    │   TIPOS      │
 │  │  (NW blue)   │    │   (NE purp)  │
 │  └──────────────┘    └──────────────┘
-│       (100,1100)         (3700,1100)
+│  (100,1260)           (3700,1180)
 │  ┌──────────────┐    ┌──────────────┐
 │  │ FRAMEWORKS   │    │  THINKING    │
 │  │ (SW blue)    │    │  (SE purp)   │
 │  └──────────────┘    └──────────────┘
-│ (100,2200) (1700,2200) (3300,2200)
-│  ┌──────┐ ┌──────┐ ┌──────┐
-│  │TOOLS │ │ MCP  │ │HARNESS│
-│  └──────┘ └──────┘ └──────┘
 │
-│ (3700, 1300) — CAPA large, top-right
-│  ┌──────────────┐
-│  │     CAPA     │
-│  │  + macro-cards│
-│  └──────────────┘
+│  (100,2200) (1700,2200) (3350,2200)
+│  ┌─────────┐ ┌──────────┐ ┌──────────┐
+│  │  TOOLS  │ │   MCP    │ │ HARNESS  │
+│  └─────────┘ └──────────┘ └──────────┘
+│
+│        (1900, 2950) — CAPA large, bottom-center
+│        ┌──────────────────────┐
+│        │       CAPA           │
+│        │  + 3 macro cards     │
+│        │  (tour launching)    │
+│        └──────────────────────┘
 └────────────────────────────────────┘
 ```
+
+Cluster colors tint (radial gradient):
+- Fundamentos: blue, NW corner
+- Modelo: purple, NE corner
+- Construções: green, southern band
+- Capa: pink, south-center
 
 ### Cluster backgrounds
 - Fundamentos: subtle blue radial-gradient sphere around NW corner
@@ -124,8 +132,8 @@ panel closes. Deep-link `?event=<id>` opens detail directly.
 ## Critical notes for future work
 
 - Canvas dimension constants must agree between CSS (`.canvas { width: 6000;
-  height: 3000; }`) and JS (`computeOverviewFit`). If you expand the canvas,
-  update both.
+  height: 3600; }`) and JS (`computeOverviewFit` uses `canvasH = 3600`).
+  If you expand the canvas, update both.
 - `getSectionRect` reads CSS `style.left/top/width/height` (inline) — keep
   these in sync with `SECTIONS` table if you ever want to dedup.
 - Prezi navigation must use the CSS transition on `.canvas` (350ms) — never

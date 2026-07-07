@@ -110,7 +110,7 @@
       left: 0;
       top: 0;
       width: 6000px;
-      height: 3000px;
+      height: 3600px;
       transform-origin: 0 0;
       will-change: transform;
       transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1);
@@ -900,8 +900,8 @@
       background: radial-gradient(ellipse, rgba(52,211,153,0.08) 0%, transparent 70%);
     }
     .cluster-bg.capa-area {
-      left: 4000px; top: 1100px;
-      width: 1500px; height: 1000px;
+      left: 1800px; top: 2900px;
+      width: 2100px; height: 800px;
       background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%);
     }
 
@@ -1068,14 +1068,16 @@
       <div class="cluster-bg capa-area"></div>
 
       <!-- ============ INTER-CLUSTER ARROWS ============ -->
-      <svg class="cluster-arrows" viewBox="0 0 6000 3000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Fundamentos (NW, center 800,700) -> Modelo (NE, center 4400,700) -->
+      <svg class="cluster-arrows" viewBox="0 0 6000 3600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Fundamentos (NW, center 800,730) -> Modelo (NE, center 4400,680) -->
         <path d="M 1500 700 C 2500 100, 3500 100, 4400 700" />
         <polygon class="arrow-head" points="4400,700 4370,680 4370,720" />
-        <!-- Modelo (NE, center 4400,1500) -> Construções (S, center 800,2550) -->
-        <!-- arcs below the capa frame to avoid overlap -->
+        <!-- Modelo (NE, center 4400,1480) -> Construções (S, center 800,2550) -->
         <path d="M 4400 1950 C 4400 2150, 800 2150, 800 2550" />
         <polygon class="arrow-head" points="800,2550 780,2520 820,2520" />
+        <!-- Construções (S, center 3350,2900) -> Capa (south-center, center 2850,3280) -->
+        <path d="M 3350 2900 C 3350 3100, 3300 3200, 2850 3280" />
+        <polygon class="arrow-head" points="2850,3280 2870,3250 2820,3260" />
       </svg>
 
       <!-- ============ CLUSTER LABELS (faded, canvas-level) ============ -->
@@ -1085,7 +1087,7 @@
 
       <!-- ============ CAPA ============ -->
       <div class="section" id="sec-capa" data-id="capa"
-           style="left: 4000px; top: 1300px; width: 1700px; height: 700px;">
+           style="left: 1900px; top: 2950px; width: 1900px; height: 650px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// CAPA</div>
@@ -1822,7 +1824,7 @@
     function computeOverviewFit() {
       const { w: vw, h: vh } = getViewportSize();
       const canvasW = 6000;
-      const canvasH = 3000;
+      const canvasH = 3600;
       const padding = 80;
       const scale = Math.min(
         (vw - padding * 2) / canvasW,
