@@ -213,11 +213,16 @@
 
     .content-header {
       display: flex;
-      align-items: baseline;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 0.65rem;
       margin-bottom: 1.25rem;
       padding-bottom: 0.85rem;
       border-bottom: 1px solid var(--border);
+    }
+    .content-header-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
     .content-header .num {
       font-family: 'JetBrains Mono', monospace;
@@ -231,6 +236,58 @@
       font-weight: 700;
       margin: 0;
       letter-spacing: -0.02em;
+    }
+
+    /* ============ CLUSTER BADGE (per-section) ============ */
+    /* Shows which macro cluster the current section belongs to.
+       Updates dynamically in JS when focusSection fires. */
+    .cluster-badge {
+      --badge-rgb: 96, 165, 250; /* default blue accent */
+      --badge-color: var(--accent);
+      --badge-tint: rgba(var(--badge-rgb), 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem 0.3rem 0.55rem;
+      border-radius: 999px;
+      background: var(--badge-tint);
+      color: var(--badge-color);
+      border: 1px solid color-mix(in srgb, var(--badge-color) 70%, transparent);
+      opacity: 0.95;
+      transition: all 250ms ease;
+      align-self: flex-start;
+    }
+    .cluster-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .cluster-badge .macro-num {
+      opacity: 0.85;
+    }
+    .cluster-badge .separator { opacity: 0.4; }
+    .cluster-badge .next {
+      font-size: 0.65rem;
+      opacity: 0.7;
+      margin-left: 0.15rem;
+    }
+
+    /* Focus border tints the focused frame's edge with the cluster color */
+    .section.focused .frame {
+      border-color: rgba(var(--cluster-rgb, 58, 71, 87), 0.65);
+      box-shadow: 0 0 0 1px rgba(var(--cluster-rgb, 58, 71, 87), 0.4), 0 12px 50px rgba(var(--cluster-rgb, 58, 71, 87), 0.15);
+      transition: border-color 250ms ease, box-shadow 250ms ease;
+    }
+    .section.focused.capa .frame {
+      border-color: rgba(244, 114, 182, 0.55); /* Capa keeps the pink halo, faintly */
+      box-shadow: 0 0 0 1px rgba(244, 114, 182, 0.3), var(--shadow-lg);
     }
     .content-body {
       max-width: 1300px;
@@ -1136,8 +1193,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 01</span>
-              <h2>História · <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">clique em qualquer item pra expandir</span></h2>
+              <div class="cluster-badge" data-cluster="fundamentos">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 01</span>
+                <span class="separator">·</span>
+                <span>FUNDAMENTOS</span>
+                <span class="next">→ 02 O MODELO</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 01</span>
+                <h2>História · <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">clique em qualquer item pra expandir</span></h2>
+              </div>
             </div>
             <div class="content-body historia-body" style="overflow-y: auto;">
 
@@ -1403,8 +1469,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 02</span>
-              <h2>Tipos de LLM</h2>
+              <div class="cluster-badge" data-cluster="modelo">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 02</span>
+                <span class="separator">·</span>
+                <span>O MODELO</span>
+                <span class="next">→ 03 CONSTRUÇÕES</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 02</span>
+                <h2>Tipos de LLM</h2>
+              </div>
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 1rem;">Modelos diferentes para trabalhos diferentes. A escolha define custo, latência e onde roda.</p>
@@ -1448,8 +1523,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 03</span>
-              <h2>Thinking vs No-thinking</h2>
+              <div class="cluster-badge" data-cluster="modelo">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 02</span>
+                <span class="separator">·</span>
+                <span>O MODELO</span>
+                <span class="next">→ 03 CONSTRUÇÕES</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 03</span>
+                <h2>Thinking vs No-thinking</h2>
+              </div>
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 1rem;">A distinção mais importante em 2025-26: modelo que <em>responde direto</em> vs modelo que <em>pensa antes</em>.</p>
@@ -1496,8 +1580,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 04</span>
-              <h2>Frameworks: Chat, Agent, Harness</h2>
+              <div class="cluster-badge" data-cluster="fundamentos">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 01</span>
+                <span class="separator">·</span>
+                <span>FUNDAMENTOS</span>
+                <span class="next">→ 02 O MODELO</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 04</span>
+                <h2>Frameworks: Chat, Agent, Harness</h2>
+              </div>
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 1rem;">Três camadas conceituais que confundem muita gente. Padrões diferentes de uso, com limites e propósitos próprios.</p>
@@ -1545,8 +1638,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 05</span>
-              <h2>Ferramentas (Tools)</h2>
+              <div class="cluster-badge" data-cluster="construcoes">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 03</span>
+                <span class="separator">·</span>
+                <span>CONSTRUÇÕES</span>
+                <span class="next">→ CAPA</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 05</span>
+                <h2>Ferramentas (Tools)</h2>
+              </div>
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 0.85rem;">LLMs são máquinas de texto. <strong>Tools</strong> dão "mãos" — acesso estruturado ao mundo externo.</p>
@@ -1576,8 +1678,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 06</span>
-              <h2>MCP — Model Context Protocol</h2>
+              <div class="cluster-badge" data-cluster="construcoes">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 03</span>
+                <span class="separator">·</span>
+                <span>CONSTRUÇÕES</span>
+                <span class="next">→ CAPA</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 06</span>
+                <h2>MCP — Model Context Protocol</h2>
+              </div>
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 0.85rem;">Padrão aberto criado pela Anthropic (nov/2024). <strong>"USB-C para IA."</strong> Padroniza a conexão entre LLMs e ferramentas/dados.</p>
@@ -1619,8 +1730,17 @@
           </div>
           <div class="content">
             <div class="content-header">
-              <span class="num">// 07</span>
-              <h2>Harness — A camada que torna o modelo útil</h2>
+              <div class="cluster-badge" data-cluster="construcoes">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 03</span>
+                <span class="separator">·</span>
+                <span>CONSTRUÇÕES</span>
+                <span class="next">→ CAPA</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 07</span>
+                <h2>Harness — A camada que torna o modelo útil</h2>
+              </div>
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 1rem;">Modelo sozinho é só completador de texto. Harness dá mãos, olhos, contexto persistente e UX específica.</p>
@@ -1879,6 +1999,30 @@
         }
       });
 
+      // Sync focused section's cluster-color CSS var with its cluster identity.
+      // This makes the .section.focused .frame border tint match the macro.
+      const clusterColorMap = {
+        fundamentos: 'var(--accent)',
+        modelo: 'var(--purple)',
+        construcoes: 'var(--success)',
+        capa: 'var(--border-strong)',
+      };
+      const clusterRgbMap = {
+        fundamentos: '96, 165, 250',
+        modelo: '167, 139, 250',
+        construcoes: '52, 211, 153',
+        capa: '58, 71, 87', // --border-strong
+      };
+      Object.entries(sectionEls).forEach(([sid, el]) => {
+        const meta = SECTIONS.find(s => s.id === sid);
+        const color = meta ? clusterColorMap[meta.cluster] : null;
+        const rgb = meta ? clusterRgbMap[meta.cluster] : null;
+        if (color) el.style.setProperty('--cluster-color', color);
+        else el.style.removeProperty('--cluster-color');
+        if (rgb) el.style.setProperty('--cluster-rgb', rgb);
+        else el.style.removeProperty('--cluster-rgb');
+      });
+
       // Update progress + buttons
       if (id === null) {
         progress.textContent = '8 / 8 · overview';
@@ -2078,6 +2222,44 @@
           const clusterId = card.dataset.tour;
           startTour(clusterId);
         });
+      });
+    })();
+
+    // ============================================================
+    // Cluster badges — apply --badge-rgb to each badge based on
+    // its data-cluster attribute so the dot/badge matches the macro.
+    // ============================================================
+    (function setupClusterBadges() {
+      const rgbMap = {
+        fundamentos: '96, 165, 250',   // --accent blue
+        modelo: '167, 139, 250',       // --purple
+        construcoes: '52, 211, 153',   // --success green
+      };
+      const colorMap = {
+        fundamentos: 'var(--accent)',
+        modelo: 'var(--purple)',
+        construcoes: 'var(--success)',
+      };
+      const clusterOrder = ['fundamentos', 'modelo', 'construcoes'];
+      document.querySelectorAll('.cluster-badge[data-cluster]').forEach(badge => {
+        const clusterId = badge.dataset.cluster;
+        if (rgbMap[clusterId]) {
+          badge.style.setProperty('--badge-rgb', rgbMap[clusterId]);
+        }
+        if (colorMap[clusterId]) {
+          badge.style.setProperty('--badge-color', colorMap[clusterId]);
+        }
+        // Update the 'next' label on the badge to reflect the position
+        const idx = clusterOrder.indexOf(clusterId);
+        const nextSpan = badge.querySelector('.next');
+        if (idx >= 0 && nextSpan) {
+          if (idx === clusterOrder.length - 1) {
+            nextSpan.textContent = '→ CAPA';
+          } else {
+            const nextCluster = CLUSTERS[clusterOrder[idx + 1]];
+            nextSpan.textContent = `→ 0${idx + 2} ${nextCluster.label.toUpperCase()}`;
+          }
+        }
       });
     })();
 
