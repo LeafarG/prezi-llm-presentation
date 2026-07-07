@@ -1880,29 +1880,33 @@
       // Hide loader
       setTimeout(() => loader.classList.add('hidden'), 200);
 
-      // URL hash auto-focus (e.g., #historia opens focused on História)
-      const hash = (location.hash || '').replace(/^#/, '').toLowerCase();
-      const wantsHashFocus = hash && sectionEls[hash];
+      // Parse URL. Hash can be: "#historia", "#historia?event=winter1", or
+      // the URL can have a separate ?event=winter1 search param alongside.
+      const rawHash = (location.hash || '').replace(/^#/, '');
+      const hashQIdx = rawHash.indexOf('?');
+      const hashSection = (hashQIdx === -1 ? rawHash : rawHash.substring(0, hashQIdx)).toLowerCase();
+      const hashQueryStr = hashQIdx === -1 ? '' : rawHash.substring(hashQIdx + 1);
+      const hashEvent = (new URLSearchParams(hashQueryStr).get('event') || '').toLowerCase();
+      const searchEvent = (new URLSearchParams(location.search).get('event') || '').toLowerCase();
 
-      // ?event=<id> deep-link: opens história focused on that event
-      const eventParam = (new URLSearchParams(location.search).get('event') || '').toLowerCase();
-      const wantsEvent = eventParam && eventParam !== '';
+      const wantsHashFocus = hashSection && sectionEls[hashSection];
+      const eventParam = hashEvent || searchEvent;
+      const wantsEvent = !!eventParam;
 
       // Wait for fonts to load (or fallback to fonts after ~600ms)
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
-          if (wantsHashFocus) focusSection(hash, { animate: false });
+          if (wantsHashFocus) focusSection(hashSection, { animate: false });
           else showOverview({ animate: false });
-          // After focus on história, auto-open event detail if requested
-          if (wantsEvent && hash === 'historia' && window.__historiaApi) {
+          if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
             setTimeout(() => window.__historiaApi.open(eventParam), 600);
           }
         });
       } else {
         setTimeout(() => {
-          if (wantsHashFocus) focusSection(hash, { animate: false });
+          if (wantsHashFocus) focusSection(hashSection, { animate: false });
           else showOverview({ animate: false });
-          if (wantsEvent && hash === 'historia' && window.__historiaApi) {
+          if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
             setTimeout(() => window.__historiaApi.open(eventParam), 600);
           }
         }, 200);
@@ -1910,9 +1914,9 @@
       // Fallback: always show overview after 800ms even if fonts.ready hangs
       setTimeout(() => {
         if (state.currentId === null && state.scale === 1) {
-          if (wantsHashFocus) focusSection(hash, { animate: false });
+          if (wantsHashFocus) focusSection(hashSection, { animate: false });
           else showOverview({ animate: false });
-          if (wantsEvent && hash === 'historia' && window.__historiaApi) {
+          if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
             setTimeout(() => window.__historiaApi.open(eventParam), 600);
           }
         }
