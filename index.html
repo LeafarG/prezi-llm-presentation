@@ -1413,16 +1413,29 @@
       // Hide loader
       setTimeout(() => loader.classList.add('hidden'), 200);
 
+      // URL hash auto-focus (e.g., #historia opens focused on História)
+      const hash = (location.hash || '').replace(/^#/, '').toLowerCase();
+      const wantsHashFocus = hash && sectionEls[hash];
+
       // Wait for fonts to load (or fallback to fonts after ~600ms)
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
-          showOverview({ animate: false });
+          if (wantsHashFocus) focusSection(hash, { animate: false });
+          else showOverview({ animate: false });
         });
       } else {
-        setTimeout(() => showOverview({ animate: false }), 200);
+        setTimeout(() => {
+          if (wantsHashFocus) focusSection(hash, { animate: false });
+          else showOverview({ animate: false });
+        }, 200);
       }
       // Fallback: always show overview after 800ms even if fonts.ready hangs
-      setTimeout(() => showOverview({ animate: false }), 800);
+      setTimeout(() => {
+        if (state.currentId === null && state.scale === 1) {
+          if (wantsHashFocus) focusSection(hash, { animate: false });
+          else showOverview({ animate: false });
+        }
+      }, 800);
     }
     init();
   })();
