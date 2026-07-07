@@ -717,7 +717,47 @@
     .back-btn:hover .back-arrow {
       transform: translateX(-3px);
     }
-    .event-panels {
+    /* ============ HISTORY TIMELINE DOTS (header strip) ============ */
+    .history-timeline { position: relative; margin: -0.4rem 0 0.85rem; height: 36px; }
+    .history-timeline svg { width: 100%; height: 36px; position: absolute; inset: 0; }
+    .history-timeline-dots {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 36px;
+      padding: 0 0.25rem;
+    }
+    .tl-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .tl-dot .pip {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--cluster-color-tl, var(--accent));
+      opacity: 0.6;
+      transition: opacity 180ms, transform 180ms;
+      box-shadow: 0 0 0 2px var(--bg-primary);
+    }
+    .tl-dot:hover .pip { opacity: 1; transform: scale(1.4); }
+    .tl-dot.active .pip { opacity: 1; transform: scale(1.5); box-shadow: 0 0 12px currentColor; }
+    .tl-dot .year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-top: 0.25rem;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+    }
+    .tl-dot:hover .year { opacity: 1; }
+    .tl-dot.warn .pip { background: var(--warning); }
+    .tl-dot.highlight .pip { background: var(--purple); }
+    .tl-dot.highlight .pip { background: var(--purple); }
       position: relative;
     }
     .event-panel {
@@ -1117,6 +1157,35 @@
       margin: 0;
       letter-spacing: 0.02em;
     }
+    .narrative-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 1.25rem;
+      background: linear-gradient(135deg, rgba(244,114,182,0.15) 0%, rgba(96,165,250,0.15) 100%);
+      border: 1px solid rgba(244,114,182,0.4);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 200ms ease;
+      margin-top: 0.5rem;
+    }
+    .narrative-cta:hover {
+      background: linear-gradient(135deg, rgba(244,114,182,0.25) 0%, rgba(96,165,250,0.25) 100%);
+      border-color: rgba(244,114,182,0.7);
+      transform: translateY(-1px);
+    }
+    .narrative-cta .arrow { color: var(--pink); font-size: 1rem; }
+    .narrative-cta .count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 0.5rem;
+    }
     .capa-cluster-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1324,6 +1393,10 @@
               <p class="capa-footer">
                 Material de apresentação · 2026 · single-file HTML &nbsp;·&nbsp; clique num macro pra tour guiado
               </p>
+              <button class="narrative-cta" id="narrativeCtaBtn">
+                <span class="arrow">▶</span>
+                <span>Tour Narrativo Completo <span class="count">8 seções · ~45s</span></span>
+              </button>
             </div>
           </div>
         </div>
@@ -1350,6 +1423,15 @@
                 <span class="num">// 01</span>
                 <h2>História · <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">clique em qualquer item pra expandir</span></h2>
               </div>
+            </div>
+
+            <!-- ============ HISTORY TIMELINE DOTS ============ -->
+            <div class="history-timeline" id="historyTimeline" aria-hidden="false">
+              <svg viewBox="0 0 1280 40" preserveAspectRatio="none">
+                <line x1="0" y1="20" x2="1280" y2="20" stroke="rgba(96,165,250,0.15)" stroke-width="1" />
+                <line id="historyTimelineLine" x1="0" y1="20" x2="1280" y2="20" stroke="rgba(96,165,250,0.5)" stroke-width="1.5" stroke-dasharray="4 4" />
+              </svg>
+              <div class="history-timeline-dots" id="historyTimelineDots"></div>
             </div>
             <div class="content-body historia-body" style="overflow-y: auto;">
 
@@ -2650,12 +2732,19 @@
 
       // Update progress + buttons
       if (id === null) {
-        progress.textContent = '8 / 8 · overview';
+        progress.textContent = 'overview · 8 / 8';
         prevBtn.disabled = true;
         nextBtn.disabled = false;
       } else {
         const idx = NODE_ORDER.indexOf(id);
-        progress.textContent = `${idx + 1} / ${TOTAL}`;
+        const meta = SECTIONS.find(s => s.id === id);
+        const clusterOrder = ['fundamentos', 'modelo', 'construcoes'];
+        const clusterIdx = meta ? clusterOrder.indexOf(meta.cluster) : -1;
+        const macroLabel = meta && clusterIdx >= 0
+          ? `MACRO 0${clusterIdx + 1} · ${CLUSTERS[meta.cluster].label.toUpperCase()}`
+          : 'CAPA';
+        const sectionLabel = meta ? meta.label : '';
+        progress.textContent = `${macroLabel} · ${sectionLabel} · ${idx + 1} / ${TOTAL}`;
         prevBtn.disabled = idx === 0;
         nextBtn.disabled = idx === TOTAL - 1;
       }
@@ -2851,6 +2940,39 @@
     })();
 
     // ============================================================
+    // History timeline dots — populate from .tl-row[data-event]
+    // and wire clicking each dot to jump to that event's detail.
+    // ============================================================
+    (function setupHistoryTimelineDots() {
+      const sec = sectionEls['historia'];
+      if (!sec) return;
+      const dotsContainer = sec.querySelector('#historyTimelineDots');
+      if (!dotsContainer) return;
+      const rows = sec.querySelectorAll('.tl-row[data-event]');
+      rows.forEach((row, idx) => {
+        const eventId = row.dataset.event;
+        const yearEl = row.querySelector('.tl-year');
+        const yearText = yearEl ? yearEl.textContent.trim() : '';
+        const yearClass = yearEl ? Array.from(yearEl.classList).find(c => c !== 'tl-year') || '' : '';
+        const dot = document.createElement('div');
+        dot.className = 'tl-dot' + (yearClass ? ' ' + yearClass : '');
+        dot.dataset.event = eventId;
+        dot.title = yearText + ' · clicar pra abrir detalhe';
+        dot.innerHTML = `<span class="pip"></span><span class="year">${yearText}</span>`;
+        // Click any dot → open that event's detail
+        dot.addEventListener('click', () => {
+          const api = window.__historiaApi;
+          if (api) api.open(eventId);
+          dotsContainer.querySelectorAll('.tl-dot').forEach(d => d.classList.toggle('active', d.dataset.event === eventId));
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      // (timeline dot click already syncs the active state; the API hook
+      // below — when defined — could be extended if we want ESC to clear dots.)
+    })();
+
+    // ============================================================
     // Cluster badges — apply --badge-rgb to each badge based on
     // its data-cluster attribute so the dot/badge matches the macro.
     // ============================================================
@@ -2994,6 +3116,127 @@
 
     // Expose tour control for deep-link / hash handling
     window.__tour = { start: startTour, end: endTour };
+
+    // ============================================================
+    // Narrative tour — walks ALL clusters sequentially:
+    // Fundamentos → Modelo → Construções → Capa.
+    // ~45s total with longer pauses for the more dense sections.
+    // ============================================================
+    let narrativeState = null;
+
+    function startNarrative() {
+      if (narrativeState) return;
+      document.body.classList.add('touring');
+      narrativeState = {
+        index: 0,
+        timer: null,
+        hintEl: null,
+      };
+      history.replaceState(null, '', '#tour:narrative');
+      runNarrativeStep();
+    }
+
+    function runNarrativeStep() {
+      const sections = ['historia', 'frameworks', 'tipos', 'thinking', 'tools', 'mcp', 'harness', 'capa'];
+      const sectionId = sections[narrativeState.index];
+      const isLast = narrativeState.index === sections.length - 1;
+      focusSection(sectionId, { animate: true });
+
+      // Animate the connecting arrow toward the next section (skip on last)
+      if (!isLast) {
+        highlightArrowTo(sectionId, sections[narrativeState.index + 1]);
+      }
+
+      showNarrativeHint(sectionId, narrativeState.index + 1, sections.length);
+
+      // Pause: longer for dense sections
+      const denseSections = new Set(['capa', 'historia', 'frameworks', 'tools', 'mcp']);
+      const pauseMs = denseSections.has(sectionId) ? 4500 : 3500;
+      narrativeState.timer = setTimeout(() => {
+        narrativeState.index++;
+        if (narrativeState.index >= sections.length) {
+          endNarrative();
+        } else {
+          runNarrativeStep();
+        }
+      }, pauseMs);
+    }
+
+    function highlightArrowTo(fromId, toId) {
+      // Find the cluster-arrow SVG path index that connects these regions.
+      // Highlight effect: temporarily set .highlight class for ~1.4s.
+      const arrows = document.querySelectorAll('.cluster-arrows path');
+      // Just flash all arrows briefly
+      arrows.forEach(p => p.classList.add('highlight'));
+      setTimeout(() => arrows.forEach(p => p.classList.remove('highlight')), 1400);
+    }
+
+    function showNarrativeHint(sectionId, current, total) {
+      if (!narrativeState.hintEl) {
+        narrativeState.hintEl = document.createElement('div');
+        narrativeState.hintEl.className = 'tour-hint';
+        document.body.appendChild(narrativeState.hintEl);
+      }
+      const label = SECTIONS.find(s => s.id === sectionId).label;
+      narrativeState.hintEl.innerHTML = `
+        <span class="badge">NARRATIVE TOUR</span>
+        <span><span class="cluster-name">${current}/${total}</span> · <span class="section-name">${label}</span></span>
+        <button data-action="end">Pular tour</button>
+      `;
+      narrativeState.hintEl.querySelector('[data-action="end"]').addEventListener('click', () => endNarrative());
+    }
+
+    function endNarrative() {
+      if (!narrativeState) return;
+      if (narrativeState.timer) clearTimeout(narrativeState.timer);
+      if (narrativeState.hintEl) {
+        narrativeState.hintEl.style.opacity = '0';
+        setTimeout(() => {
+          if (narrativeState.hintEl) {
+            narrativeState.hintEl.remove();
+            narrativeState.hintEl = null;
+          }
+        }, 350);
+      }
+      document.body.classList.remove('touring');
+      narrativeState = null;
+      if (window.location.hash === '#tour:narrative') {
+        history.replaceState(null, '', window.location.pathname);
+      }
+      setTimeout(() => showOverview({ animate: true }), 400);
+    }
+
+    window.__narrative = { start: startNarrative, end: endNarrative };
+
+    // Deep-link support for #tour:narrative
+    function handleNarrativeDeepLink() {
+      if (window.location.hash === '#tour:narrative' && window.__narrative) {
+        window.__narrative.start();
+      }
+    }
+    handleNarrativeDeepLink();
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#tour:narrative' && !narrativeState) {
+        handleNarrativeDeepLink();
+      } else if (narrativeState && window.location.hash !== '#tour:narrative') {
+        endNarrative();
+      }
+    });
+
+    // Wire CTA button on the Capa
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('narrativeCtaBtn');
+      if (btn && window.__narrative) {
+        btn.addEventListener('click', () => window.__narrative.start());
+      }
+    });
+    // Since DOMContentLoaded may have already fired by the time the script runs (script is at body end)
+    (function wireNarrativeCta() {
+      const btn = document.getElementById('narrativeCtaBtn');
+      if (btn && window.__narrative) {
+        btn.addEventListener('click', () => window.__narrative.start());
+      }
+    })();
 
     // ============================================================
     // Tipos de LLM — click-to-expand per category
