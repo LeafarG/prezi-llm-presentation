@@ -863,8 +863,8 @@
       background: radial-gradient(ellipse, rgba(52,211,153,0.08) 0%, transparent 70%);
     }
     .cluster-bg.capa-area {
-      left: 1800px; top: 2900px;
-      width: 2100px; height: 800px;
+      left: 1800px; top: 3050px;
+      width: 2100px; height: 650px;
       background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%);
     }
 
@@ -892,18 +892,43 @@
     .cluster-arrows path.highlight { stroke: var(--accent); stroke-dasharray: 0; opacity: 0.7; }
 
     /* ============ CAPA: MACRO CARDS ============ */
+    .capa-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-align: center;
+      height: 100%;
+      padding: 0.5rem 0.25rem;
+    }
+    .capa-lead {
+      max-width: 760px;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .capa-footer {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      margin: 0;
+      letter-spacing: 0.02em;
+    }
     .capa-cluster-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-top: 1.25rem;
-      max-width: 920px;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      max-width: 880px;
+      width: 100%;
     }
     .macro-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.1rem 1.2rem;
+      padding: 0.85rem 1rem 1.2rem;
       cursor: pointer;
       transition: all 250ms ease;
       position: relative;
@@ -1050,7 +1075,7 @@
 
       <!-- ============ CAPA ============ -->
       <div class="section" id="sec-capa" data-id="capa"
-           style="left: 1900px; top: 2950px; width: 1900px; height: 650px;">
+           style="left: 1900px; top: 3100px; width: 1900px; height: 500px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// CAPA</div>
@@ -1061,8 +1086,8 @@
               <span class="num">// 00</span>
               <h2>LLMs: Da Perceptron aos Agentes</h2>
             </div>
-            <div class="content-body" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-              <p style="max-width: 800px; font-size: 1.05rem; line-height: 1.65; color: var(--text-muted);">
+            <div class="content-body capa-body">
+              <p class="capa-lead">
                 Uma jornada visual pela história, arquiteturas, tipos e ecossistema atual dos
                 Large Language Models — do neurônio matemático de 1943 aos agentes autônomos
                 que executam workflows completos em 2026.
@@ -1093,7 +1118,7 @@
                 </button>
               </div>
 
-              <p style="margin-top: 1.35rem; font-size: 0.78rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+              <p class="capa-footer">
                 Material de apresentação · 2026 · single-file HTML &nbsp;·&nbsp; clique num macro pra tour guiado
               </p>
             </div>

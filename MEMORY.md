@@ -60,3 +60,15 @@ projects/llm-presentation/
 - **2026-07-07**: Project shipped to prod (`vercel --prod`, no GitHub link). Per-chat-history pattern applied: SPEC → implementation → manual deploy.
 - **2026-07-07 (later same day)**: Auto-deploy enabled via Vercel GitHub App. First auto-deploy commit `chore: enable auto-deploy via Vercel GitHub App` (`205d3ef`) verified end-to-end — push SHA matched deploy SHA within ~10 s.
 - **2026-07-07 (afternoon, Prezi variant)**: Boss asked to "make this branch a fork". GitHub API blocks forks under same owner account, so `LeafarG/prezi-llm-presentation` was created as standalone repo (not a fork of `LeafarG/llm-presentation`). The `feat/prezi-style` branch was mirrored via `git push prezi feat/prezi-style:main`. A new Vercel project (`prj_afadzrtQg2OjZPktLH3S1SiPt0jd`) was created via `POST /v10/projects` and linked via `POST /v9/projects/{id}/link` with `-F` form fields (not `--input`). SSO disabled. Boss asked for the Vercel site to mirror the Prezi version while keeping the v1 site at the original URL — both auto-deploy from their respective GitHub repos now. Production: **https://prezi-llm-presentation.vercel.app**. Reverted one throwaway `chore(prezi): trigger Vercel auto-deploy` commit on first push (commit `25d482d`, reverted by `7f92abe`) to keep history clean.
+- **2026-07-07 (later afternoon, v2 cluster architecture)**: Boss asked to reorganize the canvas into macro-clusters with intra-cluster transitions. Implemented 3-cluster layout:
+  - **Fundamentos** (NW blue): História + Frameworks
+  - **O Modelo** (NE purple): Tipos + Thinking
+  - **Construções** (S green): Tools + MCP + Harness
+  - **Capa** moved to bottom-center as the "synthesis" finale — narratively inverted from the original cover-→-content flow
+  - Canvas expanded from 6000×3000 to 6000×3600 to fit the Capa in the south.
+  - Each cluster has a canvas-level radial-gradient tint (.cluster-bg.{name}) and a faded Mono label ("// MACRO N · NAME").
+  - SVG arrows (.cluster-arrows) connect Fundamentos → Modelo → Construções → Capa (curves go around the frames, no overlaps).
+  - Cluster arrows initially pierced the Capa frame; fixed in commit `e00e269` by rerouting Modelo→Construções below y=2150.
+  - Capa now has 3 macro-cards (one per cluster) launching **guided tours** via `window.__tour.start(clusterId)`. Each tour walks the cluster's sections with 2.8s pauses + "→ Próximo" hint and "Pular tour" exit button; ends with "Tour concluído" toast + auto-overview.
+  - Deep-link `#cluster:fundamentos | modelo | construcoes` triggers tour directly.
+  - Commits: `fe83799` (feature), `e00e269` (arrow fix), `ecbcdac` (canvas resize + Capa reposition).
