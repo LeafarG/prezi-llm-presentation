@@ -18,13 +18,17 @@ Nenhuma dependência, nenhum build. Um único arquivo `index.html` contém HTML,
 
 ## Deploy
 
-Previsto: **Vercel**, conectado ao repositório GitHub.
+**Vercel** com auto-deploy via push no `main` → produção (https://llm-presentation-beta.vercel.app).
+
+Qualquer `git push` em `main` dispara um deploy de produção automaticamente. Push em outras branches cria preview deploys (URL por commit).
+
+Setup inicial (já feito): Vercel GitHub App instalada no LeafarG + projeto linkado via `/v9/projects/{id}/link`.
+
+Para deploy manual (se precisar):
 
 ```bash
 vercel --prod
 ```
-
-(Vercel auto-detecta o `index.html` na raiz e serve como static site.)
 
 ## Estrutura
 

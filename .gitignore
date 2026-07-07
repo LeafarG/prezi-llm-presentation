@@ -1,0 +1,11 @@
+# Vercel project metadata (local state, not source)
+.vercel/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node (not currently used, but defensive)
+node_modules/
