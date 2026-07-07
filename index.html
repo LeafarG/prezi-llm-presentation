@@ -2649,8 +2649,11 @@
         detail.classList.add('active');
         detail.setAttribute('aria-hidden', 'false');
         detail.scrollTop = 0;
-        sec.querySelectorAll('.tipos-list')[0]?.style && (sec.querySelectorAll('.tipos-list')[0].style.opacity = '0.35');
-        sec.querySelectorAll('.tipos-list')[0]?.style && (sec.querySelectorAll('.tipos-list')[0].style.pointerEvents = 'none');
+        const listEl = sec.querySelector('.tipos-list');
+        if (listEl) {
+          listEl.style.opacity = '0.35';
+          listEl.style.pointerEvents = 'none';
+        }
         activeTipo = tipoId;
         history.replaceState(null, '', `#tipos?expand=${tipoId}`);
       }
@@ -2659,8 +2662,8 @@
         rows.forEach(r => r.classList.remove('selected'));
         detail.classList.remove('active');
         detail.setAttribute('aria-hidden', 'true');
-        const list = sec.querySelectorAll('.tipos-list')[0];
-        if (list) { list.style.opacity = ''; list.style.pointerEvents = ''; }
+        const listEl = sec.querySelector('.tipos-list');
+        if (listEl) { listEl.style.opacity = ''; listEl.style.pointerEvents = ''; }
         activeTipo = null;
         if (window.location.hash.startsWith('#tipos?expand=')) {
           history.replaceState(null, '', '#tipos');
