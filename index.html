@@ -539,6 +539,149 @@
     }
     .tl-text strong { color: var(--text-primary); }
 
+    /* AI Winter marker (warning-tinted year box) */
+    .tl-year.warn {
+      background: rgba(251, 191, 36, 0.12);
+      border-color: rgba(251, 191, 36, 0.4);
+      color: var(--warning);
+    }
+    .tl-year-lg.warn { color: var(--warning); }
+    .chip.warning {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--warning);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    /* Clickable timeline rows */
+    .tl-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: stretch;
+      margin: 0.45rem 0;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 0.35rem 0.65rem;
+    }
+    .tl-row:hover {
+      border-color: var(--border-strong);
+      background: rgba(96, 165, 250, 0.05);
+      transform: translateX(4px);
+    }
+    .tl-row:active {
+      transform: translateX(6px) scale(0.99);
+    }
+    .tl-row.selected {
+      border-color: var(--accent);
+      background: rgba(96, 165, 250, 0.08);
+    }
+
+    /* ============ HISTORY DETAIL VIEW ============ */
+    .historia-body { position: relative; }
+    .tl-list {
+      opacity: 1;
+      transition: opacity 250ms ease;
+    }
+    .tl-list.hidden {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+    }
+    .history-detail {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .history-detail.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 180ms;
+      margin-bottom: 1.25rem;
+    }
+    .back-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+    .back-arrow {
+      font-size: 1rem;
+      transition: transform 180ms ease;
+      display: inline-block;
+    }
+    .back-btn:hover .back-arrow {
+      transform: translateX(-3px);
+    }
+    .event-panels {
+      position: relative;
+    }
+    .event-panel {
+      display: none;
+      animation: fadeInPanel 400ms ease;
+    }
+    .event-panel.active {
+      display: block;
+    }
+    @keyframes fadeInPanel {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .event-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .event-year-lg {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .event-tag-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .event-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+    .event-body {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 1280px;
+    }
+    .event-body p { margin-bottom: 0.85rem; }
+    .event-body p:last-child { margin-bottom: 0; }
+    .event-body strong { color: var(--text-primary); }
+    .event-body em { color: var(--accent-hover); }
+
     .quad-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -773,7 +916,7 @@
 
       <!-- ============ HISTÓRIA ============ -->
       <div class="section" id="sec-historia" data-id="historia"
-           style="left: 100px; top: 300px; width: 1400px; height: 800px;">
+           style="left: 100px; top: 300px; width: 1400px; height: 900px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 01</div>
@@ -782,41 +925,257 @@
           <div class="content">
             <div class="content-header">
               <span class="num">// 01</span>
-              <h2>História</h2>
+              <h2>História · <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">clique em qualquer item pra expandir</span></h2>
             </div>
-            <div class="content-body" style="overflow-y: auto;">
-              <div class="tl-row">
-                <div class="tl-year">1958</div>
-                <div class="tl-text"><strong>Perceptron</strong> · Rosenblatt cria o primeiro algoritmo que aprende a partir de dados. Roda no Mark I, do tamanho de uma sala.</div>
+            <div class="content-body historia-body" style="overflow-y: auto;">
+
+              <!-- ============ TIMELINE VIEW ============ -->
+              <div class="tl-list" id="tlList">
+                <div class="tl-row" data-event="perceptron">
+                  <div class="tl-year">1958</div>
+                  <div class="tl-text"><strong>Perceptron · Rosenblatt</strong> · Primeiro algoritmo que aprende a partir de dados. Roda no Mark I, do tamanho de uma sala.</div>
+                </div>
+                <div class="tl-row" data-event="winter1">
+                  <div class="tl-year warn">1969</div>
+                  <div class="tl-text"><strong>Minsky &amp; Papert · 1º AI Winter</strong> · "Perceptrons" prova matematicamente que Perceptron simples não resolve XOR. Funding corta. ~1969–1980 connectionism underground.</div>
+                </div>
+                <div class="tl-row" data-event="backprop">
+                  <div class="tl-year">1986</div>
+                  <div class="tl-text"><strong>Backpropagation</strong> · Rumelhart, Hinton, Williams. Redes de múltiplas camadas voltam à mesa. (Mas compute ainda curto.)</div>
+                </div>
+                <div class="tl-row" data-event="winter2">
+                  <div class="tl-year warn">1987</div>
+                  <div class="tl-text"><strong>2º AI Winter · LISP machine crash</strong> · Mercado de hardware especialista entra em colapso. Expert systems superestimados. ~1987–1993 o "AI gloom".</div>
+                </div>
+                <div class="tl-row" data-event="alexnet">
+                  <div class="tl-year highlight">2012</div>
+                  <div class="tl-text"><strong>AlexNet · ImageNet moment</strong> · CNN 8 camadas arrasa ImageNet (top-5 erro cai 26% → 15%). Deep learning moderno começa aqui.</div>
+                </div>
+                <div class="tl-row" data-event="transformer">
+                  <div class="tl-year highlight">2017</div>
+                  <div class="tl-text"><strong>"Attention Is All You Need" · Transformer</strong> · 8 autores, 1 paper. Arquitetura baseada inteiramente em atenção. Fundação de todo LLM moderno.</div>
+                </div>
+                <div class="tl-row" data-event="gpt3">
+                  <div class="tl-year">2020</div>
+                  <div class="tl-text"><strong>GPT-3 (175B)</strong> · In-context learning emerge. A API da OpenAI vira plataforma. Fundação do GitHub Copilot e dezenas de startups.</div>
+                </div>
+                <div class="tl-row" data-event="chatgpt">
+                  <div class="tl-year highlight">2022</div>
+                  <div class="tl-text"><strong>ChatGPT (GPT-3.5 + RLHF)</strong> · 100M de usuários em 2 meses. IA sai do laboratório e vira conversa de família. A corrida começa.</div>
+                </div>
+                <div class="tl-row" data-event="o1mcp">
+                  <div class="tl-year highlight">2024</div>
+                  <div class="tl-text"><strong>Era do raciocínio (o1) + MCP</strong> · Inference-time compute scaling. Anthropic lança MCP ("USB-C para IA"). Reasoning vira categoria própria.</div>
+                </div>
+                <div class="tl-row" data-event="cowork">
+                  <div class="tl-year highlight">2026</div>
+                  <div class="tl-text"><strong>Microsoft Cowork (GA jun/2026)</strong> · Agentes autônomos com Work IQ. Multi-agent orchestration vira commodity.</div>
+                </div>
               </div>
-              <div class="tl-row">
-                <div class="tl-year">1986</div>
-                <div class="tl-text"><strong>Backpropagation</strong> · Rumelhart, Hinton, Williams. Redes com múltiplas camadas voltam à mesa.</div>
+
+              <!-- ============ DETAIL VIEW (initially hidden) ============ -->
+              <div class="history-detail" id="historyDetail" aria-hidden="true">
+                <button class="back-btn" id="historyBack"><span class="back-arrow">←</span> Voltar ao timeline</button>
+                <div class="event-panels" id="eventPanels">
+
+                  <div class="event-panel" data-event="perceptron">
+                    <div class="event-meta">
+                      <div class="event-year-lg">1958</div>
+                      <div class="event-tag-row">
+                        <span class="chip accent">Algoritmo</span>
+                        <span class="chip accent">Aprendizado supervisionado</span>
+                        <span class="chip">Mark I</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Perceptron · Rosenblatt</h3>
+                    <div class="event-body">
+                      <p><strong>Frank Rosenblatt</strong>, Cornell Aeronautical Laboratory, propõe o primeiro algoritmo que <em>aprende a partir de dados</em> — não apenas executa lógica hard-coded. É a primeira concretização prática do neurônio matemático de McCulloch-Pitts (1943) com ajuste de pesos via regra de Hebb (1949).</p>
+                      <p>A implementação rodava no <strong>Mark I Perceptron</strong>, um computador custom-built do tamanho de uma sala, dedicado a treinar e classificar padrões visuais. O hardware lia imagens de <strong>20×20 pixels</strong> (resolução baixa mas gigante pra época) através de uma matriz de fotocélulas. Com o tempo, o sistema ajustava os pesos das conexões para separar categorias como "esquerda" vs "direita" ou "triângulo" vs "quadrado".</p>
+                      <p>Foi financiado pela <strong>US Navy</strong> e ganhou as páginas do New York Times com a manchete "<em>New Navy Device Learns By Doing</em>" (1958). A empolgação inicial foi exagerada — só depois ficou claro que um Perceptron de uma camada tem表达能力 limitada (Hinton chamou mais tarde de "primeiro roundtrip da hype cycle").</p>
+                      <p><strong>Por que importa:</strong> o Perceptron é o ancestral direto de toda rede neural. Mesmo com limitações, foi a primeira prova empírica de que máquinas podiam <em>aprender</em> padrões por si, sem serem explicitamente programadas.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="winter1">
+                    <div class="event-meta">
+                      <div class="event-year-lg warn">1969</div>
+                      <div class="event-tag-row">
+                        <span class="chip warning">Funding cut</span>
+                        <span class="chip warning">Symbolic AI domina</span>
+                        <span class="chip warning">~1969-1980</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Minsky &amp; Papert · 1º AI Winter</h3>
+                    <div class="event-body">
+                      <p><strong>Marvin Minsky</strong> (MIT, vencedor do Turing Award) e <strong>Seymour Papert</strong> publicam <em>Perceptrons</em> (MIT Press, 1969) — uma análise matemática devastadora. O resultado central: <strong>um Perceptron de uma única camada não consegue resolver o XOR</strong>, uma função não-linearmente separável. O livro generaliza a crítica para várias limitações estruturais.</p>
+                      <p>O livro não era maldoso — era matematicamente correto. Mas o <strong>efeito em funding bodies</strong> foi catastrófico: DARPA, NSF e outros patrocinadores cortaram verbas para pesquisa em redes neurais. O argumento informal era "<em>se Perceptron não resolve XOR, redes neurais nunca vão resolver problemas reais</em>". (Isso era falso — backprop depois mostrou — mas na época ninguém sabia.)</p>
+                      <p>Resultado: <strong>~1969–1980, o "1º AI Winter"</strong>. Pesquisadores de redes neurais viraram pária. <em>Symbolic AI</em> — programação lógica, expert systems, regras hand-coded — tomou a dianteira. Foi a era de ouro do LISP e do SHRDLU.</p>
+                      <p><strong>Curiosidade:</strong> muitos dos pesquisadores punidos nesse período tinham razão sobre o que viria, mas estavam 20 anos adiantados para o hardware.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="backprop">
+                    <div class="event-meta">
+                      <div class="event-year-lg">1986</div>
+                      <div class="event-tag-row">
+                        <span class="chip accent">Algoritmo</span>
+                        <span class="chip accent">Gradient descent</span>
+                        <span class="chip">Redes multilayer</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Backpropagation · Rumelhart, Hinton, Williams</h3>
+                    <div class="event-body">
+                      <p>Em 1986, <strong>David Rumelhart, Geoffrey Hinton e Ronald Williams</strong> publicam <em>Learning representations by back-propagating errors</em> na revista <strong>Nature</strong>. O paper demonstra, empiricamente e teoricamente, como treinar redes neurais com múltiplas camadas usando gradiente descendente + regra da cadeia (chain rule).</p>
+                      <p>Backprop não era uma ideia 100% nova — <strong>Seppo Linnainmaa</strong> já tinha descrito o algoritmo em 1970 (na sua tese, em Finlândia), e <strong>Paul Werbos</strong> aplicou ao contexto de redes neurais em 1974. O paper de Rumelhart-Hinton-Williams foi importante porque <em>fez o algoritmo funcionar na prática</em> — virou a referência para qualquer implementação.</p>
+                      <p>Com backprop, <strong>redes multilayer podiam finalmente ser treinadas</strong>. Isso destravou a capacidade de aprender representações hierárquicas — base de toda a IA moderna. A essa altura, <strong>Yann LeCun</strong> já aplicava backprop para reconhecimento de dígitos em cheques (Bell Labs), mostrando viabilidade comercial.</p>
+                      <p><strong>Limitação da época:</strong> treinar redes profundas (>3 camadas) era difícil por causa de <em>vanishing gradients</em> + compute limitado. A "deep" em deep learning só viria em 2012 com AlexNet + GPU. Mas backprop estabeleceu a base teórica que faltava.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="winter2">
+                    <div class="event-meta">
+                      <div class="event-year-lg warn">1987</div>
+                      <div class="event-tag-row">
+                        <span class="chip warning">LISP crash</span>
+                        <span class="chip warning">Expert systems oversold</span>
+                        <span class="chip warning">~1987-1993</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">2º AI Winter · LISP machine crash</h3>
+                    <div class="event-body">
+                      <p>O <strong>2º AI Winter</strong> foi causado por duas forças convergentes no fim dos anos 80:</p>
+                      <p><strong>(1) Colapso do mercado de LISP machines:</strong> Symbolics, LMI e outras vendors de hardware LISP-specialized tinham valuation inflada. Quando workstations Unix/sun e PCs comuns ficaram poderosos o suficiente, o diferencial de preço-valor evaporou. Vendas caíram >50% entre 1987 e 1989. Várias fecharam.</p>
+                      <p><strong>(2) Expert systems under-delivered:</strong> sistemas como XCON da DEC, MYCIN na medicina, etc., eram vendidos como "substitutos de especialistas humanos", mas na produção explodiam em custo de manutenção e edge cases. Os 5Cs LISP (caros, complexos, instáveis, lentos, ...) viraram piada interna.</p>
+                      <p><strong>Como durou:</strong> ~1987–1993. Período mais profundo do "AI gloom". <em>Symbolic AI funding</em> secou. Quem sobreviveu: pesquisadores de redes neurais persistentes (Hinton, LeCun, Bengio) e o grupo de statistical learning (Vapnik — SVMs).</p>
+                      <p><strong>Curiosidade:</strong> Vapnik publicou <em>The Nature of Statistical Learning Theory</em> em 1995 — SVMs eram o estado da arte. Levou 12 anos até a próxima revolta (2012 AlexNet).</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="alexnet">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">2012</div>
+                      <div class="event-tag-row">
+                        <span class="chip purple">CNN</span>
+                        <span class="chip purple">GPU</span>
+                        <span class="chip purple">ImageNet</span>
+                        <span class="chip purple">60M params</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">AlexNet · ImageNet moment</h3>
+                    <div class="event-body">
+                      <p><strong>Alex Krizhevsky, Ilya Sutskever e Geoffrey Hinton</strong> (University of Toronto) submetem uma CNN de <strong>8 camadas e 60 milhões de parâmetros</strong> ao desafio ImageNet 2012 (classificar 1.2M de imagens em 1.000 categorias). O resultado é uma <strong>chuva de margem</strong>: <em>top-5 error de 15,3%</em> contra 26,2% do segundo lugar (uma diferença ridícula).</p>
+                      <p>O <em>twist</em> técnico: treinaram em <strong>2 GPUs NVIDIA GTX 580</strong> ao longo de ~1 semana. GPUs eram hardware de jogo — ninguém tinha pensado em usar para deep learning em escala. Krizhevsky foi pioneiro em CUDA programming.</p>
+                      <p>Outros ingredientes: <strong>ReLU activations</strong> (em vez de sigmoid/tanh — evita vanishing gradient), <strong>dropout</strong> (Hinton et al., regularização), e <strong>data augmentation</strong>. Cada um desses era conhecido, mas a combinação + escala + GPU mudou o jogo.</p>
+                      <p><strong>Efeito cascata:</strong> em 6 meses, todo lab sério de visão computacional pivotou pra deep learning. Em 2013, todos os top-10 do ImageNet eram CNNs. Em 2015, ResNet (He et al., Microsoft) atinge <em>top-5 error abaixo de humanos</em> (~5%). A partir daí, "<strong>deep learning</strong>" virou sinônimo de IA.</p>
+                      <p><strong>Por que importa pra LLMs:</strong> a infraestrutura (CUDA + cuDNN + frameworks como Caffe, depois PyTorch/TensorFlow) e os métodos de treinamento (SGD com momentum, dropout, batch norm) que AlexNet popularizou são exatamente o que sustenta o treino de todo LLM moderno.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="transformer">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">2017</div>
+                      <div class="event-tag-row">
+                        <span class="chip purple">Attention</span>
+                        <span class="chip purple">Parallel</span>
+                        <span class="chip purple">Encoder-Decoder</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Transformer · "Attention Is All You Need"</h3>
+                    <div class="event-body">
+                      <p><strong>Vaswani et al.</strong> (Google Brain) publicam em junho de 2017: 8 autores, 12 páginas, <em>"Attention Is All You Need"</em>. A proposta: substituir recorrência (RNN/LSTM) e convolução por <strong>apenas mecanismo de atenção</strong> — uma operação que, a cada passo, pesa o quanto cada token anterior importa para entender o atual.</p>
+                      <p>Três vantagens decisivas:</p>
+                      <p><strong>(1) Paralelização:</strong> RNNs processam tokens um de cada vez (sequencial). Transformer processa toda a sequência em paralelo — <em>muitas ordens de grandeza mais rápido</em> pra treinar. Em GPUs, isso é transformador: o tempo de treinamento cai de semanas para dias/horas.</p>
+                      <p><strong>(2) Long-range dependencies:</strong> RNNs têm dificuldade de conectar tokens distantes (mesmo com LSTM). Atenção conecta <em>qualquer par de tokens com O(1) hops</em>. Isso destrava contexto longo.</p>
+                      <p><strong>(3) Escala:</strong> a arquitetura escala com predictabilidade — mais dados + mais parâmetros = melhor performance (a "<em>scaling law</em>" foi empiricamente caracterizada por Kaplan et al. em 2020, mas a arquitetura já estava lá).</p>
+                      <p><strong>Lineagem:</strong> o paper original era encoder-decoder para tradução. Logo <em>decoder-only</em> virou o padrão (GPT-2/3/4, Claude, Llama, Mistral, Qwen, Gemini). Os autores seguiram caminhos variados: Aidan Gomez virou co-founder da Cohere; Llion Jones na Sakana AI; Noam Shazeer fundou Character.AI (depois voltou pra Google).</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="gpt3">
+                    <div class="event-meta">
+                      <div class="event-year-lg">2020</div>
+                      <div class="event-tag-row">
+                        <span class="chip accent">175B params</span>
+                        <span class="chip accent">Few-shot</span>
+                        <span class="chip accent">API economy</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">GPT-3 · 175B parâmetros</h3>
+                    <div class="event-body">
+                      <p>Em julho de 2020, a <strong>OpenAI</strong> lança o <strong>GPT-3</strong>: 175 bilhões de parâmetros, 96 camadas, ~$4.6M estimados só em compute de treinamento. Foi treinado em ~570GB de texto curado (Common Crawl filtrado + books + Wikipedia).</p>
+                      <p>O <em>headline feature</em>: <strong>in-context learning emergiu</strong>. Sem nenhum treinamento adicional (gradient updates zero), o modelo consegue aprender uma tarefa nova só com exemplos no prompt — "<em>few-shot prompting</em>". Tradução, sumarização, Q&A, programação básica, tudo "de graça" no prompt. Isso era teoricamente previsto, mas ninguém tinha visto funcionar tão limpo.</p>
+                      <p>A <strong>API foi aberta</strong> em beta (com waitlist) e virou plataforma. <strong>GitHub Copilot</strong> (2021), <strong>Notion AI</strong>, centenas de startups YC — todos construídos em cima de GPT-3 fine-tuned ou prompting. A "<em>AI API economy</em>" explodiu em 2020-21.</p>
+                      <p><strong>Side effects:</strong> (<em>i</em>) abriu o debate sobre <em>AI safety</em>/alignment (a OpenAI deliberadamente não publicou os pesos), (<em>ii</em>) lançou o "<em>scale is all you need</em>" narrative que dominou 2020-2022, (<em>iii</em>) motivou a formação do grupo AI Safety do Google Brain (Girshberg et al.), e (<em>iv</em>) mostrou que "<em>capabilities surprise o próprio time de pesquisadores</em>" — efeito que só piorou em modelos seguintes.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="chatgpt">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">2022</div>
+                      <div class="event-tag-row">
+                        <span class="chip success">GPT-3.5</span>
+                        <span class="chip success">RLHF</span>
+                        <span class="chip success">100M usuários / 2 meses</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">ChatGPT · GPT-3.5 + RLHF</h3>
+                    <div class="event-body">
+                      <p>OpenAI lança o <strong>ChatGPT</strong> em <strong>30 de novembro de 2022</strong>. O modelo subjacente era uma variante do GPT-3.5 ajustada com <strong>RLHF (Reinforcement Learning from Human Feedback)</strong> — anotadores humanos ranqueavam respostas, e um modelo de "recompensa" era treinado nesses rankings; depois, PPO era usado para ajustar o LLM para maximizar a recompensa prevista.</p>
+                      <p>O efeito prático do RLHF: o chatbot <em>seguia instruções</em>, <em>recusava pedidos inadequados com elegância</em>, <em>admitia não saber</em>, e <em>conversava em vez de tentar continuar uma string</em>. Era, finalmente, o que o público leigo imaginava quando pensava em "IA".</p>
+                      <p><strong>Crescimento:</strong> 100 milhões de usuários em 2 meses. Recorde absoluto para qualquer app de consumo — TikTok e Instagram levaram ~9 meses. Em janeiro de 2023 a Microsoft anunciou investimento de <strong>$10B na OpenAI</strong>.</p>
+                      <p><strong>Reações da indústria:</strong></p>
+                      <p>• Google declarou "<em>code red</em>" interno (Sundar Pichai) → acelerou Bard (lançado fev/2023)<br>
+                      • Anthropic (ex-OpenAI) lança Claude (março 2023)<br>
+                      • Meta publica Llama (jul 2023) — open weights<br>
+                      • Google lança Gemini (dez 2023)<br>
+                      • Microsoft 365 Copilot anuncia integração profunda (mar 2023)<br>
+                      • AWS, Salesforce, Adobe — todos anunciam features de IA</p>
+                      <p>Foi "<em>o momento</em>" em que IA deixou de ser tecnologia e virou <strong>cultura pop</strong>. A corrida começou, e continua até hoje.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="o1mcp">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">2024</div>
+                      <div class="event-tag-row">
+                        <span class="chip warning">o1 reasoning</span>
+                        <span class="chip accent">MCP</span>
+                        <span class="chip accent">Inference-time compute</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Era do raciocínio (o1) + MCP</h3>
+                    <div class="event-body">
+                      <p>Em 2024, dois movimentos paralelos redefiniram o ecossistema:</p>
+                      <p><strong>(1) Inference-time compute scaling — OpenAI o1 (set/2024).</strong> O modelo "<em>pensa</em>" antes de responder — gera cadeia de raciocínio interna (private tokens) antes da resposta final. Em matemática, código e raciocínio encadeado, isso <strong>supera GPT-4 com menos parâmetros</strong>. <em>Insight:</em> antes, escalar era só pré-treino. Agora também é inferência — você "paga" com mais latência/custo por respostas melhores. Foi o ano em que "<em>reasoning model</em>" virou categoria.</p>
+                      <p>Outros entrants: <strong>DeepSeek-R1</strong> (jan/2025, com pesos abertos, desempenhando similar ao o1), <strong>Claude extended thinking</strong>, <strong>Gemini Thinking</strong>.</p>
+                      <p><strong>(2) MCP — Model Context Protocol (Anthropic, nov/2024).</strong> Padrão aberto para LLMs se conectarem a ferramentas/dados. Inspirado no USB-C: <em>um cabo, várias fontes</em>. Host (Claude Desktop, Cursor) ↔ Client ↔ Servers (GitHub, Postgres, Google Drive, etc.) via JSON-RPC.</p>
+                      <p>Adoção <strong>fulminante</strong>: OpenAI Agents, Google DeepMind, Microsoft, Replit, Sourcegraph, Block, Zed, Apollo — todos anunciaram suporte em 2025. Centenas de servers da comunidade. <strong>Em 2026, MCP é o padrão de facto</strong> pra conectar LLMs a ferramentas — mesmo vendors que têm specs próprios (OpenAI) implementam MCP por interoperabilidade.</p>
+                    </div>
+                  </div>
+
+                  <div class="event-panel" data-event="cowork">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">2026</div>
+                      <div class="event-tag-row">
+                        <span class="chip pink">Work IQ</span>
+                        <span class="chip pink">Cowork</span>
+                        <span class="chip pink">Multi-agent</span>
+                      </div>
+                    </div>
+                    <h3 class="event-title">Microsoft Cowork · era agentic</h3>
+                    <div class="event-body">
+                      <p>Em <strong>16 de junho de 2026</strong>, Microsoft atingiu GA (<em>general availability</em>) do <strong>Cowork</strong>, seu agente autônomo sobre o ecossistema Microsoft 365. Não é chatbot — é <em>colega de trabalho</em>.</p>
+                      <p>O fundamento técnico é o <strong>Work IQ</strong>: uma camada de inteligência que lê e-mails, calendário, arquivos, mensagens do Teams, e dados organizacionais, construindo um <em>contexto prático</em> do usuário. Cowork usa Work IQ + LLM + tools para executar tarefas multi-step sem que você especifique cada passo.</p>
+                      <p><strong>Exemplos:</strong> "<em>prepara o brief da reunião de amanhã, com base nas últimas decisões do projeto X</em>"; "<em>analisa o pipeline que estagnou, identifica risco, e propõe plano de follow-up</em>"; "<em>compara 4.000 arquivos entre duas versões e resume as diferenças relevantes</em>".</p>
+                      <p><strong>Modelos:</strong> Claude Opus e Sonnet da Anthropic + GPT 5.5 da OpenAI — pareados como <em>Advisor</em> (Sonnet, raciocínio de planejamento) e <em>Executor</em> (Opus + GPT, ações). Multi-agent orchestration <strong>vira commodity</strong>.</p>
+                      <p><strong>Capabilities extras:</strong> geração de imagens (DALL-E integration), local browser use (Playwright-equivalente), custom skills/plugins. <strong>Aprovações</strong> pausam antes de ações sensíveis (enviar e-mail, mover share, criar compromisso).</p>
+                      <p><strong>O que isso sinaliza:</strong> a fronteira entre <em>agent</em> e <em>harness</em> dissolveu. Harnesses modernos <em>são</em> agents com UX/governança. A diferença que importa é: harness é o que você <em>compra</em>, agent é o <em>padrão arquitetural</em>. Em 2026, IA deixou de ser ferramenta e virou <strong>colega de trabalho</strong>.</p>
+                    </div>
+                  </div>
+
+                </div>
               </div>
-              <div class="tl-row">
-                <div class="tl-year highlight">2012</div>
-                <div class="tl-text"><strong>AlexNet</strong> · CNN arrasa a ImageNet (erro top-5 cai de 26% para 15%). Gatilho do deep learning moderno.</div>
-              </div>
-              <div class="tl-row">
-                <div class="tl-year highlight">2017</div>
-                <div class="tl-text"><strong>"Attention Is All You Need"</strong> · Transformer. Arquitetura baseada inteiramente em atenção. Fundação de todo LLM moderno.</div>
-              </div>
-              <div class="tl-row">
-                <div class="tl-year">2020</div>
-                <div class="tl-text"><strong>GPT-3 (175B)</strong> · In-context learning emerge. A API da OpenAI vira plataforma. Fundação do GitHub Copilot e dezenas de startups.</div>
-              </div>
-              <div class="tl-row">
-                <div class="tl-year highlight">2022</div>
-                <div class="tl-text"><strong>ChatGPT (GPT-3.5 + RLHF)</strong> · 100M de usuários em 2 meses. IA sai do laboratório e vira conversa de família.</div>
-              </div>
-              <div class="tl-row">
-                <div class="tl-year highlight">2024</div>
-                <div class="tl-text"><strong>Era do raciocínio (o1) + MCP</strong> · Inference-time compute scaling. Anthropic lança MCP ("USB-C para IA").</div>
-              </div>
-              <div class="tl-row">
-                <div class="tl-year highlight">2026</div>
-                <div class="tl-text"><strong>Microsoft Cowork (GA jun/2026)</strong> · Agentes autônomos com Work IQ. Multi-agent orchestration vira commodity.</div>
-              </div>
+
             </div>
           </div>
         </div>
@@ -869,7 +1228,7 @@
 
       <!-- ============ THINKING ============ -->
       <div class="section" id="sec-thinking" data-id="thinking"
-           style="left: 4500px; top: 1200px; width: 1400px; height: 800px;">
+           style="left: 4500px; top: 1300px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 03</div>
@@ -917,7 +1276,7 @@
 
       <!-- ============ FRAMEWORKS ============ -->
       <div class="section" id="sec-frameworks" data-id="frameworks"
-           style="left: 100px; top: 1200px; width: 1400px; height: 800px;">
+           style="left: 100px; top: 1300px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 04</div>
@@ -966,7 +1325,7 @@
 
       <!-- ============ TOOLS ============ -->
       <div class="section" id="sec-tools" data-id="tools"
-           style="left: 100px; top: 2100px; width: 1400px; height: 700px;">
+           style="left: 100px; top: 2200px; width: 1400px; height: 700px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 05</div>
@@ -997,7 +1356,7 @@
 
       <!-- ============ MCP ============ -->
       <div class="section" id="sec-mcp" data-id="mcp"
-           style="left: 2300px; top: 2100px; width: 1400px; height: 800px;">
+           style="left: 2300px; top: 2200px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 06</div>
@@ -1040,7 +1399,7 @@
 
       <!-- ============ HARNESS ============ -->
       <div class="section" id="sec-harness" data-id="harness"
-           style="left: 4500px; top: 2100px; width: 1400px; height: 700px;">
+           style="left: 4500px; top: 2200px; width: 1400px; height: 700px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 07</div>
@@ -1422,7 +1781,15 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); nextSection(+1); }
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); nextSection(-1); }
-      else if (e.key === 'Escape') { e.preventDefault(); showOverview(); }
+      else if (e.key === 'Escape') {
+        e.preventDefault();
+        // Smart Escape: if História drill-down is open, close it first
+        if (window.__historiaApi && window.__historiaApi.isOpen && window.__historiaApi.isOpen()) {
+          window.__historiaApi.close();
+        } else {
+          showOverview();
+        }
+      }
       else if (e.key === 'Home') { e.preventDefault(); showOverview(); }
       else if (e.key === 'End') { e.preventDefault(); focusSection(NODE_ORDER[TOTAL - 1]); }
     });
@@ -1441,6 +1808,66 @@
         }
       }, 80);
     });
+
+    // ============================================================
+    // História — click-to-expand timeline events
+    // ============================================================
+    (function setupHistoria() {
+      const secHistoria = sectionEls['historia'];
+      if (!secHistoria) return;
+      const tlList = secHistoria.querySelector('#tlList');
+      const tlRows = secHistoria.querySelectorAll('.tl-row[data-event]');
+      const historyDetail = secHistoria.querySelector('#historyDetail');
+      const backBtn = secHistoria.querySelector('#historyBack');
+      const eventPanels = secHistoria.querySelectorAll('.event-panel');
+      if (!tlList || !historyDetail || !backBtn) return;
+
+      let activeEvent = null;
+
+      function showEvent(eventId) {
+        if (!eventId || activeEvent === eventId) return;
+        // Deactivate all panels
+        eventPanels.forEach(p => p.classList.remove('active'));
+        // Activate the requested panel
+        const targetPanel = secHistoria.querySelector(`.event-panel[data-event="${eventId}"]`);
+        if (!targetPanel) return;
+        targetPanel.classList.add('active');
+        // Toggle views
+        historyDetail.classList.add('active');
+        tlList.classList.add('hidden');
+        historyDetail.setAttribute('aria-hidden', 'false');
+        activeEvent = eventId;
+        // Mark clicked row as selected (visual)
+        tlRows.forEach(r => r.classList.toggle('selected', r.dataset.event === eventId));
+        // Scroll detail to top
+        historyDetail.scrollTop = 0;
+      }
+
+      function hideEvent() {
+        if (activeEvent === null) return;
+        historyDetail.classList.remove('active');
+        tlList.classList.remove('hidden');
+        historyDetail.setAttribute('aria-hidden', 'true');
+        activeEvent = null;
+        tlRows.forEach(r => r.classList.remove('selected'));
+      }
+
+      tlRows.forEach(row => {
+        row.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showEvent(row.dataset.event);
+        });
+      });
+
+      backBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideEvent();
+      });
+
+      // Expose API so other handlers (e.g. Escape) can close the detail first
+      window.__historiaApi = { isOpen: () => activeEvent !== null, close: hideEvent };
+    })();
+
 
     // ============================================================
     // Initial render
