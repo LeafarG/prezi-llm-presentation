@@ -459,47 +459,10 @@
       50% { opacity: 1; }
     }
 
-    /* ============ PC-ONLY ENFORCEMENT ============ */
-    .desktop-only {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 999;
-      background: var(--bg-primary);
-      padding: 2rem;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    @media (max-width: 1280px), (max-height: 720px) {
-      .desktop-only { display: flex; }
-      .viewport, .topnav, .bottom-bar, .hint, .loader { display: none !important; }
-    }
-    .desktop-only-inner { max-width: 460px; }
-    .desktop-only-logo {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--accent);
-      font-size: 0.8rem;
-      letter-spacing: 0.15em;
-      margin-bottom: 1.5rem;
-    }
-    .desktop-only h1 {
-      font-size: 1.75rem;
-      margin-bottom: 1rem;
-      color: var(--text-primary);
-    }
-    .desktop-only p {
-      max-width: 100%;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 0.5rem;
-    }
-    .desktop-only .pc-icon {
-      display: inline-block;
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
+    /* ============ PC-ONLY ENFORCEMENT (DISABLED 2026-07-07) ============ */
+    /* No longer gated by media query — the site is now responsive and
+       usable on any viewport. Mobile users will see a usable (if
+       less curated) experience. */
 
     /* ============ SECTION-SPECIFIC CONTENT STYLES ============ */
     .tl-row {
@@ -1699,17 +1662,6 @@
 
   <!-- ============ LOADER ============ -->
   <div class="loader" id="loader"><span class="loader-text">CARREGANDO · /</span></div>
-
-  <!-- ============ DESKTOP-ONLY ENFORCEMENT ============ -->
-  <div class="desktop-only">
-    <div class="desktop-only-inner">
-      <div class="desktop-only-logo">// DESKTOP ONLY</div>
-      <div class="pc-icon">🖥️</div>
-      <h1>PC apenas</h1>
-      <p>Esta apresentação Prezi-style precisa de tela widescreen pra renderizar o canvas zoomável.</p>
-      <p>Abra num PC / notebook com monitor 1280×720 ou maior.</p>
-    </div>
-  </div>
 
   <!-- ============ SCRIPT ============ -->
   <script>
