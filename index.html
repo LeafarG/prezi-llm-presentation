@@ -1865,7 +1865,11 @@
       });
 
       // Expose API so other handlers (e.g. Escape) can close the detail first
-      window.__historiaApi = { isOpen: () => activeEvent !== null, close: hideEvent };
+      window.__historiaApi = {
+        isOpen: () => activeEvent !== null,
+        close: hideEvent,
+        open: (eventId) => showEvent(eventId),
+      };
     })();
 
 
@@ -1880,16 +1884,27 @@
       const hash = (location.hash || '').replace(/^#/, '').toLowerCase();
       const wantsHashFocus = hash && sectionEls[hash];
 
+      // ?event=<id> deep-link: opens história focused on that event
+      const eventParam = (new URLSearchParams(location.search).get('event') || '').toLowerCase();
+      const wantsEvent = eventParam && eventParam !== '';
+
       // Wait for fonts to load (or fallback to fonts after ~600ms)
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           if (wantsHashFocus) focusSection(hash, { animate: false });
           else showOverview({ animate: false });
+          // After focus on história, auto-open event detail if requested
+          if (wantsEvent && hash === 'historia' && window.__historiaApi) {
+            setTimeout(() => window.__historiaApi.open(eventParam), 600);
+          }
         });
       } else {
         setTimeout(() => {
           if (wantsHashFocus) focusSection(hash, { animate: false });
           else showOverview({ animate: false });
+          if (wantsEvent && hash === 'historia' && window.__historiaApi) {
+            setTimeout(() => window.__historiaApi.open(eventParam), 600);
+          }
         }, 200);
       }
       // Fallback: always show overview after 800ms even if fonts.ready hangs
@@ -1897,6 +1912,9 @@
         if (state.currentId === null && state.scale === 1) {
           if (wantsHashFocus) focusSection(hash, { animate: false });
           else showOverview({ animate: false });
+          if (wantsEvent && hash === 'historia' && window.__historiaApi) {
+            setTimeout(() => window.__historiaApi.open(eventParam), 600);
+          }
         }
       }, 800);
     }
