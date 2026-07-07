@@ -873,6 +873,186 @@
     }
     .capa-stat-v { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
     .capa-stat-l { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+    /* ============ CLUSTER BACKGROUNDS (canvas-level) ============ */
+    /* Layered radial gradients give each macro-cluster its own subtle
+       tint on the canvas so zooming in/out reveals the geography. */
+    .cluster-bg {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+    }
+    .cluster-bg.fundamentos {
+      left: -300px; top: -200px;
+      width: 2200px; height: 1800px;
+      background: radial-gradient(circle, rgba(96,165,250,0.10) 0%, transparent 65%);
+    }
+    .cluster-bg.modelo {
+      left: 3500px; top: -200px;
+      width: 2200px; height: 1800px;
+      background: radial-gradient(circle, rgba(167,139,250,0.10) 0%, transparent 65%);
+    }
+    .cluster-bg.construcoes {
+      left: -200px; top: 2000px;
+      width: 5200px; height: 1500px;
+      background: radial-gradient(ellipse, rgba(52,211,153,0.08) 0%, transparent 70%);
+    }
+    .cluster-bg.capa-area {
+      left: 4000px; top: 1100px;
+      width: 1500px; height: 1000px;
+      background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%);
+    }
+
+    /* ============ CLUSTER LABELS (canvas-level) ============ */
+    .cluster-label {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      opacity: 0.55;
+    }
+    .cluster-label.fundamentos { left: 130px; top: 220px; color: var(--accent); }
+    .cluster-label.modelo { left: 3730px; top: 220px; color: var(--purple); }
+    .cluster-label.construcoes { left: 130px; top: 2180px; color: var(--success); }
+
+    /* ============ INTER-CLUSTER ARROWS (SVG) ============ */
+    .cluster-arrows { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .cluster-arrows path { fill: none; stroke: var(--border-strong); stroke-width: 3; stroke-dasharray: 8 10; opacity: 0.35; }
+    .cluster-arrows .arrow-head { fill: var(--border-strong); opacity: 0.4; }
+    .cluster-arrows path.highlight { stroke: var(--accent); stroke-dasharray: 0; opacity: 0.7; }
+
+    /* ============ CAPA: MACRO CARDS ============ */
+    .capa-cluster-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1.25rem;
+      max-width: 920px;
+    }
+    .macro-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      cursor: pointer;
+      transition: all 250ms ease;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+    .macro-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+    }
+    .macro-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--accent));
+    }
+    .macro-card[data-cluster="fundamentos"] { --card-accent: var(--accent); }
+    .macro-card[data-cluster="modelo"] { --card-accent: var(--purple); }
+    .macro-card[data-cluster="construcoes"] { --card-accent: var(--success); }
+    .macro-card .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--accent-glow);
+      color: var(--card-accent);
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      margin-bottom: 0.65rem;
+    }
+    .macro-card[data-cluster="fundamentos"] .icon { background: rgba(96,165,250,0.15); }
+    .macro-card[data-cluster="modelo"] .icon { background: rgba(167,139,250,0.15); }
+    .macro-card[data-cluster="construcoes"] .icon { background: rgba(52,211,153,0.15); }
+    .macro-card h3 { font-size: 1.05rem; margin-bottom: 0.25rem; }
+    .macro-card p { font-size: 0.78rem; margin: 0; color: var(--text-muted); line-height: 1.45; }
+    .macro-card .sections-list {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 0.65rem;
+      letter-spacing: 0.05em;
+    }
+    .macro-card .tour-tag {
+      position: absolute;
+      bottom: 0.85rem;
+      right: 1rem;
+      font-size: 0.65rem;
+      color: var(--card-accent);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    /* ============ TOUR MODE ============ */
+    .tour-hint {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, 50vh);
+      z-index: 60;
+      background: rgba(10, 14, 26, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: var(--shadow-lg);
+      pointer-events: auto;
+      animation: tourSlide 400ms cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+    @keyframes tourSlide {
+      from { opacity: 0; transform: translate(-50%, calc(50vh + 20px)); }
+      to   { opacity: 1; transform: translate(-50%, 50vh); }
+    }
+    .tour-hint .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+    }
+    .tour-hint[data-cluster="fundamentos"] .badge { background: rgba(96,165,250,0.15); color: var(--accent); }
+    .tour-hint[data-cluster="modelo"] .badge { background: rgba(167,139,250,0.15); color: var(--purple); }
+    .tour-hint[data-cluster="construcoes"] .badge { background: rgba(52,211,153,0.15); color: var(--success); }
+    .tour-hint .next-arrow { font-size: 1.4rem; color: var(--text-secondary); }
+    .tour-hint .cluster-name { font-weight: 600; }
+    .tour-hint .section-name { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-muted); }
+    .tour-hint button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.78rem;
+      transition: all 180ms;
+    }
+    .tour-hint button:hover { background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-strong); }
+    .tour-hint [data-action="end"] { color: var(--danger); border-color: rgba(248,113,113,0.3); }
+    .tour-hint [data-action="end"]:hover { background: rgba(248,113,113,0.1); }
+
+    /* While tour is active, dim the canvas slightly for focus */
+    body.touring .canvas { filter: brightness(1.05); }
   </style>
 </head>
 <body>
@@ -881,9 +1061,30 @@
   <div class="viewport" id="viewport">
     <div class="canvas" id="canvas">
 
+      <!-- ============ CLUSTER BACKGROUNDS (subtle canvas-level tints) ============ -->
+      <div class="cluster-bg fundamentos"></div>
+      <div class="cluster-bg modelo"></div>
+      <div class="cluster-bg construcoes"></div>
+      <div class="cluster-bg capa-area"></div>
+
+      <!-- ============ INTER-CLUSTER ARROWS ============ -->
+      <svg class="cluster-arrows" viewBox="0 0 6000 3000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Fundamentos (NW) -> Modelo (NE): curve over the top -->
+        <path d="M 1500 700 C 2500 100, 3500 100, 4400 600" />
+        <polygon class="arrow-head" points="4400,600 4370,580 4370,620" />
+        <!-- Modelo (NE) -> Construções (S): curve down the right then sweep left -->
+        <path d="M 4400 1300 C 4800 1700, 2000 1700, 800 2400" />
+        <polygon class="arrow-head" points="800,2400 830,2380 810,2420" />
+      </svg>
+
+      <!-- ============ CLUSTER LABELS (faded, canvas-level) ============ -->
+      <div class="cluster-label fundamentos">// MACRO 1 · FUNDAMENTOS</div>
+      <div class="cluster-label modelo">// MACRO 2 · O MODELO</div>
+      <div class="cluster-label construcoes">// MACRO 3 · CONSTRUÇÕES</div>
+
       <!-- ============ CAPA ============ -->
       <div class="section" id="sec-capa" data-id="capa"
-           style="left: 2500px; top: 1200px; width: 1000px; height: 600px;">
+           style="left: 4000px; top: 1300px; width: 1700px; height: 700px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// CAPA</div>
@@ -895,19 +1096,39 @@
               <h2>LLMs: Da Perceptron aos Agentes</h2>
             </div>
             <div class="content-body" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-              <p style="max-width: 700px; font-size: 1.1rem; line-height: 1.7; color: var(--text-muted);">
+              <p style="max-width: 800px; font-size: 1.05rem; line-height: 1.65; color: var(--text-muted);">
                 Uma jornada visual pela história, arquiteturas, tipos e ecossistema atual dos
                 Large Language Models — do neurônio matemático de 1943 aos agentes autônomos
                 que executam workflows completos em 2026.
               </p>
-              <div class="capa-stats">
-                <div class="capa-stat"><div class="capa-stat-v">83</div><div class="capa-stat-l">anos</div></div>
-                <div class="capa-stat"><div class="capa-stat-v">7</div><div class="capa-stat-l">arquiteturas</div></div>
-                <div class="capa-stat"><div class="capa-stat-v">8</div><div class="capa-stat-l">seções</div></div>
-                <div class="capa-stat"><div class="capa-stat-v">PT-BR</div><div class="capa-stat-l">idioma</div></div>
+
+              <!-- ============ MACRO CLUSTER CARDS ============ -->
+              <div class="capa-cluster-grid">
+                <button class="macro-card" data-cluster="fundamentos" data-tour="fundamentos">
+                  <span class="icon">01</span>
+                  <h3>Fundamentos</h3>
+                  <p>A base histórica e estrutural. Como chegamos aqui e sobre o que construímos.</p>
+                  <div class="sections-list">História &nbsp;·&nbsp; Frameworks</div>
+                  <div class="tour-tag">▶ TOUR GUIADO</div>
+                </button>
+                <button class="macro-card" data-cluster="modelo" data-tour="modelo">
+                  <span class="icon">02</span>
+                  <h3>O Modelo</h3>
+                  <p>Arquiteturas, variantes e como o raciocínio emergiu da escala.</p>
+                  <div class="sections-list">Tipos &nbsp;·&nbsp; Thinking</div>
+                  <div class="tour-tag">▶ TOUR GUIADO</div>
+                </button>
+                <button class="macro-card" data-cluster="construcoes" data-tour="construcoes">
+                  <span class="icon">03</span>
+                  <h3>Construções</h3>
+                  <p>Ferramentas, protocolos e harnesses — onde o LLM vira sistema.</p>
+                  <div class="sections-list">Tools &nbsp;·&nbsp; MCP &nbsp;·&nbsp; Harness</div>
+                  <div class="tour-tag">▶ TOUR GUIADO</div>
+                </button>
               </div>
-              <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
-                Material de apresentação · 2026 · single-file HTML
+
+              <p style="margin-top: 1.35rem; font-size: 0.78rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+                Material de apresentação · 2026 · single-file HTML &nbsp;·&nbsp; clique num macro pra tour guiado
               </p>
             </div>
           </div>
@@ -915,8 +1136,8 @@
       </div>
 
       <!-- ============ HISTÓRIA ============ -->
-      <div class="section" id="sec-historia" data-id="historia"
-           style="left: 100px; top: 300px; width: 1400px; height: 900px;">
+     <div class="section" id="sec-historia" data-id="historia"
+           style="left: 100px; top: 280px; width: 1400px; height: 900px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 01</div>
@@ -1183,7 +1404,7 @@
 
       <!-- ============ TIPOS ============ -->
       <div class="section" id="sec-tipos" data-id="tipos"
-           style="left: 4500px; top: 300px; width: 1400px; height: 800px;">
+           style="left: 3700px; top: 280px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 02</div>
@@ -1228,7 +1449,7 @@
 
       <!-- ============ THINKING ============ -->
       <div class="section" id="sec-thinking" data-id="thinking"
-           style="left: 4500px; top: 1300px; width: 1400px; height: 800px;">
+           style="left: 3700px; top: 1180px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 03</div>
@@ -1276,7 +1497,7 @@
 
       <!-- ============ FRAMEWORKS ============ -->
       <div class="section" id="sec-frameworks" data-id="frameworks"
-           style="left: 100px; top: 1300px; width: 1400px; height: 800px;">
+           style="left: 100px; top: 1260px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 04</div>
@@ -1325,7 +1546,7 @@
 
       <!-- ============ TOOLS ============ -->
       <div class="section" id="sec-tools" data-id="tools"
-           style="left: 100px; top: 2200px; width: 1400px; height: 700px;">
+           style="left: 100px; top: 2200px; width: 1300px; height: 700px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 05</div>
@@ -1356,7 +1577,7 @@
 
       <!-- ============ MCP ============ -->
       <div class="section" id="sec-mcp" data-id="mcp"
-           style="left: 2300px; top: 2200px; width: 1400px; height: 800px;">
+           style="left: 1700px; top: 2200px; width: 1400px; height: 800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 06</div>
@@ -1399,7 +1620,7 @@
 
       <!-- ============ HARNESS ============ -->
       <div class="section" id="sec-harness" data-id="harness"
-           style="left: 4500px; top: 2200px; width: 1400px; height: 700px;">
+           style="left: 3350px; top: 2200px; width: 1500px; height: 700px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// 07</div>
@@ -1496,15 +1717,30 @@
     // Section config — positions match canvas layout (6000x3000)
     // ============================================================
     const SECTIONS = [
-      { id: 'capa',       label: 'Capa' },
-      { id: 'historia',   label: 'História' },
-      { id: 'tipos',      label: 'Tipos' },
-      { id: 'thinking',   label: 'Thinking' },
-      { id: 'frameworks', label: 'Frameworks' },
-      { id: 'tools',      label: 'Tools' },
-      { id: 'mcp',        label: 'MCP' },
-      { id: 'harness',    label: 'Harness' },
+      { id: 'capa',       label: 'Capa',        cluster: 'capa' },
+      { id: 'historia',   label: 'História',    cluster: 'fundamentos' },
+      { id: 'tipos',      label: 'Tipos',       cluster: 'modelo' },
+      { id: 'thinking',   label: 'Thinking',    cluster: 'modelo' },
+      { id: 'frameworks', label: 'Frameworks',  cluster: 'fundamentos' },
+      { id: 'tools',      label: 'Tools',       cluster: 'construcoes' },
+      { id: 'mcp',        label: 'MCP',         cluster: 'construcoes' },
+      { id: 'harness',    label: 'Harness',     cluster: 'construcoes' },
     ];
+
+    const CLUSTERS = {
+      fundamentos: {
+        label: 'Fundamentos',
+        sections: ['historia', 'frameworks'],
+      },
+      modelo: {
+        label: 'O Modelo',
+        sections: ['tipos', 'thinking'],
+      },
+      construcoes: {
+        label: 'Construções',
+        sections: ['tools', 'mcp', 'harness'],
+      },
+    };
 
     const TOTAL = SECTIONS.length;
     const NODE_ORDER = SECTIONS.map(s => s.id);
@@ -1823,6 +2059,13 @@
       const searchEvent = (new URLSearchParams(location.search).get('event') || '').toLowerCase();
       const eventParam = hashEvent || searchEvent;
 
+      // Guided-tour deep-link: #cluster:fundamentos / #cluster:modelo / #cluster:construcoes
+      const clusterMatch = hashSection.match(/^cluster:([a-z]+)$/);
+      if (clusterMatch && CLUSTERS[clusterMatch[1]]) {
+        if (window.__tour) window.__tour.start(clusterMatch[1]);
+        return;
+      }
+
       // Section focus
       if (hashSection && sectionEls[hashSection]) {
         focusSection(hashSection, { animate });
@@ -1844,6 +2087,126 @@
     window.addEventListener('hashchange', () => handleUrlChange({ animate: true }));
     // Also handle back/forward navigation
     window.addEventListener('popstate', () => handleUrlChange({ animate: false }));
+
+    // ============================================================
+    // Macro-cluster cards (Capa) → launch guided tour
+    // ============================================================
+    (function setupMacroCards() {
+      const cards = document.querySelectorAll('.macro-card[data-tour]');
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const clusterId = card.dataset.tour;
+          startTour(clusterId);
+        });
+      });
+    })();
+
+    // ============================================================
+    // Guided tour — auto-walk a cluster's sections with timed pauses
+    // ============================================================
+    let tourState = null;
+
+    function startTour(clusterId) {
+      const cluster = CLUSTERS[clusterId];
+      if (!cluster) return;
+      // End any existing tour first
+      if (tourState) endTour({ silent: true });
+
+      tourState = {
+        clusterId,
+        index: 0,
+        timer: null,
+        hintEl: null,
+        pauseCountdown: 0,
+      };
+      document.body.classList.add('touring');
+
+      // Update URL to #cluster:<id> for shareable deep-link
+      history.replaceState(null, '', '#cluster:' + clusterId);
+
+      focusFirstTourSection();
+    }
+
+    function focusFirstTourSection() {
+      const cluster = CLUSTERS[tourState.clusterId];
+      const sectionId = cluster.sections[tourState.index];
+      focusSection(sectionId, { animate: true });
+      showTourHint();
+      scheduleNextTourStep();
+    }
+
+    function scheduleNextTourStep() {
+      // Pause ~2.5s showing the section before next focusSection
+      tourState.timer = setTimeout(() => {
+        advanceTourStep();
+      }, 2800);
+    }
+
+    function advanceTourStep() {
+      const cluster = CLUSTERS[tourState.clusterId];
+      tourState.index++;
+      if (tourState.index >= cluster.sections.length) {
+        // Tour finished — show final "pronto" then end
+        showTourFinal();
+        return;
+      }
+      const nextSectionId = cluster.sections[tourState.index];
+      focusSection(nextSectionId, { animate: true });
+      showTourHint();
+      scheduleNextTourStep();
+    }
+
+    function showTourFinal() {
+      if (!tourState.hintEl) return;
+      tourState.hintEl.innerHTML = `
+        <span class="badge">${CLUSTERS[tourState.clusterId].label}</span>
+        <span><strong>Tour concluído</strong></span>
+        <button data-action="end">Fechar</button>
+      `;
+      tourState.hintEl.querySelector('[data-action="end"]').addEventListener('click', () => endTour());
+      tourState.timer = setTimeout(() => endTour(), 3500);
+    }
+
+    function showTourHint() {
+      // Lazily create the hint element
+      if (!tourState.hintEl) {
+        tourState.hintEl = document.createElement('div');
+        tourState.hintEl.className = 'tour-hint';
+        document.body.appendChild(tourState.hintEl);
+        tourState.hintEl.addEventListener('click', (e) => {
+          if (e.target.dataset.action === 'end') endTour();
+        });
+      }
+      const cluster = CLUSTERS[tourState.clusterId];
+      const sectionLabel = SECTIONS.find(s => s.id === cluster.sections[tourState.index]).label;
+      const isLast = tourState.index === cluster.sections.length - 1;
+      tourState.hintEl.dataset.cluster = tourState.clusterId;
+      tourState.hintEl.innerHTML = `
+        <span class="badge">${cluster.label}</span>
+        <span><span class="cluster-name">${tourState.index + 1}/${cluster.sections.length}</span> · <span class="section-name">${sectionLabel}</span></span>
+        <span class="next-arrow">${isLast ? '✓' : '→'}</span>
+        <button data-action="end">Pular tour</button>
+      `;
+    }
+
+    function endTour({ silent = false } = {}) {
+      if (!tourState) return;
+      if (tourState.timer) clearTimeout(tourState.timer);
+      if (tourState.hintEl) {
+        tourState.hintEl.style.opacity = '0';
+        setTimeout(() => { if (tourState.hintEl) { tourState.hintEl.remove(); tourState.hintEl = null; } }, 350);
+      }
+      document.body.classList.remove('touring');
+      tourState = null;
+      if (!silent) {
+        // Snap URL back to overview
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+        setTimeout(() => showOverview({ animate: true }), 100);
+      }
+    }
+
+    // Expose tour control for deep-link / hash handling
+    window.__tour = { start: startTour, end: endTour };
 
     // ============================================================
     // História — click-to-expand timeline events
@@ -1916,8 +2279,9 @@
       // Hide loader
       setTimeout(() => loader.classList.add('hidden'), 200);
 
-      // Parse URL. Hash can be: "#historia", "#historia?event=winter1", or
-      // the URL can have a separate ?event=winter1 search param alongside.
+      // Parse URL. Hash can be: "#historia", "#historia?event=winter1",
+      // "#cluster:fundamentos", or the URL can have a separate
+      // ?event=winter1 search param alongside.
       const rawHash = (location.hash || '').replace(/^#/, '');
       const hashQIdx = rawHash.indexOf('?');
       const hashSection = (hashQIdx === -1 ? rawHash : rawHash.substring(0, hashQIdx)).toLowerCase();
@@ -1929,32 +2293,32 @@
       const eventParam = hashEvent || searchEvent;
       const wantsEvent = !!eventParam;
 
+      // Guided-tour deep-link: #cluster:fundamentos / #cluster:modelo / #cluster:construcoes
+      const clusterMatch = hashSection.match(/^cluster:([a-z]+)$/);
+      const wantsTour = !!(clusterMatch && CLUSTERS[clusterMatch[1]]);
+
       // Wait for fonts to load (or fallback to fonts after ~600ms)
+      const bootBody = () => {
+        if (wantsTour) {
+          if (window.__tour) window.__tour.start(clusterMatch[1]);
+        } else if (wantsHashFocus) {
+          focusSection(hashSection, { animate: false });
+        } else {
+          showOverview({ animate: false });
+        }
+        if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
+          setTimeout(() => window.__historiaApi.open(eventParam), 600);
+        }
+      };
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => {
-          if (wantsHashFocus) focusSection(hashSection, { animate: false });
-          else showOverview({ animate: false });
-          if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
-            setTimeout(() => window.__historiaApi.open(eventParam), 600);
-          }
-        });
+        document.fonts.ready.then(bootBody);
       } else {
-        setTimeout(() => {
-          if (wantsHashFocus) focusSection(hashSection, { animate: false });
-          else showOverview({ animate: false });
-          if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
-            setTimeout(() => window.__historiaApi.open(eventParam), 600);
-          }
-        }, 200);
+        setTimeout(bootBody, 200);
       }
       // Fallback: always show overview after 800ms even if fonts.ready hangs
       setTimeout(() => {
-        if (state.currentId === null && state.scale === 1) {
-          if (wantsHashFocus) focusSection(hashSection, { animate: false });
-          else showOverview({ animate: false });
-          if (wantsEvent && hashSection === 'historia' && window.__historiaApi) {
-            setTimeout(() => window.__historiaApi.open(eventParam), 600);
-          }
+        if (state.currentId === null && state.scale === 1 && !wantsTour) {
+          bootBody();
         }
       }, 800);
     }
