@@ -135,6 +135,15 @@
       z-index: 5;
     }
 
+    /* When focused: hide the poster so it doesn't show through the content */
+    .section.focused .poster {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .content {
+      z-index: 2;
+    }
+
     /* Each section's "frame" — visible at all scales */
     .frame {
       position: relative;
@@ -168,6 +177,7 @@
       padding: 1rem;
       text-align: center;
       transition: opacity 350ms ease;
+      z-index: 1;
     }
     .poster-num {
       font-family: 'JetBrains Mono', monospace;
@@ -449,24 +459,47 @@
       50% { opacity: 1; }
     }
 
-    /* ============ MOBILE FALLBACK ============ */
-    .mobile-fallback {
+    /* ============ PC-ONLY ENFORCEMENT ============ */
+    .desktop-only {
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 200;
+      z-index: 999;
       background: var(--bg-primary);
       padding: 2rem;
       align-items: center;
       justify-content: center;
       text-align: center;
     }
-    @media (max-width: 900px), (max-height: 700px) {
-      .mobile-fallback { display: flex; }
-      .viewport, .topnav, .bottom-bar, .hint, .loader { display: none; }
+    @media (max-width: 1280px), (max-height: 720px) {
+      .desktop-only { display: flex; }
+      .viewport, .topnav, .bottom-bar, .hint, .loader { display: none !important; }
     }
-    .mobile-fallback h1 { font-size: 1.5rem; margin-bottom: 1rem; }
-    .mobile-fallback p { max-width: 360px; }
+    .desktop-only-inner { max-width: 460px; }
+    .desktop-only-logo {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+    }
+    .desktop-only h1 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+    .desktop-only p {
+      max-width: 100%;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+    .desktop-only .pc-icon {
+      display: inline-block;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
 
     /* ============ SECTION-SPECIFIC CONTENT STYLES ============ */
     .tl-row {
@@ -1084,11 +1117,14 @@
   <!-- ============ LOADER ============ -->
   <div class="loader" id="loader"><span class="loader-text">CARREGANDO · /</span></div>
 
-  <!-- ============ MOBILE FALLBACK ============ -->
-  <div class="mobile-fallback">
-    <div>
-      <h1>Visualização em canvas</h1>
-      <p>Esta apresentação Prezi-style precisa de tela widescreen (mínimo ~900×700). Num celular ou janela pequena, abre no desktop pra melhor experiência.</p>
+  <!-- ============ DESKTOP-ONLY ENFORCEMENT ============ -->
+  <div class="desktop-only">
+    <div class="desktop-only-inner">
+      <div class="desktop-only-logo">// DESKTOP ONLY</div>
+      <div class="pc-icon">🖥️</div>
+      <h1>PC apenas</h1>
+      <p>Esta apresentação Prezi-style precisa de tela widescreen pra renderizar o canvas zoomável.</p>
+      <p>Abra num PC / notebook com monitor 1280×720 ou maior.</p>
     </div>
   </div>
 
