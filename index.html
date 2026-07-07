@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLMs: Da Perceptron aos Agentes — Uma jornada visual</title>
-  <meta name="description" content="História, tipos, frameworks e o ecossistema atual dos Large Language Models. Material de apresentação em PT-BR.">
+  <title>LLMs: Da Perceptron aos Agentes — Prezi-style</title>
+  <meta name="description" content="Apresentação espacial estilo Prezi: história, tipos, frameworks e ecossistema dos LLMs. PT-BR.">
   <meta name="author" content="Rafael Gomes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
   <style>
     /* ============ RESET & BASE ============ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
     body {
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
       background: var(--bg-primary);
@@ -21,7 +21,10 @@
       font-size: 16px;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
+      user-select: none;
+      -webkit-user-select: none;
     }
+
     :root {
       --bg-primary: #0a0e1a;
       --bg-secondary: #111827;
@@ -57,7 +60,6 @@
     h4 { font-size: 1.1rem; margin-bottom: 0.5rem; }
     p { color: var(--text-secondary); margin-bottom: 1rem; }
     a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
-    a:hover { color: var(--accent-hover); }
     code, pre { font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace; font-size: 0.9em; }
     code {
       background: var(--code-bg);
@@ -81,299 +83,475 @@
     li { margin-bottom: 0.4rem; }
     li::marker { color: var(--accent); }
 
-    /* ============ LAYOUT ============ */
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-    section { padding: 5rem 0; border-top: 1px solid var(--border); }
-    section:first-of-type { border-top: 0; }
+    /* ============ VIEWPORT + CANVAS (PREZI CORE) ============ */
+    .viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: var(--bg-primary);
+      background-image:
+        radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.04) 0%, transparent 60%),
+        radial-gradient(circle at 10% 90%, rgba(167, 139, 250, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 90% 10%, rgba(244, 114, 182, 0.02) 0%, transparent 40%);
+    }
+    /* Dot grid pattern overlay — subtle, gives "infinite canvas" feel */
+    .viewport::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-    /* ============ TOP NAV ============ */
-    .topnav {
-      position: sticky;
+    .canvas {
+      position: absolute;
+      left: 0;
       top: 0;
-      z-index: 100;
+      width: 6000px;
+      height: 3000px;
+      transform-origin: 0 0;
+      will-change: transform;
+      transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1);
+      z-index: 2;
+    }
+
+    .canvas.dragging { transition: none; cursor: grabbing; }
+    .canvas:not(.dragging) { cursor: grab; }
+
+    /* ============ SECTION NODE ============ */
+    .section {
+      position: absolute;
+      /* Width, height, left, top set inline by JS based on data */
+      cursor: pointer;
+      transition: filter 250ms ease, opacity 250ms ease;
+    }
+    .section.dimmed {
+      opacity: 0.35;
+      filter: grayscale(0.4);
+    }
+    .section.focused {
+      z-index: 5;
+    }
+
+    /* Each section's "frame" — visible at all scales */
+    .frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(19, 26, 43, 0.95) 0%, rgba(26, 34, 52, 0.95) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(96, 165, 250, 0.06) 0%, transparent 30%);
+      pointer-events: none;
+    }
+
+    /* The "title poster" — always visible large */
+    .poster {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      text-align: center;
+      transition: opacity 350ms ease;
+    }
+    .poster-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.25rem;
+    }
+    .poster-title {
+      font-size: clamp(1.1rem, 1.5vw, 1.6rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+
+    /* The "deep content" — only visible when focused */
+    .content {
+      position: absolute;
+      inset: 0;
+      padding: 2rem 2.5rem;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 450ms ease;
+    }
+    .section.focused .content {
+      opacity: 1;
+      pointer-events: auto;
+      transition-delay: 350ms;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .content-header .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .content-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .content-body {
+      max-width: 1300px;
+      height: calc(100% - 100px);
+      overflow: hidden;
+    }
+
+    /* Capa section is special — bigger, centered */
+    #sec-capa .frame {
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(26, 34, 52, 0.95) 100%);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    #sec-capa .poster-title { font-size: 2.5rem; }
+
+    /* ============ TOP-NAV ============ */
+    .topnav {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 50;
       background: rgba(10, 14, 26, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem;
+      width: 240px;
+      box-shadow: var(--shadow-lg);
+      transition: transform 350ms ease, opacity 250ms ease;
     }
-    .topnav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0.85rem 1.5rem;
+    .topnav.collapsed {
+      transform: translateX(calc(100% + 1.5rem));
+    }
+    .topnav-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      overflow-x: auto;
-      scrollbar-width: none;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
     }
-    .topnav-inner::-webkit-scrollbar { display: none; }
-    .brand {
+    .topnav-title {
+      font-size: 0.7rem;
       font-weight: 700;
-      color: var(--text-primary);
-      white-space: nowrap;
-      margin-right: 0.5rem;
-      font-size: 0.95rem;
-      letter-spacing: -0.01em;
-    }
-    .brand-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      margin-right: 0.5rem;
-      vertical-align: middle;
-    }
-    .topnav a {
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .nav-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 51;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: opacity 250ms ease;
+    }
+    .nav-toggle.opacity-0 { opacity: 0; pointer-events: none; }
+
+    .topnav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .topnav-list a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      color: var(--text-secondary);
       font-size: 0.85rem;
       font-weight: 500;
-      padding: 0.4rem 0.75rem;
-      border-radius: 6px;
-      white-space: nowrap;
-      transition: all 0.2s;
+      transition: all 180ms;
+      cursor: pointer;
     }
-    .topnav a:hover { color: var(--text-primary); background: var(--bg-tertiary); }
-    .topnav a.active { color: var(--accent-hover); background: var(--accent-glow); }
+    .topnav-list a:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+    .topnav-list a.active {
+      background: var(--accent-glow);
+      color: var(--accent-hover);
+    }
+    .topnav-list .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      flex-shrink: 0;
+      transition: all 250ms;
+    }
+    .topnav-list a.active .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .topnav-list a.passed .dot { background: var(--success); }
 
-    /* ============ HERO ============ */
-    .hero {
-      padding: 8rem 0 5rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
+    /* ============ BOTTOM CONTROLS ============ */
+    .bottom-bar {
+      position: fixed;
+      bottom: 1.25rem;
       left: 50%;
       transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero-content { position: relative; z-index: 1; }
-    .hero .eyebrow {
-      display: inline-block;
-      color: var(--accent);
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-      padding: 0.4rem 1rem;
-      background: var(--accent-glow);
-      border: 1px solid rgba(96, 165, 250, 0.3);
-      border-radius: 999px;
-    }
-    .hero h1 {
-      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1.5rem;
-    }
-    .hero .subtitle {
-      font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-      color: var(--text-muted);
-      max-width: 700px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.6;
-    }
-    .hero-stats {
+      z-index: 40;
       display: flex;
-      gap: 2rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 3rem;
-    }
-    .hero-stat {
-      padding: 1.25rem 1.75rem;
-      background: var(--bg-card);
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      min-width: 140px;
+      border-radius: 999px;
+      padding: 0.65rem 1rem;
+      box-shadow: var(--shadow-lg);
     }
-    .hero-stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .hero-stat-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 0.25rem;
-    }
-    .scroll-hint {
-      margin-top: 4rem;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      letter-spacing: 0.05em;
-    }
-    .scroll-hint::after {
-      content: '↓';
-      display: block;
-      margin-top: 0.5rem;
-      color: var(--accent);
-      animation: bounce 2s infinite;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); opacity: 0.5; }
-      50% { transform: translateY(6px); opacity: 1; }
-    }
-
-    /* ============ SECTION HEADER ============ */
-    .section-header {
-      margin-bottom: 3rem;
-    }
-    .section-number {
-      display: inline-block;
-      color: var(--accent);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.05em;
-    }
-    .section-header h2 { margin-bottom: 0.5rem; }
-    .section-header .lead {
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      max-width: 720px;
-    }
-
-    /* ============ TIMELINE ============ */
-    .timeline {
-      position: relative;
-      padding-left: 3rem;
-      margin-top: 2rem;
-    }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0.5rem;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: linear-gradient(to bottom, var(--accent) 0%, var(--border) 100%);
-    }
-    .tl-item {
-      position: relative;
-      padding-bottom: 2.5rem;
-    }
-    .tl-item:last-child { padding-bottom: 0; }
-    .tl-item::before {
-      content: '';
-      position: absolute;
-      left: -2.65rem;
-      top: 0.4rem;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--bg-primary);
-      border: 2px solid var(--accent);
-      box-shadow: 0 0 0 4px var(--bg-primary), 0 0 12px var(--accent-glow);
-    }
-    .tl-item.highlight::before {
-      background: var(--accent);
-      box-shadow: 0 0 0 4px var(--bg-primary), 0 0 16px var(--accent);
-    }
-    .tl-year {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--accent);
-      padding: 0.2rem 0.6rem;
-      background: var(--accent-glow);
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
-      border: 1px solid rgba(96, 165, 250, 0.25);
-    }
-    .tl-item h3 { color: var(--text-primary); margin-bottom: 0.4rem; }
-    .tl-item p { color: var(--text-secondary); margin-bottom: 0; font-size: 0.97rem; }
-    .tl-item .tl-tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      padding: 0.15rem 0.5rem;
-      background: var(--bg-tertiary);
-      border-radius: 4px;
-      margin-left: 0.5rem;
-      vertical-align: middle;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* ============ CARDS ============ */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.25rem;
-      margin-top: 2rem;
-    }
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: all 0.25s;
-      position: relative;
-    }
-    .card:hover {
-      border-color: var(--border-strong);
-      background: var(--bg-card-hover);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-    .card-icon {
+    .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
+      gap: 0.4rem;
+      padding: 0.5rem 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 180ms;
+    }
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
+    }
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .btn.primary {
+      background: var(--accent-glow);
+      border-color: rgba(96, 165, 250, 0.4);
+      color: var(--accent-hover);
+    }
+    .btn.primary:hover {
+      background: rgba(96, 165, 250, 0.25);
+    }
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      font-size: 1.1rem;
+    }
+    .progress-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    /* ============ HINT ============ */
+    .hint {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      padding: 0.4rem 0.85rem;
+      background: rgba(10, 14, 26, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      pointer-events: none;
+      opacity: 0;
+      animation: hintFade 1200ms ease 800ms forwards;
+      backdrop-filter: blur(8px);
+    }
+    .hint kbd {
+      display: inline-block;
+      padding: 0.05rem 0.35rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text-secondary);
+      vertical-align: middle;
+    }
+    @keyframes hintFade {
+      0% { opacity: 0; transform: translate(-50%, 0.5rem); }
+      100% { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    /* ============ LOADING ============ */
+    .loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      background: var(--bg-primary);
+      transition: opacity 500ms ease 200ms;
+    }
+    .loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-text {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* ============ MOBILE FALLBACK ============ */
+    .mobile-fallback {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--bg-primary);
+      padding: 2rem;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    @media (max-width: 900px), (max-height: 700px) {
+      .mobile-fallback { display: flex; }
+      .viewport, .topnav, .bottom-bar, .hint, .loader { display: none; }
+    }
+    .mobile-fallback h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .mobile-fallback p { max-width: 360px; }
+
+    /* ============ SECTION-SPECIFIC CONTENT STYLES ============ */
+    .tl-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: stretch;
+      margin: 0.65rem 0;
+    }
+    .tl-year {
+      flex-shrink: 0;
+      width: 70px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      padding: 0.75rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tl-year.highlight {
+      background: rgba(167, 139, 250, 0.2);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: var(--purple);
+    }
+    .tl-text {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+    .tl-text strong { color: var(--text-primary); }
+
+    .quad-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    .quad {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 10px;
+      padding: 1rem 1.15rem;
+      position: relative;
+    }
+    .quad.purple { border-color: rgba(167, 139, 250, 0.4); }
+    .quad.success { border-color: rgba(52, 211, 153, 0.4); }
+    .quad.warning { border-color: rgba(251, 191, 36, 0.4); }
+    .quad-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       background: var(--accent-glow);
       color: var(--accent);
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
       font-weight: 700;
       font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
     }
-    .card.purple .card-icon { background: rgba(167, 139, 250, 0.15); color: var(--purple); }
-    .card.success .card-icon { background: rgba(52, 211, 153, 0.15); color: var(--success); }
-    .card.warning .card-icon { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
-    .card.pink .card-icon { background: rgba(244, 114, 182, 0.15); color: var(--pink); }
-    .card h3 { margin-bottom: 0.5rem; }
-    .card p { font-size: 0.95rem; margin-bottom: 0.75rem; }
-    .card .meta {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-      margin-top: 1rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-    .card .meta span { color: var(--accent); }
+    .quad.purple .quad-icon { background: rgba(167, 139, 250, 0.2); color: var(--purple); }
+    .quad.success .quad-icon { background: rgba(52, 211, 153, 0.2); color: var(--success); }
+    .quad.warning .quad-icon { background: rgba(251, 191, 36, 0.2); color: var(--warning); }
+    .quad h4 { font-size: 1.05rem; margin-bottom: 0.25rem; }
+    .quad p { font-size: 0.85rem; margin: 0; color: var(--text-muted); }
 
-    /* ============ COMPARISON ============ */
     .compare {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-top: 2rem;
+      gap: 1rem;
     }
-    @media (max-width: 720px) { .compare { grid-template-columns: 1fr; } }
     .compare-col {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.75rem;
+      border-radius: 10px;
+      padding: 1.15rem 1.3rem;
     }
     .compare-col.thinking { border-color: rgba(167, 139, 250, 0.4); }
     .compare-col.no-thinking { border-color: rgba(96, 165, 250, 0.4); }
@@ -381,14 +559,14 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      margin-bottom: 0.65rem;
     }
     .compare-col .badge {
       display: inline-block;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 700;
-      padding: 0.2rem 0.5rem;
+      padding: 0.15rem 0.45rem;
       border-radius: 4px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -396,980 +574,858 @@
     }
     .compare-col.thinking .badge { background: rgba(167, 139, 250, 0.2); color: var(--purple); }
     .compare-col.no-thinking .badge { background: rgba(96, 165, 250, 0.2); color: var(--accent); }
-    .compare-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-      background: var(--bg-card);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .compare-table th, .compare-table td {
-      padding: 0.85rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    .compare-table thead { background: var(--bg-tertiary); }
-    .compare-table th { color: var(--text-primary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .compare-table td { color: var(--text-secondary); font-size: 0.95rem; }
-    .compare-table tbody tr:last-child td { border-bottom: 0; }
-    .compare-table tbody tr:hover { background: var(--bg-card-hover); }
+    .compare-col ul { font-size: 0.85rem; padding-left: 1.1rem; margin: 0; }
+    .compare-col li { margin-bottom: 0.3rem; }
 
-    /* ============ DIAGRAM ============ */
-    .diagram {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin: 2rem 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      overflow-x: auto;
-      line-height: 1.6;
-      white-space: pre;
-    }
-    .diagram .accent { color: var(--accent); font-weight: 600; }
-    .diagram .purple { color: var(--purple); font-weight: 600; }
-    .diagram .success { color: var(--success); font-weight: 600; }
-    .diagram .warning { color: var(--warning); font-weight: 600; }
-    .diagram .dim { color: var(--text-dim); }
-
-    /* ============ CALLOUT ============ */
-    .callout {
-      background: var(--bg-card);
-      border-left: 3px solid var(--accent);
-      padding: 1.25rem 1.5rem;
-      border-radius: 8px;
-      margin: 1.5rem 0;
-    }
-    .callout.success { border-left-color: var(--success); }
-    .callout.warning { border-left-color: var(--warning); }
-    .callout.purple { border-left-color: var(--purple); }
-    .callout p { margin-bottom: 0.5rem; }
-    .callout p:last-child { margin-bottom: 0; }
-    .callout strong { color: var(--accent-hover); }
-    .callout.success strong { color: var(--success); }
-    .callout.warning strong { color: var(--warning); }
-    .callout.purple strong { color: var(--purple); }
-
-    /* ============ FRAMEWORK STACK ============ */
-    .framework-stack {
-      margin-top: 2rem;
-    }
+    .framework-stack { display: flex; flex-direction: column; gap: 0.85rem; }
     .framework-row {
       display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 0;
-      border-bottom: 1px solid var(--border);
+      grid-template-columns: 130px 1fr;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      align-items: center;
     }
-    .framework-row:last-child { border-bottom: 0; }
-    @media (max-width: 720px) { .framework-row { grid-template-columns: 1fr; gap: 0.75rem; } }
-    .framework-label {
-      font-size: 0.85rem;
+    .framework-row .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--accent);
-      padding-top: 0.15rem;
     }
-    .framework-content h3 { margin-bottom: 0.4rem; }
-    .framework-content p { margin-bottom: 0.5rem; }
-    .framework-content .examples {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .framework-content .examples strong { color: var(--accent-hover); }
-
-    /* ============ TAG CHIPS ============ */
-    .chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
-    .chip {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-weight: 500;
-      padding: 0.25rem 0.65rem;
-      border-radius: 999px;
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .chip.accent { background: var(--accent-glow); color: var(--accent); border-color: rgba(96, 165, 250, 0.3); }
-    .chip.purple { background: rgba(167, 139, 250, 0.15); color: var(--purple); border-color: rgba(167, 139, 250, 0.3); }
-    .chip.success { background: rgba(52, 211, 153, 0.15); color: var(--success); border-color: rgba(52, 211, 153, 0.3); }
-    .chip.warning { background: rgba(251, 191, 36, 0.15); color: var(--warning); border-color: rgba(251, 191, 36, 0.3); }
-    .chip.pink { background: rgba(244, 114, 182, 0.15); color: var(--pink); border-color: rgba(244, 114, 182, 0.3); }
-
-    /* ============ FOOTER ============ */
-    footer {
-      padding: 4rem 0 3rem;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    footer p { margin-bottom: 0.5rem; color: var(--text-muted); }
-    footer a { color: var(--accent); }
-    footer .footer-meta {
-      margin-top: 1.5rem;
-      font-family: 'JetBrains Mono', monospace;
+    .framework-row .body h4 { font-size: 1rem; margin-bottom: 0.2rem; }
+    .framework-row .body p { font-size: 0.85rem; margin: 0 0 0.3rem; }
+    .framework-row .body .ex {
       font-size: 0.75rem;
       color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    /* ============ UTILITIES ============ */
-    .text-center { text-align: center; }
-    .mt-2 { margin-top: 2rem; }
-    .mb-2 { margin-bottom: 2rem; }
-
-    /* ============ RESPONSIVE ============ */
-    @media (max-width: 640px) {
-      .hero { padding: 5rem 0 3rem; }
-      section { padding: 3rem 0; }
-      .hero-stats { gap: 0.75rem; }
-      .hero-stat { padding: 1rem; min-width: 110px; }
-      .hero-stat-value { font-size: 1.4rem; }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
     }
+    .tool {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.95rem 1.1rem;
+    }
+    .tool h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--text-primary); }
+    .tool p { font-size: 0.8rem; margin: 0; color: var(--text-muted); }
+    .tool-icon {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.15rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 0.85rem 0;
+    }
+    .diagram .accent { color: var(--accent); font-weight: 600; }
+    .diagram .purple { color: var(--purple); font-weight: 600; }
+    .diagram .success { color: var(--success); font-weight: 600; }
+    .diagram .dim { color: var(--text-dim); }
+
+    .harness-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+    .harness {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+    }
+    .harness-icon {
+      display: inline-block;
+      width: 26px;
+      height: 26px;
+      line-height: 26px;
+      text-align: center;
+      border-radius: 6px;
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+    .harness h4 { display: inline-block; vertical-align: middle; margin: 0; font-size: 1rem; }
+    .harness .vendor {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      margin-left: 0.5rem;
+    }
+    .harness p { font-size: 0.82rem; margin: 0.5rem 0 0; }
+    .harness.pink { border-color: rgba(244, 114, 182, 0.4); }
+    .harness.pink .harness-icon { background: rgba(244, 114, 182, 0.2); color: var(--pink); }
+
+    /* Capa stats */
+    .capa-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+    }
+    .capa-stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      text-align: center;
+    }
+    .capa-stat-v { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .capa-stat-l { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
   </style>
 </head>
 <body>
 
-  <!-- ============ TOP NAV ============ -->
-  <nav class="topnav">
-    <div class="topnav-inner">
-      <span class="brand"><span class="brand-dot"></span>LLMs · 2026</span>
-      <a href="#historia">História</a>
-      <a href="#tipos">Tipos</a>
-      <a href="#thinking">Thinking</a>
-      <a href="#frameworks">Frameworks</a>
-      <a href="#tools">Tools</a>
-      <a href="#mcp">MCP</a>
-      <a href="#harness">Harness</a>
+  <!-- ============ VIEWPORT + CANVAS ============ -->
+  <div class="viewport" id="viewport">
+    <div class="canvas" id="canvas">
+
+      <!-- ============ CAPA ============ -->
+      <div class="section" id="sec-capa" data-id="capa"
+           style="left: 2500px; top: 1200px; width: 1000px; height: 600px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// CAPA</div>
+            <div class="poster-title">Da Perceptron<br>aos Agentes</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 00</span>
+              <h2>LLMs: Da Perceptron aos Agentes</h2>
+            </div>
+            <div class="content-body" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+              <p style="max-width: 700px; font-size: 1.1rem; line-height: 1.7; color: var(--text-muted);">
+                Uma jornada visual pela história, arquiteturas, tipos e ecossistema atual dos
+                Large Language Models — do neurônio matemático de 1943 aos agentes autônomos
+                que executam workflows completos em 2026.
+              </p>
+              <div class="capa-stats">
+                <div class="capa-stat"><div class="capa-stat-v">83</div><div class="capa-stat-l">anos</div></div>
+                <div class="capa-stat"><div class="capa-stat-v">7</div><div class="capa-stat-l">arquiteturas</div></div>
+                <div class="capa-stat"><div class="capa-stat-v">8</div><div class="capa-stat-l">seções</div></div>
+                <div class="capa-stat"><div class="capa-stat-v">PT-BR</div><div class="capa-stat-l">idioma</div></div>
+              </div>
+              <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+                Material de apresentação · 2026 · single-file HTML
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ HISTÓRIA ============ -->
+      <div class="section" id="sec-historia" data-id="historia"
+           style="left: 100px; top: 300px; width: 1400px; height: 800px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 01</div>
+            <div class="poster-title">História</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 01</span>
+              <h2>História</h2>
+            </div>
+            <div class="content-body" style="overflow-y: auto;">
+              <div class="tl-row">
+                <div class="tl-year">1958</div>
+                <div class="tl-text"><strong>Perceptron</strong> · Rosenblatt cria o primeiro algoritmo que aprende a partir de dados. Roda no Mark I, do tamanho de uma sala.</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year">1986</div>
+                <div class="tl-text"><strong>Backpropagation</strong> · Rumelhart, Hinton, Williams. Redes com múltiplas camadas voltam à mesa.</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year highlight">2012</div>
+                <div class="tl-text"><strong>AlexNet</strong> · CNN arrasa a ImageNet (erro top-5 cai de 26% para 15%). Gatilho do deep learning moderno.</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year highlight">2017</div>
+                <div class="tl-text"><strong>"Attention Is All You Need"</strong> · Transformer. Arquitetura baseada inteiramente em atenção. Fundação de todo LLM moderno.</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year">2020</div>
+                <div class="tl-text"><strong>GPT-3 (175B)</strong> · In-context learning emerge. A API da OpenAI vira plataforma. Fundação do GitHub Copilot e dezenas de startups.</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year highlight">2022</div>
+                <div class="tl-text"><strong>ChatGPT (GPT-3.5 + RLHF)</strong> · 100M de usuários em 2 meses. IA sai do laboratório e vira conversa de família.</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year highlight">2024</div>
+                <div class="tl-text"><strong>Era do raciocínio (o1) + MCP</strong> · Inference-time compute scaling. Anthropic lança MCP ("USB-C para IA").</div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-year highlight">2026</div>
+                <div class="tl-text"><strong>Microsoft Cowork (GA jun/2026)</strong> · Agentes autônomos com Work IQ. Multi-agent orchestration vira commodity.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ TIPOS ============ -->
+      <div class="section" id="sec-tipos" data-id="tipos"
+           style="left: 4500px; top: 300px; width: 1400px; height: 800px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 02</div>
+            <div class="poster-title">Tipos de LLM</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 02</span>
+              <h2>Tipos de LLM</h2>
+            </div>
+            <div class="content-body">
+              <p style="font-size: 0.95rem; margin-bottom: 1rem;">Modelos diferentes para trabalhos diferentes. A escolha define custo, latência e onde roda.</p>
+              <div class="quad-grid">
+                <div class="quad">
+                  <div class="quad-icon">S</div>
+                  <h4>SLM <span style="color: var(--text-dim); font-weight: 400; font-size: 0.85rem;">— &lt;10B</span></h4>
+                  <p>Cabe em laptop / celular / RPi. Latência sub-segundo, custo quase zero. <em>Phi-3, Gemma 2B, Llama 3.2 1B/3B, Qwen2.5</em>.</p>
+                </div>
+                <div class="quad success">
+                  <div class="quad-icon">L</div>
+                  <h4>LLM <span style="color: var(--text-dim); font-weight: 400; font-size: 0.85rem;">— 10B a 100B+</span></h4>
+                  <p>Capacidade geral forte, multimodal, janelas longas. <em>GPT-4o, Claude 4, Gemini 2, Llama 3.1 70B, Mistral Large</em>.</p>
+                </div>
+                <div class="quad purple">
+                  <div class="quad-icon">F</div>
+                  <h4>Frontier</h4>
+                  <p>Topo da pirâmide. Compute de dezenas de milhões. Máxima capacidade. <em>GPT-5, Claude 4 Opus, Gemini 2.5 Pro, o3, DeepSeek-V3</em>.</p>
+                </div>
+                <div class="quad warning">
+                  <div class="quad-icon">R</div>
+                  <h4>Reasoning</h4>
+                  <p>Pensa antes de responder. Tokens internos de raciocínio. <em>o1/o3, DeepSeek-R1, Claude extended thinking, Gemini Thinking</em>.</p>
+                </div>
+              </div>
+              <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                <strong>Open vs closed:</strong> Llama, Mistral, Qwen, DeepSeek (pesos abertos) · vs · GPT, Claude, Gemini, Grok (só via API).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ THINKING ============ -->
+      <div class="section" id="sec-thinking" data-id="thinking"
+           style="left: 4500px; top: 1200px; width: 1400px; height: 800px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 03</div>
+            <div class="poster-title">Thinking vs No-thinking</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 03</span>
+              <h2>Thinking vs No-thinking</h2>
+            </div>
+            <div class="content-body">
+              <p style="font-size: 0.95rem; margin-bottom: 1rem;">A distinção mais importante em 2025-26: modelo que <em>responde direto</em> vs modelo que <em>pensa antes</em>.</p>
+              <div class="compare">
+                <div class="compare-col no-thinking">
+                  <h3>No-thinking <span class="badge">direto</span></h3>
+                  <ul>
+                    <li>Latência: <strong>100ms – 2s</strong></li>
+                    <li>Custo: <strong>$0.0001 – $0.01</strong>/req</li>
+                    <li>Throughput alto, paralelizável</li>
+                    <li>Chat, Q&amp;A, sumário, tradução, código simples</li>
+                  </ul>
+                  <p style="margin-top: 0.85rem; font-size: 0.75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">GPT-4o · Claude 3.5/4 Sonnet · Gemini 1.5/2.0 · Llama 3.1</p>
+                </div>
+                <div class="compare-col thinking">
+                  <h3>Thinking <span class="badge">raciocínio</span></h3>
+                  <ul>
+                    <li>Latência: <strong>5s – 60s+</strong></li>
+                    <li>Custo: <strong>$0.01 – $1+</strong>/req</li>
+                    <li>Throughput baixo, sequencial</li>
+                    <li>Matemática, código complexo, agentes, pesquisa</li>
+                  </ul>
+                  <p style="margin-top: 0.85rem; font-size: 0.75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">o1/o3 · DeepSeek-R1 · Claude extended thinking · Gemini Thinking</p>
+                </div>
+              </div>
+              <p style="margin-top: 1rem; font-size: 0.88rem; color: var(--text-muted);">
+                <strong>Inference-time compute scaling:</strong> mais "pensamento" (tokens de raciocínio) → respostas melhores. Mudou como pensamos scaling: <em>antes só treino, agora também inferência</em>.
+              </p>
+              <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--success);">
+                <strong>Padrão de produção:</strong> tente primeiro no-thinking. Se insuficiente, escale para thinking. <em>Cascata.</em>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FRAMEWORKS ============ -->
+      <div class="section" id="sec-frameworks" data-id="frameworks"
+           style="left: 100px; top: 1200px; width: 1400px; height: 800px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 04</div>
+            <div class="poster-title">Frameworks</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 04</span>
+              <h2>Frameworks: Chat, Agent, Harness</h2>
+            </div>
+            <div class="content-body">
+              <p style="font-size: 0.95rem; margin-bottom: 1rem;">Três camadas conceituais que confundem muita gente. Padrões diferentes de uso, com limites e propósitos próprios.</p>
+              <div class="framework-stack">
+                <div class="framework-row">
+                  <div class="label">Chat</div>
+                  <div class="body">
+                    <h4>Interface conversacional</h4>
+                    <p>Pergunta → resposta. Stateless. Foco em <strong>UX conversacional</strong>.</p>
+                    <div class="ex">ChatGPT · Claude.ai · Gemini · Copilot Chat · Poe</div>
+                  </div>
+                </div>
+                <div class="framework-row">
+                  <div class="label">Agent</div>
+                  <div class="body">
+                    <h4>Execução autônoma de tarefas</h4>
+                    <p>LLM + loop + tools + memória + objetivo. Planeja, executa, observa, itera até entregar o resultado.</p>
+                    <div class="ex">OpenAI Agents SDK · Computer Use · Operator · Manus · Devin</div>
+                  </div>
+                </div>
+                <div class="framework-row">
+                  <div class="label">Harness</div>
+                  <div class="body">
+                    <h4>A camada que torna o modelo útil</h4>
+                    <p>Integração profunda: IDE, SO, calendário, e-mail, codebase. Transforma modelo genérico em ferramenta produtiva.</p>
+                    <div class="ex">Claude Code · GitHub Copilot · MS 365 Copilot · Microsoft Cowork · Cursor · Cline</div>
+                  </div>
+                </div>
+              </div>
+              <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                <strong>Como se relacionam:</strong> chat é UI · agent é padrão de execução · harness é o produto do dia a dia.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ TOOLS ============ -->
+      <div class="section" id="sec-tools" data-id="tools"
+           style="left: 100px; top: 2100px; width: 1400px; height: 700px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 05</div>
+            <div class="poster-title">Tools</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 05</span>
+              <h2>Ferramentas (Tools)</h2>
+            </div>
+            <div class="content-body">
+              <p style="font-size: 0.95rem; margin-bottom: 0.85rem;">LLMs são máquinas de texto. <strong>Tools</strong> dão "mãos" — acesso estruturado ao mundo externo.</p>
+              <div class="tool-grid">
+                <div class="tool"><h4><span class="tool-icon"></span>Function calling</h4><p>Modelo recebe schema JSON, retorna tool_call estruturado. Você executa e devolve o resultado.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>Structured output</h4><p>Saída garantida por JSON Schema / Pydantic / Zod. Constrained decoding impede JSON inválido.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>Tool use loop</h4><p>Ciclo: call → result → decide → call → ... → finish. Limites: 5–25 steps, timeout 30–120s.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>ReAct pattern</h4><p>Thought → Action → Observation → repeat. Formalizado em 2022, base da maioria dos agentes.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>Web search</h4><p>Tempo real: Tavily, Brave, SerpAPI, Bing.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>Code execution</h4><p>Sandbox Python/JS. Modelo roda código, instala deps, gera gráficos.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>File system</h4><p>Leitura/escrita/busca. Núcleo de coding agents (Claude Code, Cline).</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>Database</h4><p>SQL ou vector search. Text-to-SQL, RAG, retrieval.</p></div>
+                <div class="tool"><h4><span class="tool-icon"></span>Browser automation</h4><p>Playwright, Puppeteer, Computer Use da Anthropic.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ MCP ============ -->
+      <div class="section" id="sec-mcp" data-id="mcp"
+           style="left: 2300px; top: 2100px; width: 1400px; height: 800px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 06</div>
+            <div class="poster-title">MCP</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 06</span>
+              <h2>MCP — Model Context Protocol</h2>
+            </div>
+            <div class="content-body">
+              <p style="font-size: 0.95rem; margin-bottom: 0.85rem;">Padrão aberto criado pela Anthropic (nov/2024). <strong>"USB-C para IA."</strong> Padroniza a conexão entre LLMs e ferramentas/dados.</p>
+              <div class="diagram"><span class="accent">[ MCP Host ]</span>     ← Claude Desktop · Cursor · Continue
+        <span class="dim">│</span>
+        <span class="dim">│</span> <span class="purple">JSON-RPC</span>
+        <span class="dim">▼</span>
+<span class="purple">[ MCP Client ]</span>     ← gerencia 1..N conexões
+        <span class="dim">│</span>
+        <span class="dim">├──▶</span> <span class="success">[ Server A ]</span>  ← GitHub
+        <span class="dim">│</span>
+        <span class="dim">├──▶</span> <span class="success">[ Server B ]</span>  ← Postgres
+        <span class="dim">│</span>
+        <span class="dim">└──▶</span> <span class="success">[ Server C ]</span>  ← Google Drive
+
+<span class="dim">Transport: stdio · HTTP+SSE · streamable HTTP</span></div>
+              <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Capabilities expostas por server MCP:</strong></p>
+              <ul style="font-size: 0.88rem;">
+                <li><strong>Tools</strong> — funções que o modelo chama (similar a function calling)</li>
+                <li><strong>Resources</strong> — dados que o modelo lê (arquivos anexados)</li>
+                <li><strong>Prompts</strong> — templates reutilizáveis invocáveis pelo usuário</li>
+                <li><strong>Sampling</strong> — server pede ao LLM do host para gerar texto</li>
+              </ul>
+              <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--success);">
+                <strong>Em 2026, MCP é o padrão de facto</strong> para conectar LLMs a ferramentas.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ HARNESS ============ -->
+      <div class="section" id="sec-harness" data-id="harness"
+           style="left: 4500px; top: 2100px; width: 1400px; height: 700px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// 07</div>
+            <div class="poster-title">Harness</div>
+          </div>
+          <div class="content">
+            <div class="content-header">
+              <span class="num">// 07</span>
+              <h2>Harness — A camada que torna o modelo útil</h2>
+            </div>
+            <div class="content-body">
+              <p style="font-size: 0.95rem; margin-bottom: 1rem;">Modelo sozinho é só completador de texto. Harness dá mãos, olhos, contexto persistente e UX específica.</p>
+              <div class="harness-grid">
+                <div class="harness">
+                  <h4><span class="harness-icon">⌘</span>Claude Code</h4>
+                  <div class="vendor">Anthropic · fev/2025</div>
+                  <p>Terminal-first agent. Lê/edita arquivos, roda comandos, git, web, MCP. <em>Skills, sub-agents, hooks</em>.</p>
+                </div>
+                <div class="harness">
+                  <h4><span class="harness-icon">⌥</span>GitHub Copilot</h4>
+                  <div class="vendor">GitHub · 2021+</div>
+                  <p>IDE agent em VS Code, JetBrains, Neovim. Chat + agent mode (ago/2024). Workspace agent cria PRs.</p>
+                </div>
+                <div class="harness">
+                  <h4><span class="harness-icon">⊞</span>MS 365 Copilot</h4>
+                  <div class="vendor">Microsoft · 2023+</div>
+                  <p>Side-panel em Word/Excel/PP/Outlook/Teams. Copilot Studio para copilots custom de empresa.</p>
+                </div>
+                <div class="harness pink">
+                  <h4><span class="harness-icon">⊕</span>MS Cowork <span style="background: var(--accent-glow); color: var(--accent); font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 3px; margin-left: 0.4rem; font-family: 'JetBrains Mono', monospace;">GA · JUN/2026</span></h4>
+                  <div class="vendor">Microsoft · 16/06/2026</div>
+                  <p>Agente autônomo sobre Work IQ. Executa workflows longos, multi-step, com aprovações em ações sensíveis.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.canvas -->
+  </div><!-- /.viewport -->
+
+  <!-- ============ TOP-NAV ============ -->
+  <button class="nav-toggle" id="navToggle" title="Mostrar/ocultar índice">☰</button>
+  <nav class="topnav" id="topnav">
+    <div class="topnav-header">
+      <span class="topnav-title">LLMs · 2026</span>
+    </div>
+    <div class="topnav-list" id="navList">
+      <a data-id="capa"><span class="dot"></span>Capa</a>
+      <a data-id="historia"><span class="dot"></span>História</a>
+      <a data-id="tipos"><span class="dot"></span>Tipos</a>
+      <a data-id="thinking"><span class="dot"></span>Thinking</a>
+      <a data-id="frameworks"><span class="dot"></span>Frameworks</a>
+      <a data-id="tools"><span class="dot"></span>Tools</a>
+      <a data-id="mcp"><span class="dot"></span>MCP</a>
+      <a data-id="harness"><span class="dot"></span>Harness</a>
     </div>
   </nav>
 
-  <!-- ============ HERO ============ -->
-  <header id="capa" class="hero">
-    <div class="container hero-content">
-      <span class="eyebrow">Material de apresentação · 2026</span>
-      <h1>LLMs: Da Perceptron<br>aos Agentes</h1>
-      <p class="subtitle">
-        Uma jornada visual pela história, arquiteturas, tipos e ecossistema atual dos
-        Large Language Models — do neurônio matemático de 1943 aos agentes autônomos
-        que executam workflows completos em 2026.
-      </p>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-value">83</div>
-          <div class="hero-stat-label">anos de evolução</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">7</div>
-          <div class="hero-stat-label">arquiteturas</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">8</div>
-          <div class="hero-stat-label">seções</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">PT-BR</div>
-          <div class="hero-stat-label">idioma</div>
-        </div>
-      </div>
-      <div class="scroll-hint">role para começar</div>
+  <!-- ============ BOTTOM-BAR ============ -->
+  <div class="bottom-bar">
+    <button class="btn btn-icon" id="prevBtn" title="Seção anterior (←)">←</button>
+    <button class="btn primary" id="overviewBtn" title="Visão geral (Esc)">⌂ Visão geral</button>
+    <button class="btn btn-icon" id="nextBtn" title="Próxima seção (→)">→</button>
+    <span class="progress-text" id="progress">1 / 8</span>
+  </div>
+
+  <!-- ============ HINT ============ -->
+  <div class="hint">
+    <kbd>←</kbd> <kbd>→</kbd> navegar · <kbd>Esc</kbd> visão geral · clique numa seção pra zoom
+  </div>
+
+  <!-- ============ LOADER ============ -->
+  <div class="loader" id="loader"><span class="loader-text">CARREGANDO · /</span></div>
+
+  <!-- ============ MOBILE FALLBACK ============ -->
+  <div class="mobile-fallback">
+    <div>
+      <h1>Visualização em canvas</h1>
+      <p>Esta apresentação Prezi-style precisa de tela widescreen (mínimo ~900×700). Num celular ou janela pequena, abre no desktop pra melhor experiência.</p>
     </div>
-  </header>
+  </div>
 
-  <main>
-
-  <!-- ============ 1. HISTÓRIA ============ -->
-  <section id="historia">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 01</div>
-        <h2>História</h2>
-        <p class="lead">De um neurônio matemático publicado em 1943 a agentes autônomos que executam workflows completos em 2026. Uma linha do tempo das ideias que tornaram os LLMs possíveis.</p>
-      </div>
-
-      <div class="timeline">
-
-        <div class="tl-item">
-          <span class="tl-year">1943</span>
-          <h3>McCulloch-Pitts: o primeiro neurônio matemático</h3>
-          <p>Warren McCulloch e Walter Pitts publicam <em>"A Logical Calculus of the Ideas Immanent in Nervous Activity"</em>. Propõem um modelo simplificado de neurônio como uma porta lógica binária. É a base conceitual de tudo que veio depois — mas ainda sem aprendizado.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">1958</span>
-          <h3>Perceptron <span class="tl-tag">ROSENBLATT</span></h3>
-          <p>Frank Rosenblatt cria o Perceptron no Cornell Aeronautical Laboratory: o primeiro algoritmo que <strong>aprende a partir de dados</strong>. Roda no Mark I, um computador do tamanho de uma sala. O New York Times publica em primeira página.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">1969</span>
-          <h3>Minsky &amp; Papert — primeiro AI winter</h3>
-          <p><em>Perceptrons</em> (livro) demonstra matematicamente que o Perceptron simples não resolve o XOR. Cortes no financiamento. A pesquisa em redes neurais fica em geladeira por quase 20 anos.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">1986</span>
-          <h3>Backpropagation <span class="tl-tag">RUMELHART · HINTON · WILLIAMS</span></h3>
-          <p>O algoritmo de retropropagação é popularizado. Redes com múltiplas camadas voltam à mesa — agora dá para treinar representações úteis. GPUs ainda estão uma década distante.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">1997</span>
-          <h3>LSTM <span class="tl-tag">HOCHREITER · SCHMIDHUBER</span></h3>
-          <p>Long Short-Term Memory resolve o problema de dependências de longo prazo em sequências. Por 20 anos, LSTM + variantes são o estado da arte em tradução, reconhecimento de fala e modelagem de linguagem.</p>
-        </div>
-
-        <div class="tl-item highlight">
-          <span class="tl-year">2012</span>
-          <h3>AlexNet <span class="tl-tag">KRIZHEVSKY · SUTSKEVER · HINTON</span></h3>
-          <p>CNN de 8 camadas e 60M de parâmetros arrasa a ImageNet: erro top-5 cai de 26% para 15%. Treinada em duas GTX 580. É o gatilho do <strong>deep learning moderno</strong>. A ImageNet moment.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">2014</span>
-          <h3>Seq2Seq e Bahdanau Attention</h3>
-          <p>Sutskever et al. (Google) publicam o modelo Sequence-to-Sequence: encoder-decoder para tradução. No mesmo ano, Bahdanau, Cho &amp; Bengio introduzem o <strong>mecanismo de atenção</strong> — a peça que vai destravar a próxima década.</p>
-        </div>
-
-        <div class="tl-item highlight">
-          <span class="tl-year">2017</span>
-          <h3>"Attention Is All You Need" <span class="tl-tag">VASWANI ET AL.</span></h3>
-          <p>O paper da Google Brain que muda tudo. Propõe o <strong>Transformer</strong>: arquitetura baseada inteiramente em atenção, sem recorrência ou convolução. Treina em paralelo, escala melhor. <em>8 autores, 1 paper, 1 década de impacto.</em> Fundação de todo LLM moderno.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">2018</span>
-          <h3>BERT e GPT-1</h3>
-          <p>Google publica BERT (encoder-only, bidirecional) — vira a base da busca moderna. OpenAI publica GPT-1 (decoder-only, 117M de parâmetros) — primeira iteração da família que vai dominar o mundo.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">2019</span>
-          <h3>GPT-2 <span class="tl-tag">1.5B</span></h3>
-          <p>OpenAI lança GPT-2 com 1.5B de parâmetros. Tão capaz de gerar texto coerente que decidem <strong>não liberar o modelo completo</strong> por medo de uso indevido (deepfakes de texto). Liberado gradualmente em estágios ao longo de 2019-2020 — caso emblemático de responsible disclosure.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">2020</span>
-          <h3>GPT-3 <span class="tl-tag">175B</span></h3>
-          <p>175 bilhões de parâmetros. <strong>In-context learning</strong> (few-shot) emerge como capacidade nova sem treino adicional. A API da OpenAI vira plataforma. Fundação do GitHub Copilot, Notion AI e dezenas de startups. A era dos produtos começa.</p>
-        </div>
-
-        <div class="tl-item highlight">
-          <span class="tl-year">2022 · 30/NOV</span>
-          <h3>ChatGPT (GPT-3.5)</h3>
-          <p>OpenAI lança ChatGPT baseado em GPT-3.5 com <strong>RLHF</strong>. <em>100 milhões de usuários em 2 meses</em> — aplicativo de crescimento mais rápido da história. A IA sai do laboratório e vira conversa de família. A corrida começa.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">2023</span>
-          <h3>GPT-4, Claude, Llama, Gemini</h3>
-          <p>GPT-4 (mar) traz multimodalidade. Claude 2 (jul) leva o contexto a 100k tokens. Llama 2 (jul) abre o código da Meta. Gemini 1.0 (dez) entra nativo-multimodal do Google. <strong>Preços caem 90% em 12 meses.</strong> API vira commoditie.</p>
-        </div>
-
-        <div class="tl-item highlight">
-          <span class="tl-year">2024</span>
-          <h3>Era do raciocínio: OpenAI o1</h3>
-          <p>OpenAI lança o1 (set/2024): introduz <strong>inference-time compute scaling</strong>. O modelo gera chain-of-thought interno antes de responder. Em matemática e código complexo, supera GPT-4 sem ser maior. Reasoning vira categoria própria.</p>
-        </div>
-
-        <div class="tl-item highlight">
-          <span class="tl-year">NOV · 2024</span>
-          <h3>MCP — Model Context Protocol</h3>
-          <p>Anthropic lança o MCP: padrão aberto para conectar LLMs a ferramentas e dados. <em>"USB-C para IA."</em> Adotado em meses por OpenAI, Google DeepMind e a maioria dos frameworks de agentes. Ecossistema explode em 2025.</p>
-        </div>
-
-        <div class="tl-item">
-          <span class="tl-year">2025</span>
-          <h3>Agents everywhere</h3>
-          <p>DeepSeek-R1 (jan) — reasoning open-source. Claude Code (fev) — terminal agent da Anthropic. Operator, Computer Use, Agents SDK. Agents começam a executar <strong>workflows completos</strong>: navegação web, edição de código, automação de planilha.</p>
-        </div>
-
-        <div class="tl-item highlight">
-          <span class="tl-year">2026</span>
-          <h3>Microsoft Cowork e a era agentic</h3>
-          <p>Microsoft 365 Copilot <strong>Cowork</strong> atinge GA (jun/2026): agentes autônomos com Work IQ que executam tarefas de longa duração no ecossistema M365. Multi-agent orchestration vira commodity. Memória persistente entre sessões. IA deixa de ser ferramenta e vira colega de trabalho.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 2. TIPOS ============ -->
-  <section id="tipos">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 02</div>
-        <h2>Tipos de LLM</h2>
-        <p class="lead">Modelos diferentes para trabalhos diferentes. A escolha do tipo certo define custo, latência, qualidade e onde o modelo pode rodar.</p>
-      </div>
-
-      <div class="card-grid">
-
-        <div class="card">
-          <div class="card-icon">S</div>
-          <h3>SLM <span style="color: var(--text-dim); font-weight: 400; font-size: 0.85rem;">— Small Language Model</span></h3>
-          <p>Menos de 10B de parâmetros. Cabe em laptop, celular ou Raspberry Pi. Latência sub-segundo, custo por requisição próximo de zero.</p>
-          <div class="chips">
-            <span class="chip accent">Phi-3</span>
-            <span class="chip accent">Gemma 2B</span>
-            <span class="chip accent">Llama 3.2 1B/3B</span>
-            <span class="chip accent">Qwen2.5</span>
-            <span class="chip accent">Ministral</span>
-          </div>
-          <div class="meta">Uso típico: <span>edge devices, offline, privacidade</span></div>
-        </div>
-
-        <div class="card success">
-          <div class="card-icon">L</div>
-          <h3>LLM <span style="color: var(--text-dim); font-weight: 400; font-size: 0.85rem;">— Large Language Model</span></h3>
-          <p>10B a centenas de bilhões de parâmetros. Capacidade geral forte, multimodal, janelas de contexto longas. A maioria dos produtos comerciais roda nessa categoria.</p>
-          <div class="chips">
-            <span class="chip success">GPT-4o</span>
-            <span class="chip success">Claude 3.5/4</span>
-            <span class="chip success">Gemini 1.5/2.0</span>
-            <span class="chip success">Llama 3.1 70B</span>
-            <span class="chip success">Mistral Large</span>
-          </div>
-          <div class="meta">Uso típico: <span>produtos SaaS, APIs, chatbots</span></div>
-        </div>
-
-        <div class="card purple">
-          <div class="card-icon">F</div>
-          <h3>Frontier Model</h3>
-          <p>O topo da pirâmide. Treinados com dezenas de milhões de dólares de compute. Capacidade máxima em raciocínio, código, ciência, multimodalidade. Geralmente fechados e caros.</p>
-          <div class="chips">
-            <span class="chip purple">GPT-5</span>
-            <span class="chip purple">Claude 4 Opus</span>
-            <span class="chip purple">Gemini 2.5 Pro</span>
-            <span class="chip purple">o1 / o3</span>
-            <span class="chip purple">DeepSeek-V3</span>
-          </div>
-          <div class="meta">Uso típico: <span>pesquisa, problemas difíceis, agentes</span></div>
-        </div>
-
-        <div class="card warning">
-          <div class="card-icon">R</div>
-          <h3>Reasoning Model</h3>
-          <p>Modelos treinados (ou pós-treinados) para raciocinar passo a passo antes de responder. Adicionam tokens de pensamento interno que não aparecem ao usuário.</p>
-          <div class="chips">
-            <span class="chip warning">o1 · o3</span>
-            <span class="chip warning">DeepSeek-R1</span>
-            <span class="chip warning">Claude extended thinking</span>
-            <span class="chip warning">Gemini Thinking</span>
-          </div>
-          <div class="meta">Uso típico: <span>matemática, código complexo, planejamento</span></div>
-        </div>
-
-      </div>
-
-      <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Por pesos: aberto vs fechado</h3>
-      <div class="card-grid">
-        <div class="card">
-          <h3>Open weights</h3>
-          <p>Pesos disponíveis para download e self-host. Licenças variam: Apache 2.0 (Mistral), Llama Community (Meta), custom permissive (Qwen, DeepSeek). Permite auditoria, fine-tune e uso privado.</p>
-          <div class="chips">
-            <span class="chip">Llama</span>
-            <span class="chip">Mistral</span>
-            <span class="chip">Qwen</span>
-            <span class="chip">DeepSeek</span>
-            <span class="chip">Phi</span>
-            <span class="chip">Gemma</span>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Closed weights</h3>
-          <p>Acesso apenas via API. Pesos nunca são liberados. Modelo de negócio baseado em uso. Mais capacidade bruta no curto prazo; menos controle e privacidade.</p>
-          <div class="chips">
-            <span class="chip">GPT (OpenAI)</span>
-            <span class="chip">Claude (Anthropic)</span>
-            <span class="chip">Gemini (Google)</span>
-            <span class="chip">Grok (xAI)</span>
-          </div>
-        </div>
-      </div>
-
-      <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Por arquitetura</h3>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-icon">E</div>
-          <h3>Encoder-only</h3>
-          <p>Lê e representa texto, não gera. Usado para classificação, embeddings, busca semântica, NER. BERT e derivados.</p>
-          <div class="meta">Famílias: <span>BERT, RoBERTa, DeBERTa, E5, BGE</span></div>
-        </div>
-        <div class="card success">
-          <div class="card-icon">D</div>
-          <h3>Decoder-only</h3>
-          <p>Gera texto autoregressivamente. É a arquitetura dominante dos LLMs modernos. Tudo que responde com texto fluente está aqui.</p>
-          <div class="meta">Famílias: <span>GPT, Claude, Llama, Mistral, Qwen, Gemini</span></div>
-        </div>
-        <div class="card purple">
-          <div class="card-icon">ED</div>
-          <h3>Encoder-decoder</h3>
-          <p>Encoder lê a entrada, decoder gera a saída. Tradicionalmente forte em tradução e sumário. T5, BART e derivados modernos.</p>
-          <div class="meta">Famílias: <span>T5, FLAN-T5, BART, mT5</span></div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============ 3. THINKING ============ -->
-  <section id="thinking">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 03</div>
-        <h2>Thinking vs No-thinking</h2>
-        <p class="lead">A distinção mais importante em 2025-2026: a diferença entre um LLM que responde direto e um que pensa antes de responder.</p>
-      </div>
-
-      <div class="callout purple">
-        <p><strong>Regra geral:</strong> tarefas que um humano resolveria "de cabeça" (chat, sumário, e-mail) não precisam de thinking. Tarefas que exigem planejamento, verificação ou múltiplas etapas (matemática, código complexo, estratégia) se beneficiam enormemente do thinking.</p>
-      </div>
-
-      <div class="compare">
-        <div class="compare-col no-thinking">
-          <h3>No-thinking <span class="badge">direto</span></h3>
-          <p>O modelo recebe o prompt e gera a resposta imediatamente, token a token. Padrão da maioria dos modelos até 2024. Ótimo para tarefas onde o caminho até a resposta é curto e o modelo tem confiança alta.</p>
-          <ul>
-            <li>Latência: <strong>100ms – 2s</strong></li>
-            <li>Custo: <strong>$0.0001 – $0.01</strong> por request</li>
-            <li>Throughput: alto, paralelizável</li>
-            <li>Boas para: chat, Q&amp;A, sumarização, tradução, código simples</li>
-          </ul>
-          <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Modelos: GPT-4o · Claude 3.5/4 Sonnet · Gemini 1.5/2.0 Flash · Llama 3.1</p>
-        </div>
-
-        <div class="compare-col thinking">
-          <h3>Thinking <span class="badge">raciocínio</span></h3>
-          <p>O modelo gasta tokens internos (chain-of-thought) <strong>antes</strong> de produzir a resposta visível. Pensa, verifica, planeja, refaz. Em problemas difíceis a qualidade sobe muito — mas a latência e o custo explodem.</p>
-          <ul>
-            <li>Latência: <strong>5s – 60s+</strong> (às vezes minutos)</li>
-            <li>Custo: <strong>$0.01 – $1+</strong> por request</li>
-            <li>Throughput: baixo, sequencial</li>
-            <li>Boas para: matemática, código complexo, planejamento, pesquisa, agentes</li>
-          </ul>
-          <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">Modelos: o1 · o3 · DeepSeek-R1 · Claude 4 Opus extended thinking · Gemini Thinking</p>
-        </div>
-      </div>
-
-      <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Como funciona o thinking</h3>
-      <p>O modelo gera uma sequência de tokens "privados" entre o prompt e a resposta final. Esses tokens não são mostrados ao usuário, mas são contabilizados no custo. O modelo pode:</p>
-      <ul>
-        <li><strong>Decompor</strong> o problema em sub-problemas</li>
-        <li><strong>Tentar</strong> uma abordagem, verificar, refazer</li>
-        <li><strong>Criticar</strong> a própria resposta antes de finalizar</li>
-        <li><strong>Ramificar</strong> e comparar caminhos alternativos (em alguns modelos)</li>
-      </ul>
-
-      <div class="callout">
-        <p><strong>Inference-time compute scaling:</strong> a ideia de que mais "pensamento" (mais tokens de raciocínio) leva a respostas melhores. Foi o insight por trás do o1 e mudou a forma como pensamos sobre scaling — antes era só treino; agora também é inferência.</p>
-      </div>
-
-      <h3 style="margin-top: 3rem; margin-bottom: 1rem;">Quando usar cada</h3>
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th>Cenário</th>
-            <th>Recomendação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Chat de produto / atendimento</td>
-            <td>No-thinking — latência importa mais que perfeição</td>
-          </tr>
-          <tr>
-            <td>Sumarizar um documento</td>
-            <td>No-thinking — tarefa de extração</td>
-          </tr>
-          <tr>
-            <td>Resolver equação simbólica</td>
-            <td>Thinking — precisa planejar passos</td>
-          </tr>
-          <tr>
-            <td>Gerar código de produção</td>
-            <td>Thinking — vale a pena pensar antes de escrever</td>
-          </tr>
-          <tr>
-            <td>Planejar viagem multi-cidade</td>
-            <td>Thinking — várias restrições interagem</td>
-          </tr>
-          <tr>
-            <td>Classificar sentimento</td>
-            <td>No-thinking — tarefa simples e barata</td>
-          </tr>
-          <tr>
-            <td>Pesquisa jurídica com precedentes</td>
-            <td>Thinking — raciocínio encadeado é crítico</td>
-          </tr>
-          <tr>
-            <td>Agente autônomo multi-step</td>
-            <td>Thinking — verificação constante</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="callout success mt-2">
-        <p><strong>Padrão recomendado em produção:</strong> tente primeiro com modelo no-thinking (rápido e barato). Se a resposta for insuficiente, escale para thinking. <em>Cascata</em>: thinking só quando necessário.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 4. FRAMEWORKS ============ -->
-  <section id="frameworks">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 04</div>
-        <h2>Frameworks: Chat, Agent, Harness</h2>
-        <p class="lead">Três camadas conceituais que confundem muita gente. São padrões diferentes de uso, com limites e propósitos próprios.</p>
-      </div>
-
-      <div class="framework-stack">
-
-        <div class="framework-row">
-          <div class="framework-label">Chat</div>
-          <div class="framework-content">
-            <h3>Interface conversacional</h3>
-            <p>Você pergunta, o modelo responde. Stateless (cada mensagem é independente, sem memória de longo prazo além do contexto da conversa). O foco é <strong>UX conversacional</strong> — digitar, ler, refinar.</p>
-            <p><strong>Características:</strong> baixa latência, alta QPS, sem ferramentas, sem memória persistente, sem objetivo a longo prazo.</p>
-            <p class="examples">Exemplos: <strong>ChatGPT</strong>, <strong>Claude.ai</strong>, <strong>Gemini</strong>, <strong>Copilot Chat</strong>, <strong>Poe</strong>, <strong>LMSYS Chatbot Arena</strong></p>
-          </div>
-        </div>
-
-        <div class="framework-row">
-          <div class="framework-label">Agent</div>
-          <div class="framework-content">
-            <h3>Execução autônoma de tarefas</h3>
-            <p>LLM + loop + ferramentas + memória + objetivo. O agente recebe uma tarefa, planeja, executa passos, observa resultados e itera até entregar um resultado final. O foco é <strong>completar uma tarefa</strong>, não conversar.</p>
-            <p><strong>Características:</strong> loop de tool use, memória de trabalho, capacidade de replanejar, observabilidade de cada passo, tratamento de erro.</p>
-            <p class="examples">Exemplos: <strong>OpenAI Agents SDK</strong>, <strong>Anthropic Computer Use</strong>, <strong>Operator</strong>, <strong>Manus</strong>, <strong>Devin</strong>, <strong>AutoGPT</strong>, <strong>Browser Use</strong></p>
-          </div>
-        </div>
-
-        <div class="framework-row">
-          <div class="framework-label">Harness</div>
-          <div class="framework-content">
-            <h3>A camada que torna o modelo útil no dia a dia</h3>
-            <p>Software que envolve o LLM dando capacidades <strong>persistentes</strong>: integração com IDE, sistema de arquivos, terminal, calendário, e-mail, codebase. É a "alavanca" que transforma um modelo genérico em ferramenta produtiva para um contexto específico.</p>
-            <p><strong>Características:</strong> UX específica de domínio, integração profunda com sistema operacional/aplicações, permissões e segurança, human-in-the-loop.</p>
-            <p class="examples">Exemplos: <strong>Claude Code</strong>, <strong>GitHub Copilot</strong>, <strong>Microsoft 365 Copilot</strong>, <strong>Microsoft Cowork</strong>, <strong>Cursor</strong>, <strong>Cline</strong>, <strong>Continue</strong></p>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="callout">
-        <p><strong>Como se relacionam:</strong> o <em>chat</em> é a UI. O <em>agent</em> é o padrão de execução. O <em>harness</em> é o produto que você usa todo dia.</p>
-        <p>Um harness pode <em>conter</em> agentes. Um agente pode <em>ter</em> uma interface de chat. Mas conceitualmente são camadas diferentes com objetivos diferentes.</p>
-      </div>
-
-      <div class="callout warning">
-        <p><strong>Confusão comum:</strong> "Copilot" e "Cowork" são da Microsoft, mas <em>GitHub Copilot</em> é um harness de desenvolvimento (IDE), enquanto <em>Microsoft 365 Copilot</em> é um harness de produtividade (Office), e <em>Microsoft Cowork</em> é um agente autônomo que trabalha sobre o M365. Nomes parecidos, produtos diferentes.</p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============ 5. TOOLS ============ -->
-  <section id="tools">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 05</div>
-        <h2>Ferramentas (Tools)</h2>
-        <p class="lead">LLMs são, no fundo, máquinas de texto. Tools dão "mãos" — acesso estruturado ao mundo externo. Sem tools, todo agente seria só um chatbot glorificado.</p>
-      </div>
-
-      <h3>Conceitos fundamentais</h3>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-icon">1</div>
-          <h3>Function calling</h3>
-          <p>O modelo recebe um schema de funções disponíveis (nome, descrição, parâmetros JSON). Quando decide que uma função resolve a tarefa, retorna um objeto estruturado com o nome da função e os argumentos. <em>Você executa a função do seu lado e devolve o resultado.</em></p>
-          <div class="meta">Providers: <span>OpenAI · Anthropic · Google · Cohere · Mistral</span></div>
-        </div>
-        <div class="card purple">
-          <div class="card-icon">2</div>
-          <h3>Structured output</h3>
-          <p>Garante que a saída do modelo segue um schema (JSON Schema, Pydantic, Zod, etc.). Usa constrained decoding ou grammar-guided generation para que o modelo <em>não consiga</em> produzir JSON inválido.</p>
-          <div class="meta">Implementações: <span>JSON mode · tool_choice · grammar · guidance · outlines</span></div>
-        </div>
-        <div class="card success">
-          <div class="card-icon">3</div>
-          <h3>Tool use loop</h3>
-          <p>O ciclo clássico de um agente: modelo chama tool → recebe resultado → decide próximo passo → chama outra tool → ... → finalmente entrega resposta final. O harness implementa esse loop com limites (max steps, timeout, retry).</p>
-          <div class="meta">Limites típicos: <span>5–25 steps · timeout 30–120s · retry com backoff</span></div>
-        </div>
-      </div>
-
-      <h3 style="margin-top: 3rem;">Exemplo: function calling</h3>
-      <p>O modelo recebe tools disponíveis e decide quais usar:</p>
-      <pre><code>// 1. Definição da tool (enviada ao modelo)
-{
-  "type": "function",
-  "function": {
-    "name": "get_weather",
-    "description": "Retorna o clima atual de uma cidade",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "city": { "type": "string", "description": "Nome da cidade" },
-        "unit": { "type": "string", "enum": ["celsius", "fahrenheit"] }
-      },
-      "required": ["city"]
-    }
-  }
-}
-
-// 2. Resposta do modelo (decide chamar a tool)
-{
-  "tool_calls": [{
-    "name": "get_weather",
-    "arguments": { "city": "São Paulo", "unit": "celsius" }
-  }]
-}
-
-// 3. Você executa e devolve o resultado
-{ "tool_call_id": "...", "content": "{\"temp\": 18, \"sky\": \"nublado\"}" }
-
-// 4. Modelo usa o resultado e responde
-"Em São Paulo agora está 18°C com céu nublado."</code></pre>
-
-      <h3 style="margin-top: 3rem;">Padrão ReAct</h3>
-      <p>O padrão clássico de raciocínio + ação, formalizado em 2022 por Yao et al.:</p>
-      <div class="diagram"><span class="dim">Thought 1:</span> O usuário quer saber o clima de SP.
-<span class="accent">Action 1:</span>  get_weather(city="São Paulo")
-<span class="success">Observation 1:</span> {"temp": 18, "sky": "nublado"}
-
-<span class="dim">Thought 2:</span> Tenho a informação. Formato a resposta.
-<span class="accent">Action 2:</span>  finish(answer="Em SP agora está 18°C, nublado.")
-<span class="success">Observation 2:</span> Task complete.</div>
-
-      <h3 style="margin-top: 3rem;">Tipos comuns de tools</h3>
-      <div class="card-grid">
-        <div class="card">
-          <h4>Web search</h4>
-          <p>Busca em tempo real na web. Implementado por Tavily, Brave Search, SerpAPI, Bing.</p>
-        </div>
-        <div class="card success">
-          <h4>Code execution</h4>
-          <p>Sandbox Python/JavaScript. Permite o modelo rodar código, instalar deps, gerar gráficos.</p>
-        </div>
-        <div class="card purple">
-          <h4>File system</h4>
-          <p>Leitura, escrita, busca. Fundamental em coding agents (Claude Code, Cline).</p>
-        </div>
-        <div class="card warning">
-          <h4>Database queries</h4>
-          <p>SQL ou vector search. Text-to-SQL é o subcampo clássico. RAG também conta.</p>
-        </div>
-        <div class="card pink">
-          <h4>API calls</h4>
-          <p>REST/GraphQL genéricos. Stripe, GitHub, Slack, Gmail, Calendar — qualquer coisa.</p>
-        </div>
-        <div class="card">
-          <h4>Browser automation</h4>
-          <p>Playwright, Puppeteer. Computer Use da Anthropic é o estado da arte.</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============ 6. MCP ============ -->
-  <section id="mcp">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 06</div>
-        <h2>MCP — Model Context Protocol</h2>
-        <p class="lead">O padrão aberto criado pela Anthropic em novembro de 2024 que se tornou a espinha dorsal da integração entre LLMs e o mundo externo. <em>USB-C para IA.</em></p>
-      </div>
-
-      <h3>O que é</h3>
-      <p>MCP é um protocolo aberto que define como um modelo de linguagem se conecta a <strong>ferramentas, dados e prompts</strong> de forma padronizada. Antes dele, cada integração era ad-hoc — você escrevia código específico para cada combinação de LLM + ferramenta. Com MCP, qualquer <em>host</em> (Claude Desktop, Cursor, IDE X) fala com qualquer <em>server</em> (GitHub, Postgres, Google Drive) sem retrabalho.</p>
-
-      <div class="callout">
-        <p><strong>Analogia:</strong> assim como o USB-C padronizou a conexão física entre dispositivos e acessórios, o MCP padroniza a conexão lógica entre LLMs e ferramentas. Um cabo, várias fontes de dados e ações.</p>
-      </div>
-
-      <h3 style="margin-top: 3rem;">Arquitetura</h3>
-      <div class="diagram"><span class="accent">[ MCP Host ]</span>     ← Claude Desktop, Cursor, Continue, sua IDE
-      <span class="dim">        │</span>
-      <span class="dim">        │</span> <span class="purple">JSON-RPC</span>
-      <span class="dim">        ▼</span>
-<span class="purple">[ MCP Client ]</span>     ← gerencia 1..N conexões
-      <span class="dim">        │</span>
-      <span class="dim">        ├──▶</span> <span class="success">[ MCP Server A ]</span>  ← GitHub (PRs, issues, files)
-      <span class="dim">        │</span>
-      <span class="dim">        ├──▶</span> <span class="success">[ MCP Server B ]</span>  ← Postgres (queries, schema)
-      <span class="dim">        │</span>
-      <span class="dim">        └──▶</span> <span class="success">[ MCP Server C ]</span>  ← Google Drive (search, read)
-
-<span class="dim">Transport: stdio · HTTP+SSE · streamable HTTP</span></div>
-
-      <h3 style="margin-top: 2rem;">Componentes</h3>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-icon">H</div>
-          <h3>Host</h3>
-          <p>App que conversa com o usuário. Embuti o(s) client(s) MCP. Decide quando e como chamar cada server.</p>
-          <div class="meta">Exemplos: <span>Claude Desktop · Cursor · Continue · Cline · Zed</span></div>
-        </div>
-        <div class="card purple">
-          <div class="card-icon">C</div>
-          <h3>Client</h3>
-          <p>Componente dentro do host que gerencia a conexão com um server específico. Implementa o protocolo JSON-RPC.</p>
-          <div class="meta">1 host → <span>N clients → N servers</span></div>
-        </div>
-        <div class="card success">
-          <div class="card-icon">S</div>
-          <h3>Server</h3>
-          <p>Processo (local ou remoto) que expõe capabilities ao modelo. Stateless ou stateful, conforme a necessidade.</p>
-          <div class="meta">Catálogo: <span>modelcontextprotocol/servers (oficial) + centenas da comunidade</span></div>
-        </div>
-      </div>
-
-      <h3 style="margin-top: 3rem;">Capabilities</h3>
-      <p>Um server MCP pode expor três tipos de capability:</p>
-      <table class="compare-table">
-        <thead>
-          <tr><th>Capability</th><th>O que é</th><th>Exemplo</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Tools</strong></td>
-            <td>Funções que o modelo pode chamar (similar a function calling)</td>
-            <td><code>create_issue()</code>, <code>run_query()</code>, <code>send_email()</code></td>
-          </tr>
-          <tr>
-            <td><strong>Resources</strong></td>
-            <td>Dados que o modelo pode ler (similar a arquivos anexados)</td>
-            <td><code>file://repo/src/auth.ts</code>, <code>db://users/schema</code></td>
-          </tr>
-          <tr>
-            <td><strong>Prompts</strong></td>
-            <td>Templates reutilizáveis que o usuário pode invocar</td>
-            <td><code>/review-pr</code>, <code>/summarize-thread</code></td>
-          </tr>
-          <tr>
-            <td><strong>Sampling</strong></td>
-            <td>Server pede ao LLM do host para gerar texto (server → LLM)</td>
-            <td>Análise que precisa de outro modelo no meio do fluxo</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3 style="margin-top: 3rem;">Por que importa</h3>
-      <ul>
-        <li><strong>Antes do MCP:</strong> cada ferramenta precisava de integração ad-hoc por host. 10 hosts × 50 ferramentas = 500 integrações.</li>
-        <li><strong>Com MCP:</strong> uma implementação por ferramenta serve para todos os hosts. 50 tools, escritas uma vez.</li>
-        <li><strong>Adoção rápida:</strong> OpenAI, Google DeepMind, Replit, Sourcegraph, Zed, Block, Apollo — todos anunciaram suporte em 2025.</li>
-        <li><strong>Ecossistema crescente:</strong> servers oficiais para GitHub, Slack, Postgres, Google Drive, Puppeteer, Filesystem. Centenas de servers da comunidade.</li>
-        <li><strong>Open standard:</strong> governança aberta, sem vendor lock-in.</li>
-      </ul>
-
-      <div class="callout success mt-2">
-        <p><strong>Em 2026, MCP é o padrão de facto</strong> para conectar LLMs a ferramentas. Não é o único (OpenAI tem seu próprio tool spec, Anthropic tem tool use nativo), mas é o que se consolidou como camada de interoperabilidade cross-provider.</p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============ 7. HARNESS ============ -->
-  <section id="harness">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-number">// 07</div>
-        <h2>Harness — A camada que torna o modelo útil</h2>
-        <p class="lead">O modelo sozinho é só um completador de texto. O harness dá a ele mãos, olhos, contexto persistente e uma UX específica para um caso de uso real.</p>
-      </div>
-
-      <div class="callout">
-        <p><strong>O que define um harness:</strong> integração profunda com sistema operacional ou aplicações, contexto persistente (arquivos, codebase, histórico), permissões e segurança, UX desenhada para o domínio, e um modelo de interação que vai além do chat.</p>
-      </div>
-
-      <div class="card-grid">
-
-        <div class="card success">
-          <div class="card-icon">⌘</div>
-          <h3>Claude Code</h3>
-          <p><strong>Anthropic · fev/2025</strong></p>
-          <p>Terminal-first agent. Lê e edita arquivos, roda comandos, busca na web, gerencia git. Suporta skills, sub-agents e MCP nativamente. Filosofia: mínima abstração, máximo controle.</p>
-          <ul style="font-size: 0.9rem;">
-            <li>Modelo: Claude 4 Sonnet / Opus</li>
-            <li>Interface: CLI</li>
-            <li>Skills, sub-agents, MCP, hooks</li>
-            <li>Ideal para: desenvolvimento, devops, scripting</li>
-          </ul>
-          <div class="meta">Comando: <span>claude</span> (instalado via npm)</div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon">⌥</div>
-          <h3>GitHub Copilot</h3>
-          <p><strong>GitHub/Microsoft · 2021+</strong></p>
-          <p>Harness dentro do editor (VS Code, JetBrains, Visual Studio, Neovim). Começou como autocomplete; virou chat e depois agent mode (ago/2024). Workspace agent cria PRs, fecha issues, faz review.</p>
-          <ul style="font-size: 0.9rem;">
-            <li>Modelos: GPT-4o, Claude 3.5/4, Gemini</li>
-            <li>Interface: IDE + chat + agent</li>
-            <li>Adoção: 1.8M+ usuários pagos, 77k+ organizações</li>
-            <li>Ideal para: desenvolvimento integrado com GitHub</li>
-          </ul>
-          <div class="meta">Comando: <span>extensão + Copilot Chat</span></div>
-        </div>
-
-        <div class="card purple">
-          <div class="card-icon">⊞</div>
-          <h3>Microsoft 365 Copilot</h3>
-          <p><strong>Microsoft · 2023+</strong></p>
-          <p>Harness dentro do ecossistema Microsoft. Integração profunda com Word, Excel, PowerPoint, Outlook, Teams, OneNote. Copilot Studio permite criar copilots customizados para fluxos específicos da empresa.</p>
-          <ul style="font-size: 0.9rem;">
-            <li>Modelo: GPT-4 class (com opções)</li>
-            <li>Interface: side-panel em cada app M365</li>
-            <li>Agents específicos: Excel Analyst, PowerPoint Designer</li>
-            <li>Ideal para: produtividade office corporativa</li>
-          </ul>
-          <div class="meta">Requer licença: <span>Microsoft 365 Copilot</span></div>
-        </div>
-
-        <div class="card pink">
-          <div class="card-icon">⊕</div>
-          <h3>Microsoft Cowork <span style="background: var(--accent-glow); color: var(--accent); font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; font-family: 'JetBrains Mono', monospace; vertical-align: middle;">RECENTE · GA JUN/2026</span></h3>
-          <p><strong>Microsoft · GA em 16/06/2026</strong></p>
-          <p>Agente autônomo que vai além do chat: recebe um objetivo, decompõe em passos, executa usando as tools do Microsoft 365 e entrega o resultado final. Construído sobre o <strong>Work IQ</strong> — camada de inteligência que lê e-mails, reuniões, arquivos e dados organizacionais para dar contexto às ações.</p>
-          <ul style="font-size: 0.9rem;">
-            <li>Modelos: Claude Opus/Sonnet, GPT 5.5, Sonnet+Opus Advisor pairing</li>
-            <li>Interface: dashboard visual com progresso multi-step</li>
-            <li>Capabilities: geração de imagem, local browser use, custom skills/plugins</li>
-            <li>Aprovações: pausa antes de ações sensíveis (e-mail, calendário, share)</li>
-            <li>Ideal para: workflows longos, pesquisa, planejamento, automação de processos</li>
-          </ul>
-          <div class="meta">Casos de uso: <span>"prepara brief da reunião de amanhã" · "analisa pipeline estagnado" · "compara 4000 arquivos entre versões"</span></div>
-        </div>
-
-      </div>
-
-      <h3 style="margin-top: 3rem;">Comparativo rápido</h3>
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th>Harness</th>
-            <th>Vendor</th>
-            <th>Domínio</th>
-            <th>Modelo principal</th>
-            <th>Tipo</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Claude Code</strong></td>
-            <td>Anthropic</td>
-            <td>Terminal / dev</td>
-            <td>Claude 4</td>
-            <td>Agent CLI</td>
-          </tr>
-          <tr>
-            <td><strong>GitHub Copilot</strong></td>
-            <td>GitHub</td>
-            <td>IDE</td>
-            <td>Multi-provider</td>
-            <td>IDE agent</td>
-          </tr>
-          <tr>
-            <td><strong>MS 365 Copilot</strong></td>
-            <td>Microsoft</td>
-            <td>Office</td>
-            <td>GPT-4 class</td>
-            <td>Productivity harness</td>
-          </tr>
-          <tr>
-            <td><strong>MS Cowork</strong></td>
-            <td>Microsoft</td>
-            <td>Office autônomo</td>
-            <td>Claude + GPT</td>
-            <td>Autonomous agent</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="callout purple mt-2">
-        <p><strong>Tendência 2026:</strong> a fronteira entre <em>agent</em> e <em>harness</em> está se dissolvendo. Harnesses modernos (Claude Code, MS Cowork) <em>são</em> agents — só que com UX, integrações e governança de produto. A diferença que importa é: o harness é o que você <em>compra/usa</em>, o agent é o <em>padrão arquitetural</em> por trás.</p>
-      </div>
-
-    </div>
-  </section>
-
-  </main>
-
-  <!-- ============ FOOTER ============ -->
-  <footer>
-    <div class="container">
-      <p><strong style="color: var(--text-primary);">LLMs: Da Perceptron aos Agentes</strong></p>
-      <p>Material de apresentação · 2026 · PT-BR</p>
-      <p>Construído como single-file HTML · CSS/JS inline · Sem dependências em runtime</p>
-      <div class="footer-meta">
-        <p>História · Tipos · Thinking · Frameworks · Tools · MCP · Harness</p>
-        <p style="margin-top: 0.75rem;">7 seções · ~80 anos de evolução · 1 arquivo</p>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ============ JS ============ -->
+  <!-- ============ SCRIPT ============ -->
   <script>
-    // Active nav highlight on scroll
-    (function() {
-      const sections = document.querySelectorAll('section[id], header[id]');
-      const navLinks = document.querySelectorAll('.topnav a');
+  (function() {
+    'use strict';
 
-      function updateActive() {
-        const scrollY = window.scrollY + 120;
-        let current = '';
-        sections.forEach(s => {
-          if (s.offsetTop <= scrollY) current = s.id;
-        });
-        navLinks.forEach(a => {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-        });
+    // ============================================================
+    // Section config — positions match canvas layout (6000x3000)
+    // ============================================================
+    const SECTIONS = [
+      { id: 'capa',       label: 'Capa' },
+      { id: 'historia',   label: 'História' },
+      { id: 'tipos',      label: 'Tipos' },
+      { id: 'thinking',   label: 'Thinking' },
+      { id: 'frameworks', label: 'Frameworks' },
+      { id: 'tools',      label: 'Tools' },
+      { id: 'mcp',        label: 'MCP' },
+      { id: 'harness',    label: 'Harness' },
+    ];
+
+    const TOTAL = SECTIONS.length;
+    const NODE_ORDER = SECTIONS.map(s => s.id);
+
+    // ============================================================
+    // DOM
+    // ============================================================
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('canvas');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const navToggle = document.getElementById('navToggle');
+    const topnav = document.getElementById('topnav');
+    const navList = document.getElementById('navList');
+    const progress = document.getElementById('progress');
+    const loader = document.getElementById('loader');
+
+    // Section DOM nodes
+    const sectionEls = {};
+    document.querySelectorAll('.section').forEach(el => {
+      sectionEls[el.dataset.id] = el;
+    });
+
+    // Nav links
+    const navLinks = Array.from(navList.querySelectorAll('a'));
+
+    // ============================================================
+    // State
+    // ============================================================
+    const state = {
+      currentId: 'capa',
+      scale: 1,
+      tx: 0,
+      ty: 0,
+      isAnimating: false,
+    };
+
+    // ============================================================
+    // Math
+    // ============================================================
+    function getViewportSize() {
+      return { w: window.innerWidth, h: window.innerHeight };
+    }
+
+    function getSectionRect(id) {
+      const el = sectionEls[id];
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      // canvas's transform-origin is (0,0), so to get canvas-coords,
+      // we apply the inverse of the current transform.
+      // But for SECTION position we can read computed left/top from inline style.
+      const left = parseFloat(el.style.left);
+      const top = parseFloat(el.style.top);
+      const w = parseFloat(el.style.width);
+      const h = parseFloat(el.style.height);
+      return { cx: left + w/2, cy: top + h/2, w, h };
+    }
+
+    /**
+     * Compute scale + translate so that a target point in canvas-coords
+     * lands at the viewport center, while the box of given size fills as much
+     * of the viewport as possible (with padding).
+     */
+    function computeFit(targetCx, targetCy, targetW, targetH, padding = 120) {
+      const { w: vw, h: vh } = getViewportSize();
+      const availW = Math.max(200, vw - padding * 2);
+      const availH = Math.max(200, vh - padding * 2);
+      const scale = Math.min(availW / targetW, availH / targetH);
+      // transform: translate(tx, ty) scale(s)
+      // canvas point (targetCx, targetCy) → canvas-space (targetCx * scale + tx, targetCy * scale + ty)
+      // we want this to land at (vw/2, vh/2)
+      const tx = vw / 2 - targetCx * scale;
+      const ty = vh / 2 - targetCy * scale;
+      return { scale, tx, ty };
+    }
+
+    function computeOverviewFit() {
+      const { w: vw, h: vh } = getViewportSize();
+      const canvasW = 6000;
+      const canvasH = 3000;
+      const padding = 80;
+      const scale = Math.min(
+        (vw - padding * 2) / canvasW,
+        (vh - padding * 2) / canvasH
+      );
+      const tx = vw / 2 - (canvasW / 2) * scale;
+      const ty = vh / 2 - (canvasH / 2) * scale;
+      return { scale, tx, ty };
+    }
+
+    function applyTransform(scale, tx, ty) {
+      canvas.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      state.scale = scale;
+      state.tx = tx;
+      state.ty = ty;
+    }
+
+    function focusSection(id, { animate = true } = {}) {
+      if (!sectionEls[id]) return;
+      const rect = getSectionRect(id);
+      if (!rect) return;
+      const fit = computeFit(rect.cx, rect.cy, rect.w, rect.h);
+      transitionTo(fit, animate);
+      setCurrentSection(id);
+    }
+
+    function showOverview({ animate = true } = {}) {
+      const fit = computeOverviewFit();
+      transitionTo(fit, animate);
+      setCurrentSection(null);
+    }
+
+    function transitionTo({ scale, tx, ty }, animate) {
+      if (animate) {
+        state.isAnimating = true;
+        // Use the existing CSS transition on .canvas
+        // After the transition, mark unbusy
+        const onEnd = () => {
+          state.isAnimating = false;
+          canvas.removeEventListener('transitionend', onEnd);
+        };
+        canvas.addEventListener('transitionend', onEnd);
       }
+      applyTransform(scale, tx, ty);
+    }
 
-      let ticking = false;
-      window.addEventListener('scroll', () => {
-        if (!ticking) {
-          requestAnimationFrame(() => { updateActive(); ticking = false; });
-          ticking = true;
+    function setCurrentSection(id) {
+      state.currentId = id;
+
+      // Highlight in nav
+      navLinks.forEach(a => a.classList.remove('active', 'passed'));
+
+      let activeIdx = -1;
+      if (id !== null) {
+        activeIdx = NODE_ORDER.indexOf(id);
+      }
+      NODE_ORDER.forEach((sid, i) => {
+        if (id !== null && i < activeIdx) {
+          const link = navLinks.find(a => a.dataset.id === sid);
+          if (link) link.classList.add('passed');
         }
       });
-      updateActive();
-    })();
+      if (id !== null) {
+        const link = navLinks.find(a => a.dataset.id === id);
+        if (link) link.classList.add('active');
+      }
 
-    // Smooth fade-in for timeline items on first scroll into view
-    (function() {
-      const items = document.querySelectorAll('.tl-item, .card, .compare-col, .callout');
-      items.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(12px)';
-        el.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+      // Dim non-focused section frames when one is focused; restore when overview
+      Object.entries(sectionEls).forEach(([sid, el]) => {
+        el.classList.remove('focused', 'dimmed');
+        if (id !== null && sid !== id) {
+          el.classList.add('dimmed');
+        } else if (id !== null && sid === id) {
+          el.classList.add('focused');
+        }
       });
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      // Update progress + buttons
+      if (id === null) {
+        progress.textContent = '8 / 8 · overview';
+        prevBtn.disabled = true;
+        nextBtn.disabled = false;
+      } else {
+        const idx = NODE_ORDER.indexOf(id);
+        progress.textContent = `${idx + 1} / ${TOTAL}`;
+        prevBtn.disabled = idx === 0;
+        nextBtn.disabled = idx === TOTAL - 1;
+      }
+    }
 
-      items.forEach(el => observer.observe(el));
-    })();
+    function nextSection(direction) {
+      // direction = +1 or -1
+      const idx = NODE_ORDER.indexOf(state.currentId);
+      if (idx === -1) {
+        // currently on overview — go to first
+        if (direction > 0) focusSection(NODE_ORDER[0]);
+        return;
+      }
+      const newIdx = idx + direction;
+      if (newIdx < 0) {
+        showOverview();
+      } else if (newIdx >= TOTAL) {
+        // already at last — go to overview
+        showOverview();
+      } else {
+        focusSection(NODE_ORDER[newIdx]);
+      }
+    }
+
+    // ============================================================
+    // Drag to pan (when zoomed in, allow panning inside canvas)
+    // ============================================================
+    let drag = { active: false, startX: 0, startY: 0, startTx: 0, startTy: 0 };
+    canvas.addEventListener('pointerdown', (e) => {
+      // Only allow drag when focused on a section (zoomed in), not on overview
+      if (state.currentId === null) return;
+      drag.active = true;
+      drag.startX = e.clientX;
+      drag.startY = e.clientY;
+      drag.startTx = state.tx;
+      drag.startTy = state.ty;
+      canvas.classList.add('dragging');
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!drag.active) return;
+      const dx = e.clientX - drag.startX;
+      const dy = e.clientY - drag.startY;
+      applyTransform(state.scale, drag.startTx + dx, drag.startTy + dy);
+    });
+    canvas.addEventListener('pointerup', (e) => {
+      if (!drag.active) return;
+      drag.active = false;
+      canvas.classList.remove('dragging');
+      // Snap back to focused section if drag was minor
+      const dx = Math.abs(e.clientX - drag.startX);
+      const dy = Math.abs(e.clientY - drag.startY);
+      if (dx < 4 && dy < 4 && state.currentId !== null) {
+        // It was a click — already handled by section click handler below
+      } else {
+        // Snap back to focused section
+        focusSection(state.currentId, { animate: true });
+      }
+    });
+
+    // ============================================================
+    // Click on section → focus it
+    // ============================================================
+    Object.entries(sectionEls).forEach(([id, el]) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.currentId === id) {
+          // Already focused — go to overview
+          showOverview();
+        } else {
+          focusSection(id);
+        }
+      });
+    });
+
+    // Click on viewport background → overview
+    viewport.addEventListener('click', (e) => {
+      if (e.target === viewport) {
+        showOverview();
+      }
+    });
+
+    // ============================================================
+    // Buttons + nav links
+    // ============================================================
+    overviewBtn.addEventListener('click', () => showOverview());
+    prevBtn.addEventListener('click', () => nextSection(-1));
+    nextBtn.addEventListener('click', () => nextSection(+1));
+    navLinks.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.dataset.id;
+        if (state.currentId === id) {
+          showOverview();
+        } else {
+          focusSection(id);
+        }
+      });
+    });
+    navToggle.addEventListener('click', () => {
+      const collapsed = topnav.classList.toggle('collapsed');
+      navToggle.classList.toggle('opacity-0', collapsed);
+    });
+
+    // ============================================================
+    // Keyboard
+    // ============================================================
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); nextSection(+1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); nextSection(-1); }
+      else if (e.key === 'Escape') { e.preventDefault(); showOverview(); }
+      else if (e.key === 'Home') { e.preventDefault(); showOverview(); }
+      else if (e.key === 'End') { e.preventDefault(); focusSection(NODE_ORDER[TOTAL - 1]); }
+    });
+
+    // ============================================================
+    // Resize — refit current view
+    // ============================================================
+    let resizeT = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(() => {
+        if (state.currentId === null) {
+          showOverview({ animate: false });
+        } else {
+          focusSection(state.currentId, { animate: false });
+        }
+      }, 80);
+    });
+
+    // ============================================================
+    // Initial render
+    // ============================================================
+    function init() {
+      // Hide loader
+      setTimeout(() => loader.classList.add('hidden'), 200);
+
+      // Wait for fonts to load (or fallback to fonts after ~600ms)
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          showOverview({ animate: false });
+        });
+      } else {
+        setTimeout(() => showOverview({ animate: false }), 200);
+      }
+      // Fallback: always show overview after 800ms even if fonts.ready hangs
+      setTimeout(() => showOverview({ animate: false }), 800);
+    }
+    init();
+  })();
   </script>
 </body>
 </html>

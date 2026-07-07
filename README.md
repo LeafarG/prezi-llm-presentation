@@ -2,6 +2,12 @@
 
 Site estático em PT-BR cobrindo a história, os tipos e o ecossistema atual dos Large Language Models.
 
+> **Variantes:**
+> - `main` — apresentação **linear** (scroll vertical, hero + 7 seções).
+> - `feat/prezi-style` — apresentação **estilo Prezi** (canvas zoomável, navegação espacial por seções espalhadas num canvas 6000×3000).
+>
+> A `main` é a versão canônica; a branch Prezi é um preview paralelo.
+
 ## Rodar local
 
 Basta abrir o arquivo no navegador:
