@@ -840,6 +840,8 @@
     .compare-col li { margin-bottom: 0.3rem; }
 
     .framework-stack { display: flex; flex-direction: column; gap: 0.85rem; }
+    .frameworks-body { position: relative; }
+    .frameworks-lead { font-size: 0.92rem; margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.5; }
     .framework-row {
       display: grid;
       grid-template-columns: 130px 1fr;
@@ -849,7 +851,30 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       align-items: center;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
     }
+    .framework-row:hover {
+      transform: translateX(4px);
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+    }
+    .framework-row.selected {
+      border-color: var(--accent);
+      background: rgba(96,165,250,0.08);
+    }
+    .framework-detail {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .framework-detail.active { opacity: 1; pointer-events: auto; }
+    .framework-panel { display: none; animation: fadeInPanel 400ms ease; }
+    .framework-panel.active { display: block; }
     .framework-row .label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.78rem;
@@ -871,12 +896,37 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 0.85rem;
     }
+    .tools-body { position: relative; }
+    .tools-lead { font-size: 0.92rem; margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.5; }
     .tool {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.95rem 1.1rem;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
     }
+    .tool:hover {
+      transform: translateX(4px);
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+    }
+    .tool.selected {
+      border-color: var(--success);
+      background: rgba(52, 211, 153, 0.08);
+    }
+    .tool-detail {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .tool-detail.active { opacity: 1; pointer-events: auto; }
+    .tool-panel { display: none; animation: fadeInPanel 400ms ease; }
+    .tool-panel.active { display: block; }
     .tool h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--text-primary); }
     .tool p { font-size: 0.8rem; margin: 0; color: var(--text-muted); }
     .tool-icon {
@@ -912,12 +962,37 @@
       grid-template-columns: 1fr 1fr;
       gap: 0.85rem;
     }
+    .harness-body { position: relative; }
+    .harness-lead { font-size: 0.92rem; margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.5; }
     .harness {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 1rem 1.15rem;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
     }
+    .harness:hover {
+      transform: translateX(4px);
+      border-color: var(--border-strong);
+      background: var(--bg-card-hover);
+    }
+    .harness.selected {
+      border-color: var(--success);
+      background: rgba(52, 211, 153, 0.08);
+    }
+    .harness-detail {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .harness-detail.active { opacity: 1; pointer-events: auto; }
+    .harness-panel { display: none; animation: fadeInPanel 400ms ease; }
+    .harness-panel.active { display: block; }
     .harness-icon {
       display: inline-block;
       width: 26px;
@@ -1851,10 +1926,11 @@
                 <h2>Frameworks: Chat, Agent, Harness</h2>
               </div>
             </div>
-            <div class="content-body">
-              <p style="font-size: 0.95rem; margin-bottom: 1rem;">Três camadas conceituais que confundem muita gente. Padrões diferentes de uso, com limites e propósitos próprios.</p>
+            <div class="content-body frameworks-body">
+              <p class="frameworks-lead">Três camadas conceituais que confundem muita gente. Padrões diferentes de uso, com limites e propósitos próprios. <span style="color: var(--text-dim);">Clique em cada camada pra detalhes.</span></p>
               <div class="framework-stack">
-                <div class="framework-row">
+
+                <div class="framework-row" data-framework="chat">
                   <div class="label">Chat</div>
                   <div class="body">
                     <h4>Interface conversacional</h4>
@@ -1862,7 +1938,8 @@
                     <div class="ex">ChatGPT · Claude.ai · Gemini · Copilot Chat · Poe</div>
                   </div>
                 </div>
-                <div class="framework-row">
+
+                <div class="framework-row" data-framework="agent">
                   <div class="label">Agent</div>
                   <div class="body">
                     <h4>Execução autônoma de tarefas</h4>
@@ -1870,7 +1947,8 @@
                     <div class="ex">OpenAI Agents SDK · Computer Use · Operator · Manus · Devin</div>
                   </div>
                 </div>
-                <div class="framework-row">
+
+                <div class="framework-row" data-framework="harness">
                   <div class="label">Harness</div>
                   <div class="body">
                     <h4>A camada que torna o modelo útil</h4>
@@ -1878,10 +1956,73 @@
                     <div class="ex">Claude Code · GitHub Copilot · MS 365 Copilot · Microsoft Cowork · Cursor · Cline</div>
                   </div>
                 </div>
+
               </div>
+
               <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
                 <strong>Como se relacionam:</strong> chat é UI · agent é padrão de execução · harness é o produto do dia a dia.
               </p>
+
+              <!-- ============ FRAMEWORK DETAIL VIEW ============ -->
+              <div class="framework-detail" id="frameworkDetail" aria-hidden="true">
+                <button class="back-btn" id="frameworkBack"><span class="back-arrow">←</span> Voltar aos frameworks</button>
+                <div class="framework-panels" id="frameworkPanels">
+
+                  <div class="framework-panel" data-framework="chat">
+                    <div class="event-meta">
+                      <div class="event-year-lg">UI</div>
+                      <div class="event-tag-row"><span class="chip accent">Stateless</span><span class="chip accent">Conversational</span></div>
+                    </div>
+                    <h3 class="event-title">Chat · interface conversacional</h3>
+                    <div class="event-body">
+                      <p>Camada mais antiga e mais simples de produto LLM. O usuário <strong>faz uma pergunta</strong>, o sistema <strong>responde</strong>. Sem memória persistente entre conversas (na maioria dos produtos), sem tool use automático, sem capacidades autônomas.</p>
+                      <p><strong>O que dá certo com chat:</strong></p>
+                      <p>• <em>Rascunhos criativos</em> — emails, peças de copy, scripts.</p>
+                      <p>• <em>Q&amp;A de conhecimento</em> — "explique conceito X", "resuma Y".</p>
+                      <p>• <em>Brainstorming</em> — viés de alternativas, primeiro rascunho.</p>
+                      <p>• <em>Coding introdutório</em> — boilerplate, debug "rápido", conversão entre linguagens.</p>
+                      <p><strong>O que NÃO dá certo:</strong> tarefas com estado (precisa lembrar de ontem), execução no mundo real (precisa agir, não só falar), workflows longos (precisa orquestração).</p>
+                      <p><strong>Players notáveis:</strong> ChatGPT (OpenAI), Claude.ai (Anthropic), Gemini (Google), Copilot Chat (Microsoft), Poe (Quora), Le Chat (Mistral), HuggingChat (open-source). A maioria destes produtos <em>também</em> tem modo agent (Operator, Computer Use, etc.) — o chat vira UI para um sub-sistema de agentes.</p>
+                    </div>
+                  </div>
+
+                  <div class="framework-panel" data-framework="agent">
+                    <div class="event-meta">
+                      <div class="event-year-lg">loop</div>
+                      <div class="event-tag-row"><span class="chip purple">Autonomous</span><span class="chip purple">Multi-step</span></div>
+                    </div>
+                    <h3 class="event-title">Agent · execução autônoma</h3>
+                    <div class="event-body">
+                      <p>Um <strong>agent</strong> é um pattern arquitetural: LLM + loop + ferramentas + memória + objetivo. Diferente do chat, ele <strong>planeja</strong>, <strong>executa</strong>, <strong>observa</strong> o resultado, e <strong>itera</strong> até entregar.</p>
+                      <p><strong>Anatomia típica:</strong></p>
+                      <p>• <em>Planner</em> — razão reasoning model (o1, R1) decompõe o objetivo em passos.</p>
+                      <p>• <em>Tools</em> — function calling, MCP servers, web search, code execution.</p>
+                      <p>• <em>Memory</em> — short (this conversation) + long (file system / vector store).</p>
+                      <p>• <em>Loop guard</em> — limite de iterações, plano em rollback, supervisão humana em ações sensíveis.</p>
+                      <p><strong>Frameworks populares:</strong> OpenAI Agents SDK, Anthropic Computer Use, Manus, Devin, LangGraph, LangChain, CrewAI, AutoGen. Em 2026, a distinção entre "framework agent" e "harness" <em>borra</em> — harnesses agora são agents com boa UX/governança.</p>
+                      <p><strong>Risco principal:</strong> agents podem entrar em loops de tentativa-e-erro infinitos. Por isso todo harness sério tem <em>budget</em> (max tokens / max iterations / max time).</p>
+                    </div>
+                  </div>
+
+                  <div class="framework-panel" data-framework="harness">
+                    <div class="event-meta">
+                      <div class="event-year-lg">produto</div>
+                      <div class="event-tag-row"><span class="chip success">Integrated</span><span class="chip success">Product-grade</span></div>
+                    </div>
+                    <h3 class="event-title">Harness · o produto do dia a dia</h3>
+                    <div class="event-body">
+                      <p>Harness é o <strong>produto</strong> que entrega o LLM numa superfície útil. Integra-o profundamente com IDE, SO, calendário, e-mail, codebase — coisas que você usa 8 horas por dia. O modelo vira <em>parte do seu fluxo</em>, não um acessório.</p>
+                      <p><strong>Três exemplos de harnesses:</strong></p>
+                      <p>• <em>Claude Code</em> — terminal agent, lê/modifica arquivos, roda testes, faz commits. Foco: substituir IDE/CLI tradicional.</p>
+                      <p>• <em>GitHub Copilot Workspace</em> — vive dentro do GitHub, vê PRs, issues, runtime, segurança. Foco: developer experience no repo.</p>
+                      <p>• <em>Microsoft 365 Copilot</em> — vive dentro do Word/Excel/Teams/Outlook, vê inbox, calendario, documentos. Foco: knowledge worker.</p>
+                      <p><strong>Por que importa:</strong> a maioria do valor de LLM em 2026 vem de <em>harnesses</em>, não de modelos puros. Mesma coisa que aconteceu com mobile em 2008-2012: o hardware era capaz, mas só apps bem integrados desbloquearam valor.</p>
+                      <p><strong>Padrão emergente:</strong> todo harness sério hoje é, no fundo, um <strong>agent + UI + governança</strong>. A diferença que importa é o <em>contrato</em>: harness é o que você <strong>compra</strong>, agent é o padrão <strong>arquitetural</strong>.</p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1909,18 +2050,159 @@
                 <h2>Ferramentas (Tools)</h2>
               </div>
             </div>
-            <div class="content-body">
-              <p style="font-size: 0.95rem; margin-bottom: 0.85rem;">LLMs são máquinas de texto. <strong>Tools</strong> dão "mãos" — acesso estruturado ao mundo externo.</p>
+            <div class="content-body tools-body">
+              <p class="tools-lead">LLMs são máquinas de texto. <strong>Tools</strong> dão "mãos" — acesso estruturado ao mundo externo. <span style="color: var(--text-dim);">Clique em cada tool.</span></p>
               <div class="tool-grid">
-                <div class="tool"><h4><span class="tool-icon"></span>Function calling</h4><p>Modelo recebe schema JSON, retorna tool_call estruturado. Você executa e devolve o resultado.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>Structured output</h4><p>Saída garantida por JSON Schema / Pydantic / Zod. Constrained decoding impede JSON inválido.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>Tool use loop</h4><p>Ciclo: call → result → decide → call → ... → finish. Limites: 5–25 steps, timeout 30–120s.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>ReAct pattern</h4><p>Thought → Action → Observation → repeat. Formalizado em 2022, base da maioria dos agentes.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>Web search</h4><p>Tempo real: Tavily, Brave, SerpAPI, Bing.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>Code execution</h4><p>Sandbox Python/JS. Modelo roda código, instala deps, gera gráficos.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>File system</h4><p>Leitura/escrita/busca. Núcleo de coding agents (Claude Code, Cline).</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>Database</h4><p>SQL ou vector search. Text-to-SQL, RAG, retrieval.</p></div>
-                <div class="tool"><h4><span class="tool-icon"></span>Browser automation</h4><p>Playwright, Puppeteer, Computer Use da Anthropic.</p></div>
+
+                <div class="tool" data-tool="function-calling">
+                  <h4><span class="tool-icon"></span>Function calling</h4>
+                  <p>Modelo recebe schema JSON, retorna tool_call estruturado. Você executa e devolve o resultado.</p>
+                </div>
+                <div class="tool" data-tool="structured-output">
+                  <h4><span class="tool-icon"></span>Structured output</h4>
+                  <p>Saída garantida por JSON Schema / Pydantic / Zod. Constrained decoding impede JSON inválido.</p>
+                </div>
+                <div class="tool" data-tool="use-loop">
+                  <h4><span class="tool-icon"></span>Tool use loop</h4>
+                  <p>Ciclo: call → result → decide → call → ... → finish. Limites: 5–25 steps, timeout 30–120s.</p>
+                </div>
+                <div class="tool" data-tool="react">
+                  <h4><span class="tool-icon"></span>ReAct pattern</h4>
+                  <p>Thought → Action → Observation → repeat. Formalizado em 2022, base da maioria dos agentes.</p>
+                </div>
+                <div class="tool" data-tool="web-search">
+                  <h4><span class="tool-icon"></span>Web search</h4>
+                  <p>Tempo real: Tavily, Brave, SerpAPI, Bing.</p>
+                </div>
+                <div class="tool" data-tool="code-exec">
+                  <h4><span class="tool-icon"></span>Code execution</h4>
+                  <p>Sandbox Python/JS. Modelo roda código, instala deps, gera gráficos.</p>
+                </div>
+                <div class="tool" data-tool="file-system">
+                  <h4><span class="tool-icon"></span>File system</h4>
+                  <p>Leitura/escrita/busca. Núcleo de coding agents (Claude Code, Cline).</p>
+                </div>
+                <div class="tool" data-tool="database">
+                  <h4><span class="tool-icon"></span>Database</h4>
+                  <p>SQL ou vector search. Text-to-SQL, RAG, retrieval.</p>
+                </div>
+                <div class="tool" data-tool="browser">
+                  <h4><span class="tool-icon"></span>Browser automation</h4>
+                  <p>Playwright, Puppeteer, Computer Use da Anthropic.</p>
+                </div>
+
+              </div>
+
+              <!-- ============ TOOL DETAIL VIEW ============ -->
+              <div class="tool-detail" id="toolDetail" aria-hidden="true">
+                <button class="back-btn" id="toolBack"><span class="back-arrow">←</span> Voltar às tools</button>
+                <div class="tool-panels" id="toolPanels">
+
+                  <div class="tool-panel" data-tool="function-calling">
+                    <div class="event-meta"><div class="event-year-lg">⇄</div><div class="event-tag-row"><span class="chip accent">JSON schema</span></div></div>
+                    <h3 class="event-title">Function calling · o protocolo base</h3>
+                    <div class="event-body">
+                      <p>LLM recebe um <strong>JSON Schema</strong> descrevendo o input de uma função externa. Em vez de gerar texto livre, o modelo retorna um <strong>tool_call</strong> estruturado (nome + argumentos), que o host executa fora do modelo (Python function, HTTP request, db query). O resultado volta pro modelo como um user message.</p>
+                      <p><strong>Players:</strong> OpenAI (inaugurou, 2023), Anthropic (tool_use), Google (function_call), Mistral, OpenRouter. Pequenas variações no schema JSON, mas interoperáveis.</p>
+                      <p><strong>Boa prática:</strong> descreva funções com nomes claros + descrições específicas. <em>"get_weather"</em> fraco vs <em>"get_current_weather_for_city_in_celsius"</em> forte. Schema limpo &gt; código vasto.</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="structured-output">
+                    <div class="event-meta"><div class="event-year-lg">{ }</div><div class="event-tag-row"><span class="chip accent">JSON Schema</span><span class="chip accent">Zod</span></div></div>
+                    <h3 class="event-title">Structured output · JSON garantido</h3>
+                    <div class="event-body">
+                      <p>Para extração, classificação, ou alimentar sistemas que <strong>não toleram texto livre</strong> (banco, API, UI), o LLM é forçado a gerar <em>JSON válido</em> matching a um schema. Providenciadores via:</p>
+                      <p>• <em>Constrained decoding</em> — algoritmo só permite tokens que mantêm o schema válido. Garante 100% conformidade.</p>
+                      <p>• <em>Tool calling simulado</em> — usar function calling sem executar nada, pegando o argumento JSON.</p>
+                      <p>• <em>JSON mode</em> — flag na API que ativa constrained decoding.</p>
+                      <p><strong>Players:</strong> OpenAI Structured Outputs, Anthropic tool_use, Google function_calling, Mistral, AWS Bedrock Guardrails. Bibliotecas cliente: Pydantic (Python), Zod (TS), Outlines.</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="use-loop">
+                    <div class="event-meta"><div class="event-year-lg">⟳</div><div class="event-tag-row"><span class="chip accent">Loop</span><span class="chip accent">5-25 steps</span></div></div>
+                    <h3 class="event-title">Tool use loop · o coração do agente</h3>
+                    <div class="event-body">
+                      <p>O <strong>loop</strong> é o que transforma um chat LLM em um agent. Pseudocódigo:</p>
+                      <p><em>while not finished: <br>&nbsp;&nbsp;response = llm(messages, tools) <br>&nbsp;&nbsp;if response.has_tool_calls: <br>&nbsp;&nbsp;&nbsp;&nbsp;for tc in response.tool_calls: <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = execute(tc.name, tc.args) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messages.append(tool_result(result)) <br>&nbsp;&nbsp;else: <br>&nbsp;&nbsp;&nbsp;&nbsp;finished = True</em></p>
+                      <p><strong>Limites típicos:</strong> max 5-25 tool calls, max 30-120s wall-clock, max tokens consumidos. Sem limites, agentes entram em loops infinitos.</p>
+                      <p><strong>Frameworks:</strong> LangGraph, OpenAI Agents SDK, Anthropic Computer Use, Manus, CrewAI. Cada um implementa o loop com nuances (planning, reflection, persona).</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="react">
+                    <div class="event-meta"><div class="event-year-lg">T-A-O</div><div class="event-tag-row"><span class="chip accent">Yao et al. 2022</span></div></div>
+                    <h3 class="event-title">ReAct · Thought-Action-Observation</h3>
+                    <div class="event-body">
+                      <p>Paper seminal de Shunyu Yao et al., <em>"ReAct: Synergizing Reasoning and Acting in Language Models"</em> (2022). Propõe que o modelo gera, a cada step:</p>
+                      <p><strong>(1) Thought:</strong> raciocínio interno explicando o que vai fazer.</p>
+                      <p><strong>(2) Action:</strong> tool call ou query.</p>
+                      <p><strong>(3) Observation:</strong> resultado da action.</p>
+                      <p>Esse padrão permite <em>audit</em> do reasoning chain: tu vê o que o modelo pensou em cada step, não só a resposta final. É a base de quase todo agent framework hoje.</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="web-search">
+                    <div class="event-meta"><div class="event-year-lg">⌕</div><div class="event-tag-row"><span class="chip accent">Tempo real</span></div></div>
+                    <h3 class="event-title">Web search · grounding time-aware</h3>
+                    <div class="event-body">
+                      <p>LLMs isolados têm <strong>cutoff temporal</strong> — não sabem do mundo depois do treinamento. Web search quebra esse limite: o modelo faz query → search engine retorna top-K → modelo sintetiza com a frescor.</p>
+                      <p><strong>Providores:</strong></p>
+                      <p>• <em>Tavily</em> — bom default, scraping limpo.</p>
+                      <p>• <em>Brave Search API</em> — boa cobertura, privacidade-friendly.</p>
+                      <p>• <em>SerpAPI</em> — wrapper sobre SERPs reais.</p>
+                      <p>• <em>Exa</em> — embeddings-based search para semântica.</p>
+                      <p>• <em>OpenAI / Anthropic / Google</em> — próprios, embutidos no chat.</p>
+                      <p>Limitação: o modelo cita os resultados mas <strong>pode alucinar links</strong>. Mitigação: per-claim citation (RAG com source docs).</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="code-exec">
+                    <div class="event-meta"><div class="event-year-lg">⌨</div><div class="event-tag-row"><span class="chip accent">Sandbox</span><span class="chip accent">Python</span></div></div>
+                    <h3 class="event-title">Code execution · Python sandbox</h3>
+                    <div class="event-body">
+                      <p>Modelo escreve e executa código Python num <strong>sandbox isolado</strong> (sem rede ou com rede controlada). Resolve cálculos, gera gráficos, transforma datasets.</p>
+                      <p><strong>Players:</strong> OpenAI Code Interpreter, Anthropic Computer Use, E2B / Modal / Replicate (provider de sandboxes), Java/JS via Judge0 / API Externa.</p>
+                      <p><strong>Limitação:</strong> latência (5-30s pra round-trip); risco de modelo tentar escapar sandbox (perigoso). Sempre auditar logs.</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="file-system">
+                    <div class="event-meta"><div class="event-year-lg">⌗</div><div class="event-tag-row"><span class="chip accent">Coding agents</span></div></div>
+                    <h3 class="event-title">File system · núcleo do coding agent</h3>
+                    <div class="event-body">
+                      <p>Tool que dá ao modelo <strong>read_file</strong>, <strong>write_file</strong>, <strong>list_dir</strong>, <strong>grep</strong> — os op básicos. Sem isso, o agente não consegue navegar codebase.</p>
+                      <p>Em harness type-coding agent (Claude Code, Aider, Cline), essa é a tool mais usada. Cada framework implementa acesso permissivo ou restritivo (e.g. <em>read-only modes</em>, <em>sandbox to specific dirs</em>).</p>
+                      <p><strong>Padrão emergente:</strong> tree-sitter ou AST parsing pré-leitura pra dar contexto estruturado em vez de arquivo raw. Reduz tokens e melhora precisão.</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="database">
+                    <div class="event-meta"><div class="event-year-lg">⌬</div><div class="event-tag-row"><span class="chip accent">SQL</span><span class="chip accent">Vector</span></div></div>
+                    <h3 class="event-title">Database · SQL + vector</h3>
+                    <div class="event-body">
+                      <p>Duas tools complementares:</p>
+                      <p>• <em>SQL</em> — modelo gera queries estruturadas, lê/escreve dados relacionais. Text-to-SQL é o uso clássico.</p>
+                      <p>• <em>Vector search</em> — embeddings (modelo + armazenada no pgvector, Pinecone, Weaviate, Chroma). Retrieval-Augmented Generation (RAG) base.</p>
+                      <p><strong>RAG flow típico:</strong> user query → embedding → top-K similar chunks → prompt augmentation → LLM answer com sources.</p>
+                      <p><strong>Limitação clássica:</strong> LLM alucina colunas inexistentes. Mitigação: passar schema no prompt + ferramentas de <em>introspection</em> (SHOW TABLES).</p>
+                    </div>
+                  </div>
+
+                  <div class="tool-panel" data-tool="browser">
+                    <div class="event-meta"><div class="event-year-lg">⌨</div><div class="event-tag-row"><span class="chip accent">Playwright</span><span class="chip accent">Computer Use</span></div></div>
+                    <h3 class="event-title">Browser automation · click no site</h3>
+                    <div class="event-body">
+                      <p>Ferramenta que dá ao modelo <strong>controle sobre o navegador</strong> — click, scroll, fill, screenshot. Duas famílias:</p>
+                      <p>• <em>Structured DOM</em> — modelo lê o DOM via Playwright/Puppeteer e emite <code>page.click('#btn')</code>. Mais determinístico.</p>
+                      <p>• <em>Vision-based</em> — modelo olha screenshot e decide pixels/clicks. Anthropic <strong>Computer Use</strong> faz isso; mais flexível mas mais lento.</p>
+                      <p><strong>Use cases:</strong> scraping com JS, automação de web apps internos, QA testing, manipulação de UI complexa.</p>
+                      <p><strong>Risco:</strong> modelo pode clicar em botões errados, especialmente em UIs não-testadas. Sempre rodar com humans-in-the-loop ou em sandbox.</p>
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
           </div>
@@ -2001,28 +2283,109 @@
                 <h2>Harness — A camada que torna o modelo útil</h2>
               </div>
             </div>
-            <div class="content-body">
-              <p style="font-size: 0.95rem; margin-bottom: 1rem;">Modelo sozinho é só completador de texto. Harness dá mãos, olhos, contexto persistente e UX específica.</p>
+            <div class="content-body harness-body">
+              <p class="harness-lead">Modelo sozinho é só completador de texto. Harness dá mãos, olhos, contexto persistente e UX específica. <span style="color: var(--text-dim);">Clique em cada harness.</span></p>
               <div class="harness-grid">
-                <div class="harness">
+
+                <div class="harness" data-harness="claude-code">
                   <h4><span class="harness-icon">⌘</span>Claude Code</h4>
                   <div class="vendor">Anthropic · fev/2025</div>
                   <p>Terminal-first agent. Lê/edita arquivos, roda comandos, git, web, MCP. <em>Skills, sub-agents, hooks</em>.</p>
                 </div>
-                <div class="harness">
+                <div class="harness" data-harness="github-copilot">
                   <h4><span class="harness-icon">⌥</span>GitHub Copilot</h4>
                   <div class="vendor">GitHub · 2021+</div>
                   <p>IDE agent em VS Code, JetBrains, Neovim. Chat + agent mode (ago/2024). Workspace agent cria PRs.</p>
                 </div>
-                <div class="harness">
+                <div class="harness" data-harness="ms-copilot">
                   <h4><span class="harness-icon">⊞</span>MS 365 Copilot</h4>
                   <div class="vendor">Microsoft · 2023+</div>
                   <p>Side-panel em Word/Excel/PP/Outlook/Teams. Copilot Studio para copilots custom de empresa.</p>
                 </div>
-                <div class="harness pink">
+                <div class="harness pink" data-harness="ms-cowork">
                   <h4><span class="harness-icon">⊕</span>MS Cowork <span style="background: var(--accent-glow); color: var(--accent); font-size: 0.65rem; padding: 0.1rem 0.4rem; border-radius: 3px; margin-left: 0.4rem; font-family: 'JetBrains Mono', monospace;">GA · JUN/2026</span></h4>
                   <div class="vendor">Microsoft · 16/06/2026</div>
                   <p>Agente autônomo sobre Work IQ. Executa workflows longos, multi-step, com aprovações em ações sensíveis.</p>
+                </div>
+
+              </div>
+
+              <!-- ============ HARNESS DETAIL VIEW ============ -->
+              <div class="harness-detail" id="harnessDetail" aria-hidden="true">
+                <button class="back-btn" id="harnessBack"><span class="back-arrow">←</span> Voltar aos harnesses</button>
+                <div class="harness-panels" id="harnessPanels">
+
+                  <div class="harness-panel" data-harness="claude-code">
+                    <div class="event-meta">
+                      <div class="event-year-lg">⌘</div>
+                      <div class="event-tag-row"><span class="chip purple">Terminal agent</span><span class="chip purple">Anthropic</span></div>
+                    </div>
+                    <h3 class="event-title">Claude Code · Anthropic</h3>
+                    <div class="event-body">
+                      <p><strong>Claude Code</strong> (fev/2025) é o agente de terminal da Anthropic. Lê e edita arquivos locais, roda comandos, usa git, busca na web, conecta a MCP servers. Tem o modelo <strong>Claude 4 Sonnet</strong> por trás.</p>
+                      <p><strong>O que ele faz diferente:</strong></p>
+                      <p>• <em>Skills</em> — arquivos Markdown que definem workflows reutilizáveis (ex: "release-fmeware" skill pra release checklist).</p>
+                      <p>• <em>Sub-agents</em> — Claude spawna agentes focais pra tarefas paralelas (read files, search, plan).</p>
+                      <p>• <em>Hooks</em> — scripts que rodam em eventos (PostToolUse, PreToolUse) pra validar, formatar, ou bloquear.</p>
+                      <p>• <em>MCP native</em> — configura servers via JSON, conecta a Postgres, Jira, Confluence.</p>
+                      <p><strong>Limites:</strong> 200k context window, ~$3/$15 per million input/output tokens (Sonnet). Ideal pra: code reviews, refactors, scripting, debugging, documentação.</p>
+                      <p><strong>Posicionamento:</strong> Claude Code compete com Cursor (IDE-first), não com GitHub Copilot Workspace (repo-first). O "campo de batalha" é o terminal — usuários avançados amam.</p>
+                    </div>
+                  </div>
+
+                  <div class="harness-panel" data-harness="github-copilot">
+                    <div class="event-meta">
+                      <div class="event-year-lg">⌥</div>
+                      <div class="event-tag-row"><span class="chip purple">IDE agent</span><span class="chip purple">GitHub</span></div>
+                    </div>
+                    <h3 class="event-title">GitHub Copilot · workspace agent</h3>
+                    <div class="event-body">
+                      <p><strong>GitHub Copilot</strong> evoluiu de "autocomplete" (2021) para um agente dentro do editor. Em 2024 a Microsoft lançou o <strong>agent mode</strong> (ago/2024) e em 2025 o <strong>workspace agent</strong>, que cria PRs de issues automaticamente.</p>
+                      <p><strong>Posicionamento único:</strong> Copilot vive DENTRO da IDE (VS Code, JetBrains, Neovim) e DENTRO do GitHub. Tem visibilidade nativa de PRs, issues, codeowners, security alerts, actions. <strong>Isso é vantagem competitiva em relação a Cursor</strong>, que compete só no editor.</p>
+                      <p><strong>Tier de produto:</strong></p>
+                      <p>• <em>Free</em> — 50 chats/mês.</p>
+                      <p>• <em>Pro $10</em> — 300 chats + agent mode.</p>
+                      <p>• <em>Business $19</em> — telemetry agregada.</p>
+                      <p>• <em>Enterprise $39</em> — modelos premium (Claude 4 Opus, GPT-5) + audit + IP indemnification.</p>
+                      <p><strong>Adoção:</strong> 1.8M+ paying customers (Microsoft Build 2025). É o LLM-product mais vendido da história, considerando GitHub como vetor.</p>
+                    </div>
+                  </div>
+
+                  <div class="harness-panel" data-harness="ms-copilot">
+                    <div class="event-meta">
+                      <div class="event-year-lg">⊞</div>
+                      <div class="event-tag-row"><span class="chip purple">Knowledge worker</span><span class="chip purple">Microsoft 365</span></div>
+                    </div>
+                    <h3 class="event-title">Microsoft 365 Copilot · work surface</h3>
+                    <div class="event-body">
+                      <p><strong>MS 365 Copilot</strong> (2023) vive como side-panel dentro do Word, Excel, PowerPoint, Outlook, Teams. A diferença chave: tem <strong>contexto nativo</strong> dos seus documentos, e-mails, calendário e reuniões — sem precisar conectar nada.</p>
+                      <p><strong>Stack técnico:</strong></p>
+                      <p>• <em>Microsoft Graph</em> — indexa permissão-aware todos os artefatos do 365 do usuário.</p>
+                      <p>• <em>Copilot runtime</em> — orquestra qual modelo usar (OpenAI, Anthropic, Microsoft próprio).</p>
+                      <p>• <em>Copilot Studio</em> — low-code pra empresa criar copilots custom (ex: "Copilot de Vendas" com dados de CRM).</p>
+                      <p><strong>Preço:</strong> $30/usuário/mês (add-on sobre Microsoft 365 E3/E5). Estimativa: ~15M licenças vendidas até mid-2026.</p>
+                      <p><strong>Concorrente direto:</strong> Google Workspace AI (Gemini in Workspace). O mercado corporativo está em brasa pela preferência entre os dois.</p>
+                    </div>
+                  </div>
+
+                  <div class="harness-panel" data-harness="ms-cowork">
+                    <div class="event-meta">
+                      <div class="event-year-lg highlight">⊕ GA</div>
+                      <div class="event-tag-row"><span class="chip success">Work IQ</span><span class="chip success">Multi-agent</span><span class="chip success">jun/2026</span></div>
+                    </div>
+                    <h3 class="event-title">MS Cowork · agente autônomo</h3>
+                    <div class="event-body">
+                      <p><strong>Microsoft Cowork</strong> foi GA em 16 de junho de 2026. Diferente do MS 365 Copilot (que sugere), o Cowork <strong>executa</strong> workflows longos de forma autônoma — sem tu especificar cada passo.</p>
+                      <p><strong>Fundamento: Work IQ</strong> — camada que lê e-mails, calendário, arquivos, Teams messages e dados organizacionais, construindo contexto prático do usuário.</p>
+                      <p><strong>Exemplos que rodam em produção:</strong></p>
+                      <p>• <em>"Prepara o brief da reunião de amanhã com base nas últimas decisões do projeto X"</em> → Cowork busca emails, documentos e decisões recentes.</p>
+                      <p>• <em>"Analisa o pipeline que estagnou, identifica risco e propõe follow-up"</em> → loop CRM + email.</p>
+                      <p>• <em>"Compara 4.000 arquivos entre duas versões e resume as diferenças relevantes"</em></p>
+                      <p><strong>Modelos:</strong> Advisor = Sonnet (reasoning, planeamento) · Executor = Opus + GPT-5.5 (ações). Multi-agent orchestration vira commodity.</p>
+                      <p><strong>Governance:</strong> ações sensíveis (enviar e-mail, mover share, criar compromisso) pausam pra aprovação humana.</p>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -2689,6 +3052,119 @@
       window.addEventListener('hashchange', () => {
         if (window.location.hash.startsWith('#tipos?expand=')) handleExpand();
         else if (activeTipo) hideTipo();
+      });
+    })();
+
+    // ============================================================
+    // Generic click-to-expand detail-panel helper
+    // ============================================================
+    function setupExpandableGrid({ sectionId, rowSelector, detailId, panelSelector, backId, deepLinkKey }) {
+      const sec = sectionEls[sectionId];
+      if (!sec) return { show: () => {}, hide: () => {} };
+      const rows = sec.querySelectorAll(rowSelector);
+      const detail = sec.querySelector('#' + detailId);
+      const panels = sec.querySelectorAll(panelSelector);
+      const backBtn = sec.querySelector('#' + backId);
+      if (!detail || !backBtn) return { show: () => {}, hide: () => {} };
+
+      // Find the list container (first direct sibling that wraps the rows)
+      let listContainer = rows[0]?.parentElement;
+      if (listContainer && listContainer.tagName === 'SECTION') listContainer = null; // safety
+
+      let active = null;
+
+      function show(id) {
+        if (!id || active === id) return;
+        rows.forEach(r => r.classList.toggle('selected', r.dataset[rowSelector.match(/data-(\w+)/)[1]] === id));
+        panels.forEach(p => p.classList.toggle('active', p.dataset[rowSelector.match(/data-(\w+)/)[1]] === id));
+        detail.classList.add('active');
+        detail.setAttribute('aria-hidden', 'false');
+        detail.scrollTop = 0;
+        if (listContainer) listContainer.classList.add('dimmed');
+        active = id;
+        history.replaceState(null, '', `#${sectionId}?expand=${id}`);
+      }
+      function hide() {
+        if (!active) return;
+        rows.forEach(r => r.classList.remove('selected'));
+        detail.classList.remove('active');
+        detail.setAttribute('aria-hidden', 'true');
+        if (listContainer) listContainer.classList.remove('dimmed');
+        active = null;
+        if (window.location.hash.startsWith(`#${sectionId}?expand=`)) {
+          history.replaceState(null, '', `#${sectionId}`);
+        }
+      }
+
+      rows.forEach(row => {
+        row.addEventListener('click', () => {
+          const key = rowSelector.match(/data-(\w+)/)[1];
+          show(row.dataset[key]);
+        });
+      });
+      backBtn.addEventListener('click', hide);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && active) {
+          e.preventDefault();
+          hide();
+        }
+      });
+
+      const dataKey = rowSelector.match(/data-(\w+)/)[1];
+      function handleExpand() {
+        const re = new RegExp(`^#${sectionId}\\?expand=([a-z-]+)$`);
+        const m = window.location.hash.match(re);
+        if (m && m[1]) show(m[1]);
+      }
+      handleExpand();
+      window.addEventListener('hashchange', () => {
+        if (window.location.hash.startsWith(`#${sectionId}?expand=`)) handleExpand();
+        else if (active && !window.location.hash.startsWith(`#${sectionId}`)) hide();
+      });
+
+      return { show, hide };
+    }
+
+    // ============================================================
+    // Frameworks — click-to-expand per layer
+    // ============================================================
+    (function setupFrameworksDetail() {
+      setupExpandableGrid({
+        sectionId: 'frameworks',
+        rowSelector: '.framework-row[data-framework]',
+        detailId: 'frameworkDetail',
+        panelSelector: '.framework-panel[data-framework]',
+        backId: 'frameworkBack',
+        deepLinkKey: 'framework',
+      });
+    })();
+
+    // ============================================================
+    // Harness — click-to-expand per product
+    // ============================================================
+    (function setupHarnessDetail() {
+      setupExpandableGrid({
+        sectionId: 'harness',
+        rowSelector: '.harness[data-harness]',
+        detailId: 'harnessDetail',
+        panelSelector: '.harness-panel[data-harness]',
+        backId: 'harnessBack',
+        deepLinkKey: 'harness',
+      });
+    })();
+
+    // ============================================================
+    // Tools — click-to-expand per tool
+    // ============================================================
+    (function setupToolsDetail() {
+      setupExpandableGrid({
+        sectionId: 'tools',
+        rowSelector: '.tool[data-tool]',
+        detailId: 'toolDetail',
+        panelSelector: '.tool-panel[data-tool]',
+        backId: 'toolBack',
+        deepLinkKey: 'tool',
       });
     })();
 
