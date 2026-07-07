@@ -609,7 +609,8 @@
     .historia-body { position: relative; }
     .tipos-body { position: relative; }
     .tipos-lead { font-size: 0.92rem; margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.5; }
-    .tipos-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .tipos-list { display: flex; flex-direction: column; gap: 0.6rem; transition: opacity 250ms ease; }
+    .tipos-list.dimmed { opacity: 0.25; pointer-events: none; }
     .tipo-row {
       display: flex;
       align-items: stretch;
@@ -2650,10 +2651,7 @@
         detail.setAttribute('aria-hidden', 'false');
         detail.scrollTop = 0;
         const listEl = sec.querySelector('.tipos-list');
-        if (listEl) {
-          listEl.style.opacity = '0.35';
-          listEl.style.pointerEvents = 'none';
-        }
+        if (listEl) listEl.classList.add('dimmed');
         activeTipo = tipoId;
         history.replaceState(null, '', `#tipos?expand=${tipoId}`);
       }
@@ -2663,7 +2661,7 @@
         detail.classList.remove('active');
         detail.setAttribute('aria-hidden', 'true');
         const listEl = sec.querySelector('.tipos-list');
-        if (listEl) { listEl.style.opacity = ''; listEl.style.pointerEvents = ''; }
+        if (listEl) listEl.classList.remove('dimmed');
         activeTipo = null;
         if (window.location.hash.startsWith('#tipos?expand=')) {
           history.replaceState(null, '', '#tipos');
