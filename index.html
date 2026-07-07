@@ -1810,6 +1810,42 @@
     });
 
     // ============================================================
+    // URL deep-link: hashchange listener
+    // Handles in-page navigation (clicking a link to #historia?event=winter1
+    // on a page that's already loaded). Also fires on history.back()/forward().
+    // ============================================================
+    function handleUrlChange({ animate = true } = {}) {
+      const rawHash = (location.hash || '').replace(/^#/, '');
+      const hashQIdx = rawHash.indexOf('?');
+      const hashSection = (hashQIdx === -1 ? rawHash : rawHash.substring(0, hashQIdx)).toLowerCase();
+      const hashQueryStr = hashQIdx === -1 ? '' : rawHash.substring(hashQIdx + 1);
+      const hashEvent = (new URLSearchParams(hashQueryStr).get('event') || '').toLowerCase();
+      const searchEvent = (new URLSearchParams(location.search).get('event') || '').toLowerCase();
+      const eventParam = hashEvent || searchEvent;
+
+      // Section focus
+      if (hashSection && sectionEls[hashSection]) {
+        focusSection(hashSection, { animate });
+      } else {
+        showOverview({ animate });
+      }
+
+      // Event detail open/close
+      if (window.__historiaApi) {
+        if (hashSection === 'historia' && eventParam) {
+          // Slight delay so the focus transition starts first
+          setTimeout(() => window.__historiaApi.open(eventParam), 350);
+        } else if (window.__historiaApi.isOpen && window.__historiaApi.isOpen()) {
+          // Close if we navigated away
+          setTimeout(() => window.__historiaApi.close(), 100);
+        }
+      }
+    }
+    window.addEventListener('hashchange', () => handleUrlChange({ animate: true }));
+    // Also handle back/forward navigation
+    window.addEventListener('popstate', () => handleUrlChange({ animate: false }));
+
+    // ============================================================
     // História — click-to-expand timeline events
     // ============================================================
     (function setupHistoria() {
