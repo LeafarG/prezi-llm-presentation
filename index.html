@@ -2320,19 +2320,18 @@
             </div>
             <div class="content-body">
               <p style="font-size: 0.95rem; margin-bottom: 0.85rem;">Padrão aberto criado pela Anthropic (nov/2024). <strong>"USB-C para IA."</strong> Padroniza a conexão entre LLMs e ferramentas/dados.</p>
-              <div class="diagram"><span class="accent">[ MCP Host ]</span>     ← Claude Desktop · Cursor · Continue
-        <span class="dim">│</span>
-        <span class="dim">│</span> <span class="purple">JSON-RPC</span>
-        <span class="dim">▼</span>
-<span class="purple">[ MCP Client ]</span>     ← gerencia 1..N conexões
-        <span class="dim">│</span>
-        <span class="dim">├──▶</span> <span class="success">[ Server A ]</span>  ← GitHub
-        <span class="dim">│</span>
-        <span class="dim">├──▶</span> <span class="success">[ Server B ]</span>  ← Postgres
-        <span class="dim">│</span>
-        <span class="dim">└──▶</span> <span class="success">[ Server C ]</span>  ← Google Drive
-
-<span class="dim">Transport: stdio · HTTP+SSE · streamable HTTP</span></div>
+              <div class="diagram"><span class="accent">[ MCP Host ]</span>   ← Claude Desktop · Cursor · Continue
+    <span class="dim">│</span>
+    <span class="dim">│</span>  <span class="purple">JSON-RPC</span>
+    <span class="dim">▼</span>
+<span class="purple">[ MCP Client ]</span>  ← gerencia 1..N conexões
+    <span class="dim">│</span>
+    <span class="dim">├──▶</span> <span class="success">[ Server A ]</span>  ← GitHub
+    <span class="dim">│</span>
+    <span class="dim">├──▶</span> <span class="success">[ Server B ]</span>  ← Postgres
+    <span class="dim">│</span>
+    <span class="dim">└──▶</span> <span class="success">[ Server C ]</span>  ← Google Drive
+  <span class="dim">Transport: stdio · HTTP+SSE · streamable HTTP</span></div>
               <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Capabilities expostas por server MCP:</strong></p>
               <ul style="font-size: 0.88rem;">
                 <li><strong>Tools</strong> — funções que o modelo chama (similar a function calling)</li>
