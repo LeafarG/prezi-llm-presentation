@@ -337,10 +337,11 @@
     }
     /* Auto-collapse the topnav when a section is focused so it doesn't overlap content */
     body.focused-section .topnav {
-      transform: translateX(calc(100% + 1.5rem));
-      opacity: 0.25;
+      transform: translateX(calc(100% + 3rem));
+      opacity: 0;
       pointer-events: none;
     }
+    body.focused-section .nav-toggle { opacity: 0.6; }
     .topnav-header {
       display: flex;
       align-items: center;
