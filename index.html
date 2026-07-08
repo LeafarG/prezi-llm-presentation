@@ -1117,6 +1117,153 @@
       gap: 1rem;
       margin-top: 0.5rem;
     }
+
+    /* ============ BIG-NUMBER MODEL CARDS ============ */
+    .cost-model-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+    .cmc {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 0.6rem 0.6rem;
+      position: relative;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .cmc-glm {
+      border-color: rgba(52, 211, 153, 0.5);
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+      box-shadow: 0 0 24px rgba(52, 211, 153, 0.12);
+    }
+    .cmc-opus { border-color: rgba(167, 139, 250, 0.3); }
+    .cmc-gpt { border-color: rgba(96, 165, 250, 0.3); }
+    .cmc-best {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: #0a0e1a;
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      letter-spacing: 0.05em;
+    }
+    .cmc-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .cmc-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
+    .cmc-unit {
+      font-size: 0.55rem;
+      font-weight: 400;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+    }
+    .cmc-meta {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin: 0.4rem 0 0.3rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .cmc-score {
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ============ 2H SCENARIO CARDS ============ */
+    .cost-scenario-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.6rem;
+      margin: 0.5rem 0;
+    }
+    .csc {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem 0.5rem;
+    }
+    .csc-light { border-left: 3px solid var(--success); }
+    .csc-medium { border-left: 3px solid var(--warning); }
+    .csc-heavy { border-left: 3px solid var(--pink); }
+    .csc-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.2rem;
+    }
+    .csc-desc {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+    .csc-numbers { display: flex; flex-direction: column; gap: 0.3rem; }
+    .csc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.3rem;
+      border-radius: 4px;
+    }
+    .csc-winner { background: rgba(52, 211, 153, 0.12); }
+    .csc-pink { background: rgba(244, 114, 182, 0.12); }
+    .csc-label { color: var(--text-secondary); font-weight: 500; }
+    .csc-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-primary); }
+    .csc-winner .csc-val { color: var(--success); }
+    .csc-pink .csc-val { color: var(--pink); }
+
+    /* ============ ROUTE STEPS ============ */
+    .cost-route {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
+    }
+    .route-step {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem 0.4rem;
+      text-align: center;
+      font-size: 0.7rem;
+      line-height: 1.3;
+      border: 1px solid var(--border);
+    }
+    .route-num {
+      display: inline-block;
+      width: 1.4rem;
+      height: 1.4rem;
+      line-height: 1.4rem;
+      border-radius: 50%;
+      background: var(--warning);
+      color: #0a0e1a;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.3rem;
+    }
+    .route-text { color: var(--text-secondary); font-size: 0.66rem; }
+    .route-arrow { font-size: 0.7rem; color: var(--text-dim); margin: 0.15rem 0; }
+    .route-action {
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
     .dt-step {
       padding: 0.4rem 0;
       color: var(--text-secondary);
@@ -2641,143 +2788,133 @@
           <div class="poster">
             <div class="poster-num">// ORÇAMENTO</div>
             <div class="poster-title">Pensar caro<br>ou pensar barato?</div>
-            <div class="poster-sub">Opus 4.6 · GLM 5.2 · GPT-5 — quando cada um compensa.</div>
+            <div class="poster-sub">Opus 4.6 · GLM 5.2 · GPT-5 — preço por capacidade.</div>
           </div>
 
           <div class="content-body">
-            <p style="font-size:0.72rem;line-height:1.4;margin-bottom:0.4rem"><span style="color:var(--warning);font-weight:600">Premissa:</span> o modelo <em>mais capaz</em> raramente é o mais <em>custo-efetivo</em>. "Thinking" multiplica o output em 3–20×. Veja a régua antes de chamar Opus pra classificar um e-mail.</p>
+            <p style="font-size:0.78rem;line-height:1.4;margin:0 0 0.7rem"><span style="color:var(--warning);font-weight:600">Regra de bolso:</span> o modelo <em>mais capaz</em> raramente é o mais <em>custo-efetivo</em>. Pague Opus só pra nuance + raciocínio profundo — use GLM ou GPT-5 mini pra todo o resto.</p>
 
-            <!-- ============ TABELA DE PREÇOS ============ -->
-            <div class="cost-table">
-              <div class="cost-row cost-head">
-                <div>Modelo</div>
-                <div>In · $/M</div>
-                <div>Out · $/M</div>
-                <div>Thinking</div>
-                <div>Score</div>
-                <div>Score/$</div>
+            <!-- ============ BIG-NUMBER MODEL CARDS ============ -->
+            <div class="cost-model-cards">
+              <div class="cmc cmc-opus">
+                <div class="cmc-name"><span class="purple">Opus 4.6</span></div>
+                <div class="cmc-price">$5 <span class="cmc-unit">/M in</span></div>
+                <div class="cmc-price">$25 <span class="cmc-unit">/M out</span></div>
+                <div class="cmc-meta">Adaptive · 3–5× thinking</div>
+                <div class="cmc-score">Score 84 · <span style="color:var(--warning)">$/$ = 3.4</span></div>
               </div>
-              <div class="cost-row">
-                <div><span class="purple">Opus 4.6</span> <span class="dim">·Anthropic</span></div>
-                <div>$5.00</div>
-                <div>$25.00</div>
-                <div>Adaptive · 3–5×</div>
-                <div>84</div>
-                <div><strong style="color:var(--warning)">3.4</strong></div>
+              <div class="cmc cmc-glm">
+                <div class="cmc-best">★ melhor $/Score</div>
+                <div class="cmc-name"><span class="success">GLM 5.2</span></div>
+                <div class="cmc-price">$1.40 <span class="cmc-unit">/M in</span></div>
+                <div class="cmc-price">$4.40 <span class="cmc-unit">/M out</span></div>
+                <div class="cmc-meta">Reasoning · $1/$3.20</div>
+                <div class="cmc-score">Score 83 · <span style="color:var(--success)">$/$ = 17.5</span></div>
               </div>
-              <div class="cost-row">
-                <div><span class="success">GLM 5.2</span> <span class="dim">·Zhipu</span></div>
-                <div>$1.40</div>
-                <div>$4.40</div>
-                <div>Reasoning · $1/$3.20</div>
-                <div>83</div>
-                <div><strong style="color:var(--success)">17.5</strong></div>
-              </div>
-              <div class="cost-row">
-                <div><span class="accent">GPT-5</span> <span class="dim">·OpenAI</span></div>
-                <div>$1.25</div>
-                <div>$10.00</div>
-                <div>o-series · 5–20×</div>
-                <div>~72</div>
-                <div><strong style="color:var(--accent)">8.0</strong></div>
+              <div class="cmc cmc-gpt">
+                <div class="cmc-name"><span class="accent">GPT-5</span></div>
+                <div class="cmc-price">$1.25 <span class="cmc-unit">/M in</span></div>
+                <div class="cmc-price">$10 <span class="cmc-unit">/M out</span></div>
+                <div class="cmc-meta">o-series · 5–20× thinking</div>
+                <div class="cmc-score">Score 72 · <span style="color:var(--accent)">$/$ = 8.0</span></div>
               </div>
             </div>
 
-            <p style="font-size:0.7rem;margin-top:0.3rem;line-height:1.4"><strong>Score</strong> = benchmark agregado (BenchLM, jul/2026). <strong>Score/$</strong> = qualidade por dólar de output. <em style="color:var(--success)">GLM 5.2 entrega 5× mais valor por dólar que Opus 4.6</em>, quase empatado em score bruto.</p>
+            <p style="font-size:0.7rem;text-align:center;margin:0.5rem 0 0.7rem;color:var(--text-dim)"><em>GLM 5.2 entrega <strong style="color:var(--success)">5× mais valor por dólar</strong> que Opus 4.6 — com score quase igual.</em></p>
 
-            <!-- ============ DECISION GRID 2 COL ============ -->
-            <div class="cost-grid-2col">
-              <div>
-                <h4 style="color:var(--success);margin:0.5rem 0 0.3rem;font-size:0.78rem;letter-spacing:0.05em">✓ MESMO RESULTADO (USE O MAIS BARATO)</h4>
-                <ul style="font-size:0.7rem;line-height:1.45;margin:0">
-                  <li><strong>Classificação, extração, formatação, FAQ</strong> — GLM ≈ GPT ≈ Opus &gt;95%</li>
-                  <li><strong>Refatorar 1–2 arquivos</strong> — GLM 5.2 reasoning resolve</li>
-                  <li><strong>Resumir texto</strong> — Sonnet 4.6 empata Opus</li>
-                  <li><strong>Code review superficial</strong> — GPT-5.4 mini basta</li>
-                </ul>
+            <!-- ============ 2H ESTIMATE - BIG VISUAL ============ -->
+            <h4 style="color:var(--warning);margin:0.6rem 0 0.4rem;font-size:0.85rem;letter-spacing:0.05em;text-align:center">⏱ CUSTO DE 2 HORAS DE ATIVIDADE AGÊNTICA</h4>
 
-                <h4 style="color:var(--pink);margin:0.5rem 0 0.3rem;font-size:0.78rem;letter-spacing:0.05em">✕ PAGUE MAIS (PRECISA DE OPUS)</h4>
-                <ul style="font-size:0.7rem;line-height:1.45;margin:0">
-                  <li><strong>Arquitetura multi-componente</strong> — coerência de longo prazo</li>
-                  <li><strong>Escrita criativa longa / nuance editorial</strong></li>
-                  <li><strong>Análise jurídica / contratual</strong> — Adaptive Thinking calibra incerteza</li>
-                  <li><strong>Debug race condition / sistema distribuído</strong></li>
-                </ul>
+            <div class="cost-scenario-cards">
+              <div class="csc csc-light">
+                <div class="csc-tag">LIGHT</div>
+                <div class="csc-desc">sem thinking · só leitura + plan</div>
+                <div class="csc-numbers">
+                  <div class="csc-row">
+                    <span class="csc-label">Opus 4.6</span>
+                    <span class="csc-val">$5.05</span>
+                  </div>
+                  <div class="csc-row csc-winner">
+                    <span class="csc-label">GLM 5.2</span>
+                    <span class="csc-val">$1.42</span>
+                  </div>
+                  <div class="csc-row">
+                    <span class="csc-label">GPT-5</span>
+                    <span class="csc-val">$1.92</span>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <h4 style="color:var(--warning);margin:0.5rem 0 0.3rem;font-size:0.78rem;letter-spacing:0.05em">⚠ THINKING MULTIPLICA</h4>
-                <div class="diagram" style="font-size:0.66rem;line-height:1.35;margin-bottom:0.4rem">
-<span class="warning">[ 500 out visíveis ]</span>
-  <span class="purple">Opus 4.6</span>  (sem)  <strong>$0.0125</strong>
-  <span class="success">GLM 5.2</span>  (sem)  <strong>$0.0022</strong>
-  <span class="accent">GPT-5</span>    (sem)  <strong>$0.0050</strong>
+              <div class="csc csc-medium">
+                <div class="csc-tag">MEDIUM</div>
+                <div class="csc-desc">thinking moderado (5× output)</div>
+                <div class="csc-numbers">
+                  <div class="csc-row">
+                    <span class="csc-label">Opus 4.6</span>
+                    <span class="csc-val">$15.60</span>
+                  </div>
+                  <div class="csc-row csc-winner">
+                    <span class="csc-label">GLM 5.2</span>
+                    <span class="csc-val">$3.24</span>
+                  </div>
+                  <div class="csc-row">
+                    <span class="csc-label">GPT-5</span>
+                    <span class="csc-val">$5.52</span>
+                  </div>
+                </div>
+              </div>
 
-<span class="warning">[ 500 out + 2.000 thinking ]</span>
-  <span class="purple">Opus 4.6</span>  (5×)   <strong>$0.0625</strong> +400%
-  <span class="success">GLM 5.2</span>  (rea)  <strong>$0.0085</strong> +286%
-  <span class="accent">GPT-5</span>    (o3)   <strong>$0.0550</strong> +1000%</div>
-
-                <h4 style="color:var(--accent);margin:0.5rem 0 0.3rem;font-size:0.78rem;letter-spacing:0.05em">★ ROTEIRO</h4>
-                <div style="font-size:0.7rem;line-height:1.45;color:var(--text-secondary)">
-                  <strong>[1]</strong> Tarefa simples? → GLM 5.2 ou GPT-5.4 mini<br>
-                  <strong>[2]</strong> Complexa? Tente GLM 5.2 reasoning primeiro ($1/$3.20)<br>
-                  <strong>[3]</strong> Falhou? Escale pra GPT-5 (o3)<br>
-                  <strong>[4]</strong> Precisa de nuance? Só então Opus 4.6<br>
-                  <strong>[5]</strong> Cache (90% off) + batch sempre que possível
+              <div class="csc csc-heavy">
+                <div class="csc-tag">HEAVY</div>
+                <div class="csc-desc">Opus extended max thinking</div>
+                <div class="csc-numbers">
+                  <div class="csc-row csc-pink">
+                    <span class="csc-label">Opus 4.6</span>
+                    <span class="csc-val">$37.50</span>
+                  </div>
+                  <div class="csc-row csc-winner">
+                    <span class="csc-label">GLM 5.2</span>
+                    <span class="csc-val">$7.38</span>
+                  </div>
+                  <div class="csc-row">
+                    <span class="csc-label">GPT-5</span>
+                    <span class="csc-val">$13.88</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- ============ 2H ESTIMATE - HIGHLIGHTED ============ -->
-            <h4 style="color:var(--warning);margin:0.7rem 0 0.4rem;font-size:0.85rem;letter-spacing:0.05em">⏱ ESTIMATIVA REAL · 2 HORAS DE ATIVIDADE AGÊNTICA</h4>
-            <p style="font-size:0.66rem;margin-bottom:0.3rem;line-height:1.4"><strong>Premissas:</strong> 8 user turns · 15 model calls/turn (fanning out) · 8K input/call · 600 out visíveis · 3K thinking/call. <em>Fonte: Calcis + Cursor + Copilot benchmarks, jul/2026.</em></p>
+            <p style="font-size:0.68rem;text-align:center;margin:0.5rem 0 0.4rem;color:var(--text-dim)"><em>Premissas: 8 user turns · 15 model calls/turn · 8K input + 600 out + 3K thinking/call · <strong style="color:var(--success)">cache 80% corta 5×</strong></em></p>
 
-            <div class="agent-estimate">
-              <div class="ae-row ae-head">
-                <div>Cenário</div>
-                <div>Input</div>
-                <div>Out+Think</div>
-                <div>Opus 4.6</div>
-                <div>GLM 5.2</div>
-                <div>GPT-5</div>
+            <!-- ============ ROUTE: WHEN USE WHAT ============ -->
+            <div class="cost-route">
+              <div class="route-step route-simple">
+                <div class="route-num">1</div>
+                <div class="route-text">Tarefa <strong>simples</strong>?</div>
+                <div class="route-arrow">→</div>
+                <div class="route-action" style="color:var(--success)">GLM 5.2 · GPT-5 mini</div>
               </div>
-              <div class="ae-row ae-light">
-                <div><strong>Light</strong> <span class="dim">sem thinking</span></div>
-                <div>960K</div>
-                <div>72K</div>
-                <div><strong>$5.05</strong></div>
-                <div><strong style="color:var(--success)">$1.42</strong></div>
-                <div><strong>$1.92</strong></div>
+              <div class="route-step route-complex">
+                <div class="route-num">2</div>
+                <div class="route-text"><strong>Complexa</strong>?</div>
+                <div class="route-arrow">→</div>
+                <div class="route-action" style="color:var(--accent)">GLM reasoning · GPT-5 o3</div>
               </div>
-              <div class="ae-row ae-medium">
-                <div><strong>Medium</strong> <span class="dim">thinking 5×</span></div>
-                <div>960K</div>
-                <div>432K</div>
-                <div><strong>$15.60</strong></div>
-                <div><strong style="color:var(--success)">$3.24</strong></div>
-                <div><strong>$5.52</strong></div>
-              </div>
-              <div class="ae-row ae-heavy">
-                <div><strong>Heavy</strong> <span class="dim">Opus ext. max</span></div>
-                <div>1.5M</div>
-                <div>1.2M</div>
-                <div><strong style="color:var(--pink)">$37.50</strong></div>
-                <div><strong style="color:var(--success)">$7.38</strong></div>
-                <div><strong>$13.88</strong></div>
+              <div class="route-step route-deep">
+                <div class="route-num">3</div>
+                <div class="route-text">Precisa <strong>nuance</strong>?</div>
+                <div class="route-arrow">→</div>
+                <div class="route-action" style="color:var(--purple)">Só então Opus 4.6</div>
               </div>
             </div>
 
-            <p style="font-size:0.7rem;margin-top:0.4rem;line-height:1.4"><strong style="color:var(--success)">Cache 80%</strong> corta custos ~5×. <strong>GLM 5.2 Medium cached:</strong> <strong style="color:var(--success)">$0.65</strong> · <strong>Opus 4.6 Medium cached:</strong> <strong>$3.12</strong>. <em>Real stats: Calcis = $0.09-0.32/turn · Cursor (88% cache) Opus = $0.90/req · heavy 4-6h/dia user = $20-200/mês em Claude Code/Copilot Max.</em></p>
-
             <!-- ============ FOOTER ============ -->
-            <p style="font-size:0.66rem;color:var(--text-dim);margin-top:0.5rem;border-top:1px solid var(--border);padding-top:0.4rem;line-height:1.4">
-              <strong>Preços</strong>: Anthropic, OpenAI, Zhipu AI · jul/2026 · <em>por milhão de tokens</em>. <strong>Benchmarks</strong>: BenchLM agregados (8 categorias). <strong>Thinking</strong> = output rate. <strong>Cache</strong> corta input em até 90%.
+            <p style="font-size:0.62rem;color:var(--text-dim);margin-top:0.4rem;text-align:center;border-top:1px solid var(--border);padding-top:0.3rem">
+              Preços jul/2026 · Anthropic, OpenAI, Zhipu AI · por milhão de tokens · Thinking = output rate · Cache corta até 90%
             </p>
           </div>
         </div>
       </div>
-  </div><!-- /.viewport -->
 
   <!-- ============ TOP-NAV ============ -->
   <button class="nav-toggle" id="navToggle" title="Mostrar/ocultar índice">☰</button>
