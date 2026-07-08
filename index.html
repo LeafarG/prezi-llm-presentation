@@ -335,6 +335,12 @@
     .topnav.collapsed {
       transform: translateX(calc(100% + 1.5rem));
     }
+    /* Auto-collapse the topnav when a section is focused so it doesn't overlap content */
+    body.focused-section .topnav {
+      transform: translateX(calc(100% + 1.5rem));
+      opacity: 0.25;
+      pointer-events: none;
+    }
     .topnav-header {
       display: flex;
       align-items: center;
@@ -1747,12 +1753,12 @@
                   <div class="sections-list">Tools &nbsp;·&nbsp; MCP &nbsp;·&nbsp; Harness</div>
                   <div class="tour-tag">▶ TOUR GUIADO</div>
                 </button>
-                <button class="macro-card" data-cluster="orcamento">
+                <button class="macro-card" data-cluster="orcamento" data-tour="orcamento">
                   <span class="icon">04</span>
                   <h3>Orçamento</h3>
                   <p class="macro-fact"><strong>GLM 5.2 entrega 5× mais valor/$</strong> que Opus 4.6 com score quase igual.</p>
                   <div class="sections-list">Custos</div>
-                  <div class="tour-tag">▶ VER COMPARAÇÃO</div>
+                  <div class="tour-tag">▶ TOUR GUIADO</div>
                 </button>
               </div>
 
@@ -2854,6 +2860,19 @@
           </div>
 
           <div class="content">
+            <div class="content-header">
+              <div class="cluster-badge" data-cluster="orcamento">
+                <span class="dot"></span>
+                <span class="macro-num">MACRO 04</span>
+                <span class="separator">·</span>
+                <span>ORÇAMENTO</span>
+                <span class="next"> CAPA</span>
+              </div>
+              <div class="content-header-row">
+                <span class="num">// 04</span>
+                <h2>Custos</h2>
+              </div>
+            </div>
           <div class="content-body">
             <p style="font-size:0.78rem;line-height:1.4;margin:0 0 0.7rem"><span style="color:var(--warning);font-weight:600">Regra de bolso:</span> o modelo <em>mais capaz</em> raramente é o mais <em>custo-efetivo</em>. Pague Opus só pra nuance + raciocínio profundo — use GLM ou GPT-5 mini pra todo o resto.</p>
 
@@ -3028,7 +3047,7 @@
       <a data-id="tools"><span class="dot"></span>Tools</a>
       <a data-id="mcp"><span class="dot"></span>MCP</a>
       <a data-id="harness"><span class="dot"></span>Harness</a>
-      <a data-id="custos"><span class="dot"></span>Custos</a>
+      <a data-id="custos"><span class="dot"></span>Orçamento</a>
     </div>
   </nav>
 
@@ -3215,6 +3234,8 @@
 
     function setCurrentSection(id) {
       state.currentId = id;
+      // Body class for CSS hooks (e.g., auto-collapse topnav when a section is focused)
+      document.body.classList.toggle('focused-section', id !== null);
 
       // Highlight in nav
       navLinks.forEach(a => a.classList.remove('active', 'passed'));
