@@ -35,25 +35,31 @@ What we build on top: tooling, protocol, agents.
 - **MCP** — Model Context Protocol "USB-C for AI"
 - **Harness** — Claude Code, Cursor, MS Cowork, Manus
 
+### Cluster 4 — "Orçamento" (amber accent)
+Practical cost-of-intelligence — which model for which task.
+- **Custos** — Opus 4.6 vs GLM 5.2 vs GPT-5 price/performance comparison,
+  thinking-token multiplier (3-20×), decision tree for routing,
+  "when same result / when you must pay more" checklists.
+
 ### Cover — entry point
-- **Capa** — overview + 3 macro-cards (clickable → tour)
+- **Capa** — overview + 4 macro-cards (clickable → tour)
 - Each macro-card launches a **guided tour** that walks through the
   cluster's sections with brief pauses + "→ próximo" overlay
 
 ## Visual canvas layout (timeline)
 
 ```
-Canvas 7900 × 1500 (timeline horizontal)
+Canvas 9500 × 1500 (timeline horizontal)
 
-   100      950    1850 2750 3650 4550 5450   6400 7400   (left edges)
-   ├──┬──────┼─────┼───┼────┼────┼────┼─────────┼───┤
-   │CAPA│  HIST   │TIPOS│THIN│FRA │TOOL│  MCP    │ HARNESS │ (timeline)
-   │    │          │    │    │MEW │ S  │         │         │
-   │750 │ 850      │850 │850 │850 │850 │ 900     │ 1500    │ (widths)
-   │    │          │    │    │   │    │         │         │
-   └────┴──────────┴────┴────┴───┴────┴─────────┴─────────┘
-         ↗    →    →    →    →    →    →    →       (timeline flow)
-   (pink)  (gray between-section arrows)
+   100      950    1850 2750 3650 4550 5450   6400        8000  9400   (left edges)
+   ├──┬──────┼─────┼───┼────┼────┼────┼─────────┼───────────┼─────┤
+   │CAPA│  HIST   │TIPOS│THIN│FRA │TOOL│  MCP    │  HARNESS  │CUSTOS│ (timeline)
+   │    │          │    │    │MEW │ S  │         │           │      │
+   │750 │ 850      │850 │850 │850 │850 │ 900     │ 1500      │1400  │ (widths)
+   │    │          │    │    │   │    │         │           │      │
+   └────┴──────────┴────┴────┴───┴────┴─────────┴───────────┴──────┘
+         ↗    →    →    →    →    →    →    →    ↘          (timeline flow)
+   (pink)  (gray between-section arrows)               (amber lead-out)
 ```
 
 **Geometry guarantee** — each section:
@@ -68,8 +74,9 @@ Cluster colors tint (vertical bands):
 - Fundamentos: blue vertical band (Historia + Frameworks columns)
 - Modelo: purple vertical band (Tipos + Thinking columns)
 - Construções: green vertical band (Tools + MCP + Harness columns)
+- Orçamento: amber vertical band (Custos column)
 
-Inter-cluster arrows SVG overlay: 7 small horizontal arrows + arrowheads drawn in the 50 px gap between adjacent sections. During the narrative tour, one arrow briefly `.highlight`s (cyan accent) just before its right-side section focuses.
+Inter-cluster arrows SVG overlay: 8 small horizontal arrows + arrowheads drawn in the 50-100 px gap between adjacent sections. The Capa→Historia lead-in is dashed pink; the Harness→Custos lead-out is dashed amber. During the narrative tour, one arrow briefly `.highlight`s (cyan accent) just before its right-side section focuses.
 
 This layout replaces the previous v2 quadranted "U" (6000×3800) — boss feedback was that the U felt too rigid and unnatural. Timeline reads as a continuous narrative flow from Capa on the left to Harness on the right.
 
@@ -80,7 +87,7 @@ This layout replaces the previous v2 quadranted "U" (6000×3800) — boss feedba
 2. **Top-nav jump** — click any section in the top-right list.
 3. **Guided tour** — click a cluster card on Capa → auto-advances through
    that cluster with 2.5s pauses + "→ Próximo" hint. ESC ends the tour.
-4. **Overview** — Home button fits the entire 6000×3000 canvas.
+4. **Overview** — Home button fits the entire 9500×1500 canvas (9 sections in 4 clusters).
 5. **Hash deep-link** — `#historia`, `#mcp`, `#historia?event=transformer`,
    `#cluster:fundamentos` (tour), `#cluster:construcoes` (tour).
 
@@ -126,8 +133,8 @@ panel closes. Deep-link `?event=<id>` opens detail directly.
 
 ## Critical notes for future work
 
-- Canvas dimension constants must agree between CSS (`.canvas { width: 7900;
-  height: 1500; }`) and JS (`canvasW = 7900`, `canvasH = 1500`).
+- Canvas dimension constants must agree between CSS (`.canvas { width: 9500;
+  height: 1500; }`) and JS (`canvasW = 9500`, `canvasH = 1500`).
   If you expand the canvas, update both.
 - `getSectionRect` reads CSS `style.left/top/width/height` (inline) — keep
   these in sync with `SECTIONS` table if you ever want to dedup.
