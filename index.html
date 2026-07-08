@@ -1119,6 +1119,54 @@
     .dt-win { color: var(--success); }
     .dt-choose { color: var(--text-primary); }
 
+    /* ============ AGENT ESTIMATE TABLE ============ */
+    .agent-estimate {
+      display: grid;
+      grid-template-columns: 1.5fr 0.8fr 1.1fr 1fr 1fr 1fr;
+      gap: 0;
+      margin: 0.6rem 0 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+    }
+    .ae-row { display: contents; }
+    .ae-row > div {
+      padding: 0.45rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .ae-head > div {
+      background: var(--bg-card);
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.6rem;
+    }
+    .ae-light > div:nth-child(1) { border-left: 3px solid var(--success); padding-left: 0.4rem; }
+    .ae-medium > div:nth-child(1) { border-left: 3px solid var(--warning); padding-left: 0.4rem; }
+    .ae-heavy > div:nth-child(1) { border-left: 3px solid var(--pink); padding-left: 0.4rem; }
+
+    /* ============ REAL STATS ============ */
+    .real-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-top: 0.6rem;
+      padding: 0.55rem 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .rs-item { line-height: 1.45; color: var(--text-dim); }
+    .rs-label { color: var(--text-secondary); font-weight: 600; }
+    .rs-value { color: var(--text-primary); }
+
     /* Capa stats */
     .capa-stats {
       display: grid;
@@ -2666,6 +2714,52 @@
               <li><strong>Refatorar 1–2 arquivos</strong> — GLM 5.2 reasoning resolve. <em>Só escale pra Opus/GPT-5 se a mudança atravessa 5+ arquivos.</em></li>
               <li><strong>Code review superficial</strong> — GPT-5.4 mini basta. <em>Opus é desperdício.</em></li>
             </ul>
+
+            <h4 style="color:var(--warning);margin:1.2rem 0 0.6rem;font-size:0.95rem;letter-spacing:0.05em">⏱ ESTIMATIVA REAL: 2 HORAS DE ATIVIDADE AGÊNTICA</h4>
+            <p style="font-size:0.82rem;margin-bottom:0.4rem"><strong>Premissas</strong> (baseadas em dados reais Cursor/Copilot, jul/2026): 8 user turns em 2h · 15 model calls/turn (fanning out: file read, plan, edit, retry) · 8K input/call · 600 output visíveis/call · 3K thinking/call quando thinking ativo.</p>
+
+            <div class="agent-estimate">
+              <div class="ae-row ae-head">
+                <div>Cenário</div>
+                <div>Input</div>
+                <div>Output+Thinking</div>
+                <div>Opus 4.6</div>
+                <div>GLM 5.2</div>
+                <div>GPT-5</div>
+              </div>
+              <div class="ae-row ae-light">
+                <div><strong>Light</strong><br><span class="dim">sem thinking · só leitura+plan</span></div>
+                <div>960K</div>
+                <div>72K</div>
+                <div><strong>$5.05</strong></div>
+                <div><strong style="color:var(--success)">$1.42</strong></div>
+                <div><strong>$1.92</strong></div>
+              </div>
+              <div class="ae-row ae-medium">
+                <div><strong>Medium</strong><br><span class="dim">thinking moderado (5× out)</span></div>
+                <div>960K</div>
+                <div>432K</div>
+                <div><strong>$15.60</strong></div>
+                <div><strong style="color:var(--success)">$3.24</strong></div>
+                <div><strong>$5.52</strong></div>
+              </div>
+              <div class="ae-row ae-heavy">
+                <div><strong>Heavy</strong><br><span class="dim">Opus extended max</span></div>
+                <div>1.5M</div>
+                <div>1.2M</div>
+                <div><strong style="color:var(--pink)">$37.50</strong></div>
+                <div><strong style="color:var(--success)">$7.38</strong></div>
+                <div><strong>$13.88</strong></div>
+              </div>
+            </div>
+
+            <p style="font-size:0.78rem;margin-top:0.5rem"><strong>Com cache 80%</strong> (sistema lê mesmo código toda hora): custos caem ~5×. <strong>GLM 5.2 Medium com cache:</strong> <strong style="color:var(--success)">$0.65</strong> · <strong>Opus 4.6 Medium com cache:</strong> <strong>$3.12</strong>. <em>Cache é onde se ganha ou se perde dinheiro em produção.</em></p>
+
+            <div class="real-stat">
+              <div class="rs-item"><span class="rs-label">Calcis benchmark (15 calls/turn):</span> <span class="rs-value">Opus 4.6 = <strong>$0.32</strong>/turn · GLM 5.2 = <strong>$0.09</strong>/turn · GPT-5 = <strong>$0.16</strong>/turn</span></div>
+              <div class="rs-item"><span class="rs-label">Cursor Composer 2 (88% cache):</span> <span class="rs-value">Sonnet = <strong>$0.19</strong>/req · Opus = <strong>$0.90</strong>/req · pico Opus = <strong>$4.25</strong></span></div>
+              <div class="rs-item"><span class="rs-label">Heavy user 4-6h/dia:</span> <span class="rs-value">Claude Code Pro <strong>$20-40/mês</strong> · Copilot Max <strong>$100/mês</strong> · Claude Code Max <strong>$200/mês</strong></span></div>
+            </div>
 
             <h4 style="color:var(--warning);margin:1.2rem 0 0.6rem;font-size:0.95rem;letter-spacing:0.05em">✕ QUANDO VOCÊ <em>PRECISA</em> PAGAR MAIS</h4>
             <ul style="font-size:0.85rem;line-height:1.55">
