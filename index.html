@@ -109,7 +109,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 7900px;
+      width: 9500px;
       height: 1500px;
       transform-origin: 0 0;
       will-change: transform;
@@ -1061,6 +1061,64 @@
     .harness.pink { border-color: rgba(244, 114, 182, 0.4); }
     .harness.pink .harness-icon { background: rgba(244, 114, 182, 0.2); color: var(--pink); }
 
+    /* ============ COSTOS SECTION ============ */
+    .cost-table {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1.3fr 0.8fr 0.8fr;
+      gap: 0;
+      margin: 0.75rem 0 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+    }
+    .cost-row { display: contents; }
+    .cost-row > div {
+      padding: 0.45rem 0.55rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .cost-head > div {
+      background: var(--bg-card);
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.62rem;
+    }
+    .cost-row:not(.cost-head) > div:nth-child(5),
+    .cost-row:not(.cost-head) > div:nth-child(6) {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* ============ DECISION TREE ============ */
+    .decision-tree {
+      background: rgba(251, 191, 36, 0.04);
+      border-left: 3px solid var(--warning);
+      border-radius: 0 8px 8px 0;
+      padding: 0.5rem 0.85rem;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .dt-step {
+      padding: 0.4rem 0;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .dt-step strong { color: var(--text-primary); }
+    .dt-arrow {
+      text-align: center;
+      color: var(--warning);
+      font-size: 1.1rem;
+      padding: 0.1rem 0;
+      opacity: 0.6;
+    }
+    .dt-win { color: var(--success); }
+    .dt-choose { color: var(--text-primary); }
+
     /* Capa stats */
     .capa-stats {
       display: grid;
@@ -1108,6 +1166,11 @@
       width: 820px; height: 1100px;
       background: radial-gradient(circle, rgba(244,114,182,0.10) 0%, transparent 70%);
     }
+    .cluster-bg.orcamento {
+      left: 7950px; top: 80px;
+      width: 1500px; height: 1300px;
+      background: radial-gradient(ellipse, rgba(251,191,36,0.10) 0%, transparent 70%);
+    }
 
     /* ============ CLUSTER LABELS (canvas-level) ============ */
     .cluster-label {
@@ -1126,11 +1189,13 @@
     .cluster-label.modelo { left: 2525px; top: 40px; color: var(--purple); }
     .cluster-label.construcoes { left: 5800px; top: 40px; color: var(--success); }
     .cluster-label.capa-area { left: 110px; top: 320px; color: var(--pink); writing-mode: vertical-rl; transform: rotate(180deg); }
+    .cluster-label.orcamento { left: 8400px; top: 40px; color: var(--warning); }
 
     /* ============ INTER-CLUSTER ARROWS (SVG) ============ */
     .cluster-arrows { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
     .cluster-arrows path { fill: none; opacity: 0.7; }
     .cluster-arrows path.lead-in { stroke: var(--pink); stroke-width: 3; stroke-dasharray: 4 6; }
+    .cluster-arrows path.lead-out { stroke: var(--warning); stroke-width: 3; stroke-dasharray: 4 6; }
     .cluster-arrows path.between { stroke: var(--border-strong); stroke-width: 3; }
     .cluster-arrows path.highlight { stroke: var(--accent); stroke-dasharray: 0; opacity: 0.95; stroke-width: 4; }
     .cluster-arrows .arrow-head { fill: var(--border-strong); opacity: 0.7; }
@@ -1296,6 +1361,7 @@
     .tour-hint[data-cluster="fundamentos"] .badge { background: rgba(96,165,250,0.15); color: var(--accent); }
     .tour-hint[data-cluster="modelo"] .badge { background: rgba(167,139,250,0.15); color: var(--purple); }
     .tour-hint[data-cluster="construcoes"] .badge { background: rgba(52,211,153,0.15); color: var(--success); }
+    .tour-hint[data-cluster="orcamento"] .badge { background: rgba(251,191,36,0.15); color: var(--warning); }
     .tour-hint .next-arrow { font-size: 1.4rem; color: var(--text-secondary); }
     .tour-hint .cluster-name { font-weight: 600; }
     .tour-hint .section-name { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-muted); }
@@ -1328,10 +1394,11 @@
       <div class="cluster-bg fundamentos"></div>
       <div class="cluster-bg modelo"></div>
       <div class="cluster-bg construcoes"></div>
+      <div class="cluster-bg orcamento"></div>
       <div class="cluster-bg capa-area"></div>
 
       <!-- ============ INTER-CLUSTER ARROWS ============ -->
-      <svg class="cluster-arrows" viewBox="0 0 7900 1500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="cluster-arrows" viewBox="0 0 9500 1500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Capa -> Historia (lead-in, dashed pink) -->
         <path d="M 860 760 L 945 760" class="lead-in" />
         <polygon class="arrow-head" points="945,760 935,755 935,765" />
@@ -1353,12 +1420,16 @@
         <!-- MCP -> Harness (finale, ends at Harness left edge) -->
         <path d="M 6360 760 L 6395 760" class="between" />
         <polygon class="arrow-head" points="6395,760 6385,755 6385,765" />
+        <!-- Harness -> Custos (finale: Construções -> Orçamento) -->
+        <path d="M 7910 760 L 7995 760" class="lead-out" />
+        <polygon class="arrow-head" points="7995,760 7985,755 7985,765" />
       </svg>
 
       <!-- ============ CLUSTER LABELS (faded, canvas-level) ============ -->
       <div class="cluster-label fundamentos">// MACRO 1 · FUNDAMENTOS</div>
       <div class="cluster-label modelo">// MACRO 2 · O MODELO</div>
       <div class="cluster-label construcoes">// MACRO 3 · CONSTRUÇÕES</div>
+      <div class="cluster-label orcamento">// MACRO 4 · ORÇAMENTO</div>
 
       <!-- ============ CAPA ============ -->
       <div class="section" id="sec-capa" data-id="capa"
@@ -2492,6 +2563,126 @@
         </div>
       </div>
 
+      <!-- ============ CUSTOS ============ -->
+      <div class="section" id="sec-custos" data-id="custos"
+           style="left: 8000px; top: 200px; width: 1400px; height: 1100px;">
+        <div class="frame">
+          <div class="poster">
+            <div class="poster-num">// ORÇAMENTO</div>
+            <div class="poster-title">Pensar caro<br>ou pensar barato?</div>
+            <div class="poster-sub">Opus 4.6 · GLM 5.2 · GPT-5 — quando cada um compensa.</div>
+          </div>
+
+          <div class="content-body">
+            <p class="harness-lead"><span style="color:var(--warning)">Premissa:</span> o modelo <em>mais capaz</em> raramente é o mais <em>custo-efetivo</em>. A escolha depende da tarefa — e "thinking" multiplica o custo de saída de 3× a 20×. Use a régua abaixo antes de chamar Opus pra classificar um e-mail.</p>
+
+            <!-- ============ TABELA DE PREÇOS ============ -->
+            <div class="cost-table">
+              <div class="cost-row cost-head">
+                <div>Modelo</div>
+                <div>In · $/M</div>
+                <div>Out · $/M</div>
+                <div>Thinking</div>
+                <div>Score (geral)</div>
+                <div>Score/$</div>
+              </div>
+              <div class="cost-row">
+                <div><span class="purple">Opus 4.6</span><br><span class="dim">Anthropic</span></div>
+                <div>$5.00</div>
+                <div>$25.00</div>
+                <div><strong>Adaptive</strong><br><span class="dim">3–5× output</span></div>
+                <div>84</div>
+                <div><strong style="color:var(--warning)">3.4</strong></div>
+              </div>
+              <div class="cost-row">
+                <div><span class="success">GLM 5.2</span><br><span class="dim">Zhipu / Z.ai</span></div>
+                <div>$1.40</div>
+                <div>$4.40</div>
+                <div><strong>Reasoning</strong><br><span class="dim">$1.00/$3.20</span></div>
+                <div>83</div>
+                <div><strong style="color:var(--success)">17.5</strong></div>
+              </div>
+              <div class="cost-row">
+                <div><span class="accent">GPT-5</span><br><span class="dim">OpenAI</span></div>
+                <div>$1.25</div>
+                <div>$10.00</div>
+                <div><strong>o-series</strong><br><span class="dim">5–20× output</span></div>
+                <div>~72</div>
+                <div><strong style="color:var(--accent)">8.0</strong></div>
+              </div>
+            </div>
+
+            <p style="font-size:0.85rem;margin-top:0.5rem"><strong>Como ler:</strong> <em>Score</em> = benchmark agregado (BenchLM, jul/2026). <em>Score/$</em> = qualidade por dólar de output. <em>GLM 5.2 entrega 5× mais valor por dólar que Opus 4.6</em> — quase empatado em score bruto, com score/$ 5× maior.</p>
+
+            <!-- ============ THINKING MULTIPLIER ============ -->
+            <h4 style="color:var(--warning);margin:1.2rem 0 0.6rem;font-size:0.95rem;letter-spacing:0.05em">⚠ O CUSTO REAL DO "THINKING"</h4>
+            <p style="font-size:0.88rem">Raciocínio estendido não é grátis. <em>Thinking tokens</em> são cobrados como <strong>output</strong> — e modelos de raciocínio queimam 3–20× mais tokens pra produzir a mesma resposta visível. Exemplos reais (jul/2026):</p>
+
+            <div class="diagram"><span class="warning">[ Tarefa simples · 500 out visíveis ]</span>
+  <span class="dim">├─</span> <span class="purple">Opus 4.6</span>  (sem thinking)        <strong>$0.0125</strong>
+  <span class="dim">├─</span> <span class="success">GLM 5.2</span>    (sem thinking)        <strong>$0.0022</strong>  ← 5.7× mais barato
+  <span class="dim">└─</span> <span class="accent">GPT-5</span>     (sem thinking)        <strong>$0.0050</strong>
+
+<span class="warning">[ Tarefa complexa · 500 out visíveis + 2.000 thinking ]</span>
+  <span class="dim">├─</span> <span class="purple">Opus 4.6</span>  (5× thinking)         <strong>$0.0625</strong>  ← +400%
+  <span class="dim">├─</span> <span class="success">GLM 5.2</span>    (reasoning variant)  <strong>$0.0085</strong>  ← +286% (mas ainda 7× < Opus)
+  <span class="dim">└─</span> <span class="accent">GPT-5</span>     (o3-style thinking)  <strong>$0.0550</strong>  ← +1000%
+
+<span class="dim">Lição: thinking <em>multiplica</em> o output cost. Opus 4.6 com thinking máximo</span>
+<span class="dim">       cobra $0.0625 por resposta — mesmo trabalho no GLM 5.2 fica em $0.0085.</span></div>
+
+            <!-- ============ DECISION TREE ============ -->
+            <h4 style="color:var(--warning);margin:1.2rem 0 0.6rem;font-size:0.95rem;letter-spacing:0.05em">★ ROTEIRO DE DECISÃO</h4>
+            <div class="decision-tree">
+              <div class="dt-step"><span class="dim">[1]</span> <strong>Tarefa é simples e repetitiva?</strong><br>
+                <span class="dim">→</span> classificação, extração, formatação, FAQ básico</div>
+              <div class="dt-arrow">↓</div>
+              <div class="dt-step dt-win"><span class="dim">[2]</span> Use <strong style="color:var(--success)">GLM 5.2</strong> ou <strong style="color:var(--accent)">GPT-5.4 mini</strong> ($0.75/$4.50).<br>
+                <span class="dim">→ resultado equivalente a Opus em ~95% dos casos.</span></div>
+
+              <div class="dt-arrow">↓</div>
+
+              <div class="dt-step"><span class="dim">[3]</span> <strong>Tarefa exige raciocínio profundo OU código multi-arquivo?</strong><br>
+                <span class="dim">→ debug complexo, prova matemática, análise contratual, agente longo</span></div>
+              <div class="dt-arrow">↓</div>
+              <div class="dt-step dt-choose"><span class="dim">[4]</span> <strong>Roteie por tier</strong>:<br>
+                <span class="success">• Tente GLM 5.2 reasoning primeiro</span> ($1.00/$3.20 — 7× mais barato).<br>
+                <span class="accent">• Se falhar, escale pra GPT-5 (o3-style).</span><br>
+                <span class="purple">• Opus 4.6 só quando precisa de fidelidade + nuance</span> (escrita longa, análise jurídica).</div>
+
+              <div class="dt-arrow">↓</div>
+
+              <div class="dt-step"><span class="dim">[5]</span> <strong>Cache + batch?</strong><br>
+                <span class="dim">→ 90% de desconto em input via cache · 50% via Batch API.</span></div>
+              <div class="dt-step dt-win"><span class="dim">→ Opus 4.6 cached input:</span> <strong>$0.50/M</strong> em vez de $5.00.</div>
+            </div>
+
+            <!-- ============ WHEN SAME RESULT ============ -->
+            <h4 style="color:var(--warning);margin:1.2rem 0 0.6rem;font-size:0.95rem;letter-spacing:0.05em">✓ QUANDO VOCÊ OBTÉM O MESMO RESULTADO</h4>
+            <ul style="font-size:0.85rem;line-height:1.55">
+              <li><strong>Classificação, extração JSON, formatação, tradução simples</strong> — GLM 5.2 ≈ GPT-5 ≈ Opus 4.6 (todos &gt;95% de acurácia). <em>Use o mais barato.</em></li>
+              <li><strong>Perguntas factuais sobre código que já está no contexto</strong> — qualquer modelo de 2026 acerta. <em>Use GLM 5.2 ou GPT-5 mini.</em></li>
+              <li><strong>Resumir texto</strong> — Sonnet 4.6 ($3/$15) já empata Opus 4.6 em BLEU/ROUGE. <em>Não pague 5× a mais.</em></li>
+              <li><strong>Refatorar 1–2 arquivos</strong> — GLM 5.2 reasoning resolve. <em>Só escale pra Opus/GPT-5 se a mudança atravessa 5+ arquivos.</em></li>
+              <li><strong>Code review superficial</strong> — GPT-5.4 mini basta. <em>Opus é desperdício.</em></li>
+            </ul>
+
+            <h4 style="color:var(--warning);margin:1.2rem 0 0.6rem;font-size:0.95rem;letter-spacing:0.05em">✕ QUANDO VOCÊ <em>PRECISA</em> PAGAR MAIS</h4>
+            <ul style="font-size:0.85rem;line-height:1.55">
+              <li><strong>Arquitetura de sistema multi-componente</strong> — Opus 4.6 ainda vence em coerência de longo prazo.</li>
+              <li><strong>Escrita criativa longa ou nuance editorial</strong> — Opus 4.6 &gt; GPT-5 &gt;&gt; GLM em prosa.</li>
+              <li><strong>Análise jurídica / contratual com responsabilidade</strong> — Opus 4.6 (Adaptive Thinking) tem a melhor calibração de incerteza.</li>
+              <li><strong>Debugging de race condition ou problema distribuído</strong> — Opus 4.6 + extended thinking supera outros em horas-investigadas.</li>
+            </ul>
+
+            <!-- ============ FOOTER ============ -->
+            <p style="font-size:0.8rem;color:var(--text-dim);margin-top:1rem;border-top:1px solid var(--border);padding-top:0.6rem">
+              <strong>Preços</strong>: Anthropic, OpenAI, Zhipu AI · jul/2026 · <em>por milhão de tokens</em>. <strong>Benchmarks</strong>: BenchLM agregados (8 categorias, jul/2026). <strong>Thinking tokens</strong> são cobrados como output. <strong>Cache</strong> corta input em até 90% — sempre que o contexto é estável.
+            </p>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /.canvas -->
   </div><!-- /.viewport -->
 
@@ -2546,6 +2737,7 @@
       { id: 'tools',      label: 'Tools',       cluster: 'construcoes' },
       { id: 'mcp',        label: 'MCP',         cluster: 'construcoes' },
       { id: 'harness',    label: 'Harness',     cluster: 'construcoes' },
+      { id: 'custos',     label: 'Custos',      cluster: 'orcamento' },
     ];
 
     const CLUSTERS = {
@@ -2560,6 +2752,10 @@
       construcoes: {
         label: 'Construções',
         sections: ['tools', 'mcp', 'harness'],
+      },
+      orcamento: {
+        label: 'Orçamento',
+        sections: ['custos'],
       },
     };
 
@@ -2641,7 +2837,7 @@
 
     function computeOverviewFit() {
       const { w: vw, h: vh } = getViewportSize();
-      const canvasW = 7900;
+      const canvasW = 9500;
       const canvasH = 1500;
       const padding = 80;
       const scale = Math.min(
@@ -2727,12 +2923,14 @@
         modelo: 'var(--purple)',
         construcoes: 'var(--success)',
         capa: 'var(--border-strong)',
+        orcamento: 'var(--warning)',
       };
       const clusterRgbMap = {
         fundamentos: '96, 165, 250',
         modelo: '167, 139, 250',
         construcoes: '52, 211, 153',
         capa: '58, 71, 87', // --border-strong
+        orcamento: '251, 191, 36', // --warning amber
       };
       Object.entries(sectionEls).forEach(([sid, el]) => {
         const meta = SECTIONS.find(s => s.id === sid);
@@ -3151,7 +3349,7 @@
     }
 
     function runNarrativeStep() {
-      const sections = ['historia', 'frameworks', 'tipos', 'thinking', 'tools', 'mcp', 'harness', 'capa'];
+      const sections = ['historia', 'frameworks', 'tipos', 'thinking', 'tools', 'mcp', 'harness', 'custos', 'capa'];
       const sectionId = sections[narrativeState.index];
       const isLast = narrativeState.index === sections.length - 1;
       focusSection(sectionId, { animate: true });
@@ -3164,7 +3362,7 @@
       showNarrativeHint(sectionId, narrativeState.index + 1, sections.length);
 
       // Pause: longer for dense sections
-      const denseSections = new Set(['capa', 'historia', 'frameworks', 'tools', 'mcp']);
+      const denseSections = new Set(['capa', 'historia', 'frameworks', 'tools', 'mcp', 'custos']);
       const pauseMs = denseSections.has(sectionId) ? 4500 : 3500;
       narrativeState.timer = setTimeout(() => {
         narrativeState.index++;
