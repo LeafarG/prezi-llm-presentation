@@ -110,7 +110,7 @@
       left: 0;
       top: 0;
       width: 9500px;
-      height: 1500px;
+      height: 2000px;
       transform-origin: 0 0;
       will-change: transform;
       transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1);
@@ -302,7 +302,7 @@
       height: calc(100% - 100px);
       overflow: hidden;
     }
-    #sec-custos .content-body { overflow-y: auto; padding-right: 0.5rem; scrollbar-width: thin; scrollbar-color: var(--warning) transparent; }
+    #sec-custos .content-body { overflow-y: auto; overflow-x: hidden; padding-right: 0.5rem; scrollbar-width: thin; scrollbar-color: var(--warning) transparent; }
     #sec-custos .content-body::-webkit-scrollbar { width: 6px; }
     #sec-custos .content-body::-webkit-scrollbar-track { background: transparent; }
     #sec-custos .content-body::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.4); border-radius: 3px; }
@@ -1201,17 +1201,17 @@
     }
     .cluster-bg.fundamentos {
       left: 900px; top: 80px;
-      width: 3700px; height: 1300px;
+      width: 3700px; height: 1800px;
       background: radial-gradient(ellipse, rgba(96,165,250,0.10) 0%, transparent 70%);
     }
     .cluster-bg.modelo {
       left: 1800px; top: 80px;
-      width: 1900px; height: 1300px;
+      width: 1900px; height: 1800px;
       background: radial-gradient(ellipse, rgba(167,139,250,0.10) 0%, transparent 70%);
     }
     .cluster-bg.construcoes {
       left: 4500px; top: 80px;
-      width: 3450px; height: 1300px;
+      width: 3450px; height: 1800px;
       background: radial-gradient(ellipse, rgba(52,211,153,0.08) 0%, transparent 70%);
     }
     .cluster-bg.capa-area {
@@ -1221,7 +1221,7 @@
     }
     .cluster-bg.orcamento {
       left: 7950px; top: 80px;
-      width: 1500px; height: 1300px;
+      width: 1500px; height: 1800px;
       background: radial-gradient(ellipse, rgba(251,191,36,0.10) 0%, transparent 70%);
     }
 
@@ -1451,7 +1451,7 @@
       <div class="cluster-bg capa-area"></div>
 
       <!-- ============ INTER-CLUSTER ARROWS ============ -->
-      <svg class="cluster-arrows" viewBox="0 0 9500 1500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="cluster-arrows" viewBox="0 0 9500 2000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Capa -> Historia (lead-in, dashed pink) -->
         <path d="M 860 760 L 945 760" class="lead-in" />
         <polygon class="arrow-head" points="945,760 935,755 935,765" />
@@ -2618,7 +2618,7 @@
 
       <!-- ============ CUSTOS ============ -->
       <div class="section" id="sec-custos" data-id="custos"
-           style="left: 8000px; top: 100px; width: 1400px; height: 1300px;">
+           style="left: 8000px; top: 100px; width: 1400px; height: 1800px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// ORÇAMENTO</div>
@@ -2938,7 +2938,7 @@
     function computeOverviewFit() {
       const { w: vw, h: vh } = getViewportSize();
       const canvasW = 9500;
-      const canvasH = 1500;
+      const canvasH = 2000;
       const padding = 80;
       const scale = Math.min(
         (vw - padding * 2) / canvasW,

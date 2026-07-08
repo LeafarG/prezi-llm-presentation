@@ -134,7 +134,7 @@ panel closes. Deep-link `?event=<id>` opens detail directly.
 ## Critical notes for future work
 
 - Canvas dimension constants must agree between CSS (`.canvas { width: 9500;
-  height: 1500; }`) and JS (`canvasW = 9500`, `canvasH = 1500`).
+  height: 2000; }`) and JS (`canvasW = 9500`, `canvasH = 2000`).
   If you expand the canvas, update both.
 - `getSectionRect` reads CSS `style.left/top/width/height` (inline) — keep
   these in sync with `SECTIONS` table if you ever want to dedup.
