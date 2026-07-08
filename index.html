@@ -1280,6 +1280,68 @@
     .dt-win { color: var(--success); }
     .dt-choose { color: var(--text-primary); }
 
+    /* ============ CEO QUOTES (footer of Custos) ============ */
+    .cost-quotes {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.45rem;
+      margin-top: 0.55rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed rgba(251, 191, 36, 0.3);
+    }
+    .cost-quote {
+      position: relative;
+      padding: 0.5rem 0.65rem 0.5rem 0.85rem;
+      border-radius: 7px;
+      font-size: 0.68rem;
+      line-height: 1.4;
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 3px solid var(--border-strong);
+    }
+    .cost-quote::before {
+      content: "\201C";
+      position: absolute;
+      left: 0.2rem;
+      top: -0.05rem;
+      font-size: 1.2rem;
+      font-family: Georgia, serif;
+      color: var(--border-strong);
+      opacity: 0.6;
+    }
+    .cost-quote.bullish { border-left-color: var(--warning); }
+    .cost-quote.bullish::before { color: var(--warning); opacity: 0.9; }
+    .cost-quote.balanced { border-left-color: var(--accent); }
+    .cost-quote.balanced::before { color: var(--accent); opacity: 0.9; }
+    .cost-quote.optimistic { border-left-color: var(--success); }
+    .cost-quote.optimistic::before { color: var(--success); opacity: 0.9; }
+    .cost-quote-text {
+      color: var(--text-primary);
+      font-style: italic;
+      margin-bottom: 0.3rem;
+    }
+    .cost-quote-text strong { font-style: normal; }
+    .cost-quote-author {
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .cost-quote-author .name { font-weight: 700; color: var(--text-secondary); }
+    .cost-quote-tag {
+      display: inline-block;
+      font-size: 0.55rem;
+      padding: 0.08rem 0.35rem;
+      border-radius: 3px;
+      margin-right: 0.35rem;
+      background: rgba(0, 0, 0, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+    }
+    .cost-quote.bullish .cost-quote-tag { color: var(--warning); }
+    .cost-quote.balanced .cost-quote-tag { color: var(--accent); }
+    .cost-quote.optimistic .cost-quote-tag { color: var(--success); }
+
     /* ============ AGENT ESTIMATE TABLE ============ */
     .agent-estimate {
       display: grid;
@@ -2904,8 +2966,45 @@
                 <div class="route-num">3</div>
                 <div class="route-text">Precisa <strong>nuance</strong>?</div>
                 <div class="route-arrow">→</div>
+                <div class="route-action" style="color:var(--purple)">              <div class="route-step route-deep">
+                <div class="route-num">3</div>
+                <div class="route-text">Precisa <strong>nuance</strong>?</div>
+                <div class="route-arrow"></div>
                 <div class="route-action" style="color:var(--purple)">Só então Opus 4.6</div>
               </div>
+            </div>
+
+            <!-- ============ CEO VOICES ON AI COST ============ -->
+            <h4 style="color:var(--text-secondary);margin:0.7rem 0 0.3rem;font-size:0.72rem;letter-spacing:0.06em;text-align:center;font-weight:600">VOZES · O QUE CEOs DIZEM SOBRE CUSTO DE IA</h4>
+            <div class="cost-quotes">
+
+              <div class="cost-quote bullish">
+                <div class="cost-quote-text">
+                  “Se o engenheiro de US$ <strong>500k</strong> não consumir pelo menos <strong>US$ 250k</strong> em tokens por ano, eu vou ficar profundamente preocupado.”</div>
+                <div class="cost-quote-author">
+                  <span class="cost-quote-tag">gaste mais</span>
+                  <span class="name">Jensen Huang</span> · CEO, NVIDIA · All-In Podcast, GTC 2026
+                </div>
+              </div>
+
+              <div class="cost-quote balanced">
+                <div class="cost-quote-text">
+                  “Não tenho certeza se a inferência um dia será essencialmente gratuita. <strong>Jevons paradox</strong>: o custo cai, mas todo mundo simplesmente consome o que conseguir.”</div>
+                <div class="cost-quote-author">
+                  <span class="cost-quote-tag">controle</span>
+                  <span class="name">Demis Hassabis</span> · CEO, Google DeepMind · Y Combinator, mai/2026
+                </div>
+              </div>
+
+              <div class="cost-quote optimistic">
+                <div class="cost-quote-text">
+                  “O custo de usar um nível de IA cai ~<strong>10× por ano</strong> — e preço mais baixo leva a muito mais uso. Lei de Moore mudou o mundo em 2× a cada 18 meses; isto é inacreditavelmente mais forte.”</div>
+                <div class="cost-quote-author">
+                  <span class="cost-quote-tag">tendência</span>
+                  <span class="name">Sam Altman</span> · CEO, OpenAI · Three Observations, fev/2025
+                </div>
+              </div>
+
             </div>
 
             <!-- ============ FOOTER ============ -->
