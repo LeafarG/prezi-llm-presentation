@@ -302,6 +302,11 @@
       height: calc(100% - 100px);
       overflow: hidden;
     }
+    #sec-custos .content-body { overflow-y: auto; padding-right: 0.5rem; scrollbar-width: thin; scrollbar-color: var(--warning) transparent; }
+    #sec-custos .content-body::-webkit-scrollbar { width: 6px; }
+    #sec-custos .content-body::-webkit-scrollbar-track { background: transparent; }
+    #sec-custos .content-body::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.4); border-radius: 3px; }
+    #sec-custos .content-body::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.7); }
 
     /* Capa section is special — bigger, centered */
     #sec-capa .frame {
@@ -2613,7 +2618,7 @@
 
       <!-- ============ CUSTOS ============ -->
       <div class="section" id="sec-custos" data-id="custos"
-           style="left: 8000px; top: 200px; width: 1400px; height: 1100px;">
+           style="left: 8000px; top: 100px; width: 1400px; height: 1300px;">
         <div class="frame">
           <div class="poster">
             <div class="poster-num">// ORÇAMENTO</div>
