@@ -62,7 +62,9 @@ Canvas 9500 × 1500 (timeline horizontal)
    (pink)  (gray between-section arrows)               (amber lead-out)
 ```
 
-**Geometry guarantee** — each section:
+**Geometry guarantee** — all sections share uniform height = **1100 px** (Custos previously had 1800 px
+but was normalized on boss feedback "each box must have the same height"). Custos content is
+compact enough to fit in 1100 px (smaller fonts, 2-column decision grid, condensed lists).
 - Vertical: same top=200, height=1100 (canvas 1500 px tall, 200/300 px top/bottom margin)
 - Horizontal: 50-100 px gap between adjacent sections
 - Capa w=750 (smaller, intro column); Harness w=1500 (larger, finale column); others w=850-900
@@ -134,7 +136,7 @@ panel closes. Deep-link `?event=<id>` opens detail directly.
 ## Critical notes for future work
 
 - Canvas dimension constants must agree between CSS (`.canvas { width: 9500;
-  height: 2000; }`) and JS (`canvasW = 9500`, `canvasH = 2000`).
+  height: 1500; }`) and JS (`canvasW = 9500`, `canvasH = 1500`).
   If you expand the canvas, update both.
 - `getSectionRect` reads CSS `style.left/top/width/height` (inline) — keep
   these in sync with `SECTIONS` table if you ever want to dedup.
